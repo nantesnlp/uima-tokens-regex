@@ -1,0 +1,136 @@
+////////////////////////////////////////////////////////////////// SCRIPT DEPENDENCY FOR ANTLR4 PLUGIN
+
+buildscript {
+	repositories {
+		maven {
+			name 'JFrog OSS snapshot repo'
+			url  'https://oss.jfrog.org/oss-snapshot-local/'
+		}
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'me.champeau.gradle:antlr4-gradle-plugin:0.1'
+	}
+}
+
+repositories {
+   jcenter()
+   mavenLocal()
+   mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'signing'
+// plugin antlr4
+apply plugin: 'me.champeau.gradle.antlr4'
+
+///////////////////////////////////////////////////////////////// CONFIGURATION
+ 
+group = 'fr.univnantes.lina'
+archivesBaseName = 'uima-tokens-regex'
+version = '1.0'
+ 
+////////////////////////////////////////////////////////////////// DEPENDENCIES
+ 
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives javadocJar, sourcesJar
+}
+
+
+dependencies {
+	// Logging
+	compile "org.slf4j:slf4j-api:1.7.+"
+	
+	// Tests
+	compile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
+	compile "junit:junit:4.12"
+	compile "eu.codearte.catch-exception:catch-exception:1.4.1"
+	compile "org.assertj:assertj-core:2.0.0"
+	compile "org.mockito:mockito-all:1.10.19"
+
+	// UIMA
+	compile 'org.apache.uima:uimaj-core:2.6.+'
+	compile "org.apache.uima:uimafit-core:2.1.+"
+	
+	compile 'com.google.guava:guava:16.+'
+    compile "fr.univnantes.lina:uima-profiler:1.+"
+
+}
+
+
+uploadArchives {
+	repositories {
+	  mavenDeployer {
+		//beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  
+		repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+		  authentication(userName: ossrhUsername, password: ossrhPassword)
+		}
+  
+		snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+		  authentication(userName: ossrhUsername, password: ossrhPassword)
+		}
+  
+		pom.project {
+		  name 'UIMA Tokens Regex'
+		  packaging 'jar'
+		  // optionally artifactId can be defined here
+		  description 'A utility to manually profile UIMA AEs and manage examples'
+		  //url 'http://www.example.com/example-application'
+	
+		  scm {
+			  connection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
+			  developerConnection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
+			  url 'git@github.com:julestar/uima-tokens-regex.git'
+		  }
+  
+		  licenses {
+			  license {
+				  name 'The Apache License, Version 2.0'
+				  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+			  }
+		  }
+  
+		  developers {
+			  developer {
+				  id 'dcram'
+				  name 'Damien Cram'
+				  email 'damien.cram@univ-nantes.fr'
+			  }
+		  }
+		}
+	  }
+	}
+}
+
+////////////////////////////////////////////////////////////////// ANTLR4
+
+// make the Java compile task depend on the antlr4 task
+compileJava.dependsOn antlr4
+
+antlr4.source = file("antlr")
+antlr4.output = file("src/main/java/fr/univnantes/lina/uima/tkregex/antlr/generated")
+antlr4.visitor = false
+
+// add the generated source files to the list of java sources
+//sourceSets.main.java.srcDirs += "antlr"
+
+// add antlr4 to classpath
+configurations {
+   compile.extendsFrom antlr4
+}
+
+

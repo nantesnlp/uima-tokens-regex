@@ -1,0 +1,141 @@
+package fr.univnantes.lina.uima.tkregex;
+
+import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
+public class RegexOccurrence {
+	public static final char WHITESPACE = ' ';
+
+	private Automaton automaton;
+	private String category;
+	private List<LabelledAnnotation> allMatchingAnnotations;
+	private List<LabelledAnnotation> labelledAnnotations;
+	private List<String> labels;
+	private LabelledAnnotation last = null;
+	private int size;
+	private int begin = -1;
+	private int end = -1;
+
+	RegexOccurrence(Automaton automaton, Iterable<LabelledAnnotation> list) {
+		super();
+		this.automaton = automaton;
+		this.allMatchingAnnotations = ImmutableList.copyOf(list);
+		this.labelledAnnotations = ImmutableList.copyOf(labelledAnnotationIterator());
+		this.size = this.labelledAnnotations.size();
+		if(size > 0) {
+			this.last = this.labelledAnnotations.get(size - 1);
+			this.begin = this.labelledAnnotations.get(0).getAnnotation().getBegin();
+			this.end = this.last.getAnnotation().getEnd();
+		}
+		this.labels =  Lists.newArrayListWithCapacity(this.size);
+		final Iterator<LabelledAnnotation> it = this.labelledAnnotations.iterator();
+		while(it.hasNext()) {
+			LabelledAnnotation la = it.next();
+			labels.add(la.getLabel() == null ? la.getAnnotation().getCoveredText() : la.getLabel());
+		}
+		if(end < begin)
+			throw new IllegalArgumentException("end < begin");
+	}
+
+//	void setRule(Rule rule) {
+//		this.rule = rule;
+//	}
+	
+	void setCategory(String category) {
+		this.category = category;
+	}
+	
+	public LabelledAnnotation getLast() {
+		return last;
+	}
+	
+	public Rule getRule() {
+		return this.automaton.getRule();
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	private Iterator<LabelledAnnotation> labelledAnnotationIterator() {
+		final Iterator<LabelledAnnotation> it = this.allMatchingAnnotations.iterator();
+		return new AbstractIterator<LabelledAnnotation>() {
+			@Override
+			protected LabelledAnnotation computeNext() {
+				while(it.hasNext()) {
+					LabelledAnnotation la = it.next();
+					if(!la.isIgnored())
+						return la;
+				}
+				return endOfData();
+			}
+		};
+	}
+
+
+	public List<LabelledAnnotation> getLabelledAnnotations() {
+		return labelledAnnotations;
+	}
+	
+	public List<LabelledAnnotation> getAllMatchingAnnotations() {
+		return allMatchingAnnotations;
+	}
+	
+	
+	public int size() {
+		return size;
+	}
+	
+	@Override
+	public String toString() {
+		if(size() > 0) {
+			return Objects.toStringHelper(this)
+					.add("begin", this.getLabelledAnnotations().get(0).getAnnotation().getBegin())
+					.add("end", this.getLabelledAnnotations().get(size()-1).getAnnotation().getEnd())
+					.add("rule", this.getRule().getName())
+//					.add("pattern", Joiner.on(" ").join(this.getLabels()))
+					.toString();
+		} else {
+			return Objects.toStringHelper(this)
+					.add("size", 0)
+					.add("rule", this.getRule().getName())
+					.toString();
+		}
+	}
+
+	
+	public List<String> getLabels() {
+		return labels;
+	}
+
+	public int getBegin() {
+		return begin;
+	}
+	public int getEnd() {
+		return end;
+	}
+
+	public String asPatternString() {
+		return Joiner.on(WHITESPACE).join(this.getLabels());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(begin, end);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RegexOccurrence) {
+			RegexOccurrence o = (RegexOccurrence) obj;
+			return this.begin == o.begin && this.end == o.end;
+		} else
+			return false;
+	}
+}
