@@ -1,2 +1,5 @@
-ossrhUsername=dam
-ossrhPassword=t2T0PP8SGY3A
+ossrhUsername=toto
+ossrhPassword=thePasswd
+developerId=id
+developerName=theName
+developerEmail=theMail

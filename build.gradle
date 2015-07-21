@@ -106,9 +106,9 @@ uploadArchives {
   
 		  developers {
 			  developer {
-				  id 'dcram'
-				  name 'Damien Cram'
-				  email 'damien.cram@univ-nantes.fr'
+				  id developerId
+				  name developerName
+				  email developerEmail
 			  }
 		  }
 		}
