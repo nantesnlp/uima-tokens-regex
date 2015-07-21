@@ -28,13 +28,13 @@ apply plugin: 'signing'
 apply plugin: 'me.champeau.gradle.antlr4'
 
 ///////////////////////////////////////////////////////////////// CONFIGURATION
- 
+
 group = 'fr.univnantes.lina'
 archivesBaseName = 'uima-tokens-regex'
 version = '1.0'
- 
+
 ////////////////////////////////////////////////////////////////// DEPENDENCIES
- 
+
 task javadocJar(type: Jar) {
 	classifier = 'javadoc'
 	from javadoc
@@ -53,7 +53,7 @@ artifacts {
 dependencies {
 	// Logging
 	compile "org.slf4j:slf4j-api:1.7.+"
-	
+
 	// Tests
 	compile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
 	compile "junit:junit:4.12"
@@ -64,7 +64,7 @@ dependencies {
 	// UIMA
 	compile 'org.apache.uima:uimaj-core:2.6.+'
 	compile "org.apache.uima:uimafit-core:2.1.+"
-	
+
 	compile 'com.google.guava:guava:16.+'
     compile "fr.univnantes.lina:uima-profiler:1.+"
 
@@ -75,35 +75,35 @@ uploadArchives {
 	repositories {
 	  mavenDeployer {
 		//beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-  
+
 		repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
 		  authentication(userName: ossrhUsername, password: ossrhPassword)
 		}
-  
+
 		snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
 		  authentication(userName: ossrhUsername, password: ossrhPassword)
 		}
-  
+
 		pom.project {
 		  name 'UIMA Tokens Regex'
 		  packaging 'jar'
 		  // optionally artifactId can be defined here
-		  description 'A utility to manually profile UIMA AEs and manage examples'
+		  description 'A UIMA Analysis Engine that detects in a CAS occurrences of a regular expressions over UIMA annotations'
 		  //url 'http://www.example.com/example-application'
-	
+
 		  scm {
 			  connection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
 			  developerConnection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
 			  url 'git@github.com:julestar/uima-tokens-regex.git'
 		  }
-  
+
 		  licenses {
 			  license {
 				  name 'The Apache License, Version 2.0'
 				  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 			  }
 		  }
-  
+
 		  developers {
 			  developer {
 				  id developerId
@@ -132,5 +132,3 @@ antlr4.visitor = false
 configurations {
    compile.extendsFrom antlr4
 }
-
-
