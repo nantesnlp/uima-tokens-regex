@@ -55,11 +55,11 @@ dependencies {
 	compile "org.slf4j:slf4j-api:1.7.+"
 
 	// Tests
-	compile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
-	compile "junit:junit:4.12"
-	compile "eu.codearte.catch-exception:catch-exception:1.4.1"
-	compile "org.assertj:assertj-core:2.0.0"
-	compile "org.mockito:mockito-all:1.10.19"
+	testCompile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
+	testCompile "junit:junit:4.12"
+	testCompile "eu.codearte.catch-exception:catch-exception:1.4.1"
+	testCompile "org.assertj:assertj-core:2.0.0"
+	testCompile "org.mockito:mockito-all:1.10.19"
 
 	// UIMA
 	compile 'org.apache.uima:uimaj-core:2.6.+'
@@ -68,6 +68,8 @@ dependencies {
 	compile 'com.google.guava:guava:16.+'
     compile "fr.univnantes.lina:uima-profiler:1.+"
 
+	// Antlr
+	runtime "org.antlr:antlr4-runtime:4.2.+"
 }
 
 
