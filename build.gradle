@@ -59,7 +59,7 @@ if(hasProperty("signing.keyId")) {
 
 dependencies {
 	// Logging
-	compile "org.slf4j:slf4j-api:1.7.+"
+	compile "org.slf4j:slf4j-api:1.7.12"
 
 	// Tests
 	testCompile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
@@ -69,14 +69,14 @@ dependencies {
 	testCompile "org.mockito:mockito-all:1.10.19"
 
 	// UIMA
-	compile 'org.apache.uima:uimaj-core:2.6.+'
-	compile "org.apache.uima:uimafit-core:2.1.+"
+	compile 'org.apache.uima:uimaj-core:2.6.0'
+	compile "org.apache.uima:uimafit-core:2.1.0"
 
-	compile 'com.google.guava:guava:16.+'
-    compile "fr.univ-nantes.julestar:uima-profiler:1.+"
+	compile 'com.google.guava:guava:18.0'
+    compile 'fr.univ-nantes.julestar:uima-profiler:1.0'
 
 	// Antlr
-	runtime "org.antlr:antlr4-runtime:4.2.+"
+	runtime "org.antlr:antlr4-runtime:4.2.1"
 }
 
 publishing {
@@ -110,7 +110,7 @@ if(hasProperty("ossrhUsername")) {
 			  packaging 'jar'
 			  // optionally artifactId can be defined here
 			  description 'A UIMA Analysis Engine that detects in a CAS occurrences of a regular expressions over UIMA annotations'
-			  //url 'http://www.example.com/example-application'
+			  url 'https://github.com/JuleStar/uima-tokens-regex'
 	
 			  scm {
 				  connection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
