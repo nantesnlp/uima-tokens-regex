@@ -26,10 +26,11 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 // plugin antlr4
 apply plugin: 'me.champeau.gradle.antlr4'
+apply plugin: 'maven-publish'
 
 ///////////////////////////////////////////////////////////////// CONFIGURATION
 
-group = 'fr.univnantes.julestar'
+group = 'fr.univ-nantes.julestar'
 archivesBaseName = 'uima-tokens-regex'
 version = '1.0'
 
@@ -72,6 +73,17 @@ dependencies {
 	runtime "org.antlr:antlr4-runtime:4.2.+"
 }
 
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId group
+			artifactId archivesBaseName
+			version version
+
+			from components.java
+		}
+	}
+}
 
 if(hasProperty("ossrhUsername")) {
 	uploadArchives {
