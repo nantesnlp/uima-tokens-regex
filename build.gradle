@@ -29,7 +29,7 @@ apply plugin: 'me.champeau.gradle.antlr4'
 
 ///////////////////////////////////////////////////////////////// CONFIGURATION
 
-group = 'fr.univnantes.lina'
+group = 'fr.univnantes.julestar'
 archivesBaseName = 'uima-tokens-regex'
 version = '1.0'
 
@@ -66,58 +66,62 @@ dependencies {
 	compile "org.apache.uima:uimafit-core:2.1.+"
 
 	compile 'com.google.guava:guava:16.+'
-    compile "fr.univnantes.lina:uima-profiler:1.+"
+    compile "fr.univ-nantes.julestar:uima-profiler:1.+"
 
 	// Antlr
 	runtime "org.antlr:antlr4-runtime:4.2.+"
 }
 
 
-uploadArchives {
-	repositories {
-	  mavenDeployer {
-		//beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-		repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-		  authentication(userName: ossrhUsername, password: ossrhPassword)
-		}
-
-		snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-		  authentication(userName: ossrhUsername, password: ossrhPassword)
-		}
-
-		pom.project {
-		  name 'UIMA Tokens Regex'
-		  packaging 'jar'
-		  // optionally artifactId can be defined here
-		  description 'A UIMA Analysis Engine that detects in a CAS occurrences of a regular expressions over UIMA annotations'
-		  //url 'http://www.example.com/example-application'
-
-		  scm {
-			  connection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
-			  developerConnection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
-			  url 'git@github.com:julestar/uima-tokens-regex.git'
-		  }
-
-		  licenses {
-			  license {
-				  name 'The Apache License, Version 2.0'
-				  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+if(hasProperty("ossrhUsername")) {
+	uploadArchives {
+		repositories {
+		  mavenDeployer {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+	
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+			  authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+	
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+			  authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+	
+			pom.project {
+			  name 'UIMA Tokens Regex'
+			  packaging 'jar'
+			  // optionally artifactId can be defined here
+			  description 'A UIMA Analysis Engine that detects in a CAS occurrences of a regular expressions over UIMA annotations'
+			  //url 'http://www.example.com/example-application'
+	
+			  scm {
+				  connection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
+				  developerConnection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
+				  url 'git@github.com:julestar/uima-tokens-regex.git'
 			  }
-		  }
-
-		  developers {
-			  developer {
-				  id developerId
-				  name developerName
-				  email developerEmail
+	
+			  licenses {
+				  license {
+					  name 'The Apache License, Version 2.0'
+					  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				  }
 			  }
+	
+			  developers {
+				  developer {
+					  id developerId
+					  name developerName
+					  email developerEmail
+				  }
+			  }
+			}
 		  }
 		}
-	  }
 	}
+} else {
+def msg = "Publishing to maven central (task uploadArchives) is not possible since no gradle property file is found (use \"\$ cp gradle.properties.sample gradle.properties\")"
+logger.warn(msg)
 }
-
 ////////////////////////////////////////////////////////////////// ANTLR4
 
 // make the Java compile task depend on the antlr4 task
