@@ -56,7 +56,7 @@ public class AutomatonTestCase extends TestCase {
 		ImmutableMap<String, String> labels = ImmutableMap.of("a", "b", "c", "e");
 		automatonTest(
 				"a c b d", 
-				automaton("a c b d", labels), 
+				automaton("a c b d", labels, false), 
 				"b e b d (0,4)");
 	}
 
@@ -228,6 +228,23 @@ public class AutomatonTestCase extends TestCase {
 				"a b a (0,3) | a b a (4,7)"
 				);
 	}
+
+	@Test
+	public void testAllowOverlap() {
+		javaTest(
+				"ababababa",
+				"aba",
+				"aba (0,3) | aba (4,7)"
+		);
+
+		automatonTest(
+				"a b a b a b a b c", 
+				"a b a", 
+				"a b a (0,3) | a b a (2,5) | a b a (4,7)",
+				true);
+	}
+	
+
 	
 	@Test
 	public void testSucceedsIfItDoesNotMatchWholeSequence() {

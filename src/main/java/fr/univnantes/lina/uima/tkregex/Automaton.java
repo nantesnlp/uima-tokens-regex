@@ -44,6 +44,7 @@ public class Automaton implements Cloneable {
 	private State initState;
 	private TreeSet<State> acceptingStates;
 	private TreeSet<State> states;
+	private boolean allowOverlappingInstances = false;
 	
 	private LinkedList<AutomatonInstance> instances;
 	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
@@ -65,6 +66,15 @@ public class Automaton implements Cloneable {
 		this.acceptingStates = new TreeSet<State>();
 		this.states = new TreeSet<State>();
 		reset();
+	}
+	
+	
+	public void setAllowOverlappingInstances(boolean allowOverlappingInstances) {
+		this.allowOverlappingInstances = allowOverlappingInstances;
+	}
+	
+	public boolean isAllowOverlappingInstances() {
+		return allowOverlappingInstances;
 	}
 	
 	void setRule(Rule rule) {
@@ -111,21 +121,23 @@ public class Automaton implements Cloneable {
 			 *  remove the instance if there is already a 
 			 *  found instance covering it.
 			 */
-			if(matchingEpisode != null) {
-				AnnotationFS firstAnno = inst.firstAnno();
-				if(firstAnno != null) {
-					List<LabelledAnnotation> matchingAnnoList = matchingEpisode.getAllMatchingAnnotations();
-					AnnotationFS lastAnno = matchingAnnoList.get(matchingAnnoList.size()-1).getAnnotation();
-					int begin1 = lastAnno.getBegin();
-					int begin2 = firstAnno.getBegin();
-					int end1 = lastAnno.getEnd();
-					int end2 = firstAnno.getEnd();
-					if (!(begin1 < begin2 || (begin1 == begin2 && end1 < end2))) {
-						instanceIt.remove();
-						continue;
+			if(!this.allowOverlappingInstances) {
+				if(matchingEpisode != null) {
+					AnnotationFS firstAnno = inst.firstAnno();
+					if(firstAnno != null) {
+						List<LabelledAnnotation> matchingAnnoList = matchingEpisode.getAllMatchingAnnotations();
+						AnnotationFS lastAnno = matchingAnnoList.get(matchingAnnoList.size()-1).getAnnotation();
+						int begin1 = lastAnno.getBegin();
+						int begin2 = firstAnno.getBegin();
+						int end1 = lastAnno.getEnd();
+						int end2 = firstAnno.getEnd();
+						if (!(begin1 < begin2 || (begin1 == begin2 && end1 < end2))) {
+							instanceIt.remove();
+							continue;
+						}
+					} else {
+						
 					}
-				} else {
-					
 				}
 			}
 			

@@ -115,10 +115,10 @@ public class TestUtils {
 	}
 
 	public static Automaton automaton(String regexp) {
-		return automaton(regexp, new HashMap<String, String>());
+		return automaton(regexp, new HashMap<String, String>(), false);
 	}
 
-	public static Automaton automaton(String regexp, Map<String, String> labels) {
+	public static Automaton automaton(String regexp, Map<String, String> labels, boolean allowOverlap) {
 		StringTokenizer st = new StringTokenizer(regexp);
 		List<Automaton> list = new LinkedList<Automaton>();
 		while(st.hasMoreTokens()) {
@@ -146,7 +146,9 @@ public class TestUtils {
 						getQuantifier(quant))
 				);
 		}
-		return AutomatonFactory.createConcatenation(list);
+		Automaton automaton = AutomatonFactory.createConcatenation(list);
+		automaton.setAllowOverlappingInstances(allowOverlap);
+		return automaton;
 	}
 	
 	private static AutomatonQuantifier getQuantifier(String quantifierStr) {
@@ -224,11 +226,15 @@ public class TestUtils {
 		assertEquals(expectedOcc, occ);
 	}
 	
-	public static void automatonTest(String sequence, String regexp, String result) {
+	public static void automatonTest(String sequence, String regexp, String result, boolean allowOverlap) {
 		automatonTest(
 				sequence, 
-				automaton(regexp), 
+				automaton(regexp, new HashMap<String, String>(), allowOverlap), 
 				result);
+	}
+
+	public static void automatonTest(String sequence, String regexp, String result) {
+		automatonTest(sequence, regexp, result, false);
 	}
 
 	public static void automatonTest(String sequence, Automaton a, String result) {

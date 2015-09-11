@@ -47,7 +47,11 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	public static final String PARAM_SET_LABELS = "SetLabels";
 	@ConfigurationParameter(name = PARAM_SET_LABELS, mandatory = false, defaultValue = NO_SET_LABEL)
 	private String labelFeature = null;
-	
+
+	public static final String PARAM_ALLOW_OVERLAPPING_OCCURRENCES = "AllowOverlappingOccurrences";
+	@ConfigurationParameter(name = PARAM_ALLOW_OVERLAPPING_OCCURRENCES, mandatory = false, defaultValue="false")
+	private boolean allowOverlappingOccurrences;
+
 	protected abstract void ruleMatched(JCas jCas, RegexOccurrence occurrence);
 	protected void beforeRuleProcessing(JCas jCas) {}
 	protected void afterRuleProcessing(JCas jCas) {}
@@ -77,6 +81,7 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 			}
 		};
 		for (final Rule rule: this.resource.getRules()) {
+			rule.getAutomaton().setAllowOverlappingInstances(this.allowOverlappingOccurrences);
 			rule.getAutomaton().addRecognitionHandler(recognitionHandler);
 			rule.getAutomaton().reset();
 		}
