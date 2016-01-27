@@ -32,7 +32,7 @@ apply plugin: 'maven-publish'
 
 group = 'fr.univ-nantes.julestar'
 archivesBaseName = 'uima-tokens-regex'
-version = '1.1'
+version = '1.2'
 
 ////////////////////////////////////////////////////////////////// DEPENDENCIES
 
@@ -73,7 +73,6 @@ dependencies {
 	compile "org.apache.uima:uimafit-core:2.1.0"
 
 	compile 'com.google.guava:guava:18.0'
-    compile 'fr.univ-nantes.julestar:uima-profiler:1.0'
 
 	// Antlr
 	runtime "org.antlr:antlr4-runtime:4.2.1"

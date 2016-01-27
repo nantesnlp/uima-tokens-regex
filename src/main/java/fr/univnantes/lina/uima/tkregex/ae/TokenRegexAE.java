@@ -31,9 +31,8 @@ import org.apache.uima.fit.descriptor.ExternalResource;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import fr.univnantes.lina.UIMAProfiler;
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.RecognitionHandler;
+import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.Rule;
 
 
@@ -58,7 +57,6 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	
 	@Override
 	public void process(final JCas jCas) throws AnalysisEngineProcessException {
-		UIMAProfiler.getProfiler("AnalysisEngine").start(this, "process");
 		beforeRuleProcessing(jCas);
 		
 		if(!this.labelFeature.equals(NO_SET_LABEL)) {
@@ -76,7 +74,6 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 		RecognitionHandler recognitionHandler = new RecognitionHandler() {
 			@Override
 			public void recognizedEpisode(RegexOccurrence episode) {
-				UIMAProfiler.getProfiler("Regex rule names").hit(episode.getRule().getName(), episode.asPatternString());
 				ruleMatched(jCas, episode);
 			}
 		};
@@ -107,7 +104,6 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 		
 		
 		afterRuleProcessing(jCas);
-		UIMAProfiler.getProfiler("AnalysisEngine").stop(this, "process");
 	}
 
 	protected void allRulesFailed(JCas jCas) {}
