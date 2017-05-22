@@ -47,7 +47,7 @@ dependencies {
 	antlr "org.antlr:antlr4:4.7"
     
 	// Logging
-	compile "org.slf4j:slf4j-api:1.7.12"
+	compile "org.slf4j:slf4j-api:1.7.25"
 
 	// Tests
 	testCompile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
@@ -57,10 +57,10 @@ dependencies {
 	testCompile "org.mockito:mockito-all:1.10.19"
 
 	// UIMA
-	compile 'org.apache.uima:uimaj-core:2.6.0'
-	compile "org.apache.uima:uimafit-core:2.1.0"
+	compile 'org.apache.uima:uimaj-core:2.10.0'
+	compile "org.apache.uima:uimafit-core:2.3.0"
 
-	compile 'com.google.guava:guava:18.0'
+	compile 'com.google.guava:guava:21.0'
 
 	// Antlr
 	runtime "org.antlr:antlr4-runtime:4.7"

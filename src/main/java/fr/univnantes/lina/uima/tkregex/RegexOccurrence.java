@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
@@ -116,14 +117,14 @@ public class RegexOccurrence {
 	@Override
 	public String toString() {
 		if(size() > 0) {
-			return Objects.toStringHelper(this)
+			return MoreObjects.toStringHelper(this)
 					.add("begin", this.getLabelledAnnotations().get(0).getAnnotation().getBegin())
 					.add("end", this.getLabelledAnnotations().get(size()-1).getAnnotation().getEnd())
 					.add("rule", this.getRule().getName())
 //					.add("pattern", Joiner.on(" ").join(this.getLabels()))
 					.toString();
 		} else {
-			return Objects.toStringHelper(this)
+			return MoreObjects.toStringHelper(this)
 					.add("size", 0)
 					.add("rule", this.getRule().getName())
 					.toString();

@@ -23,7 +23,7 @@ package fr.univnantes.lina.uima.tkregex;
 
 import org.apache.uima.cas.text.AnnotationFS;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 public class LabelledAnnotation {
 	private AnnotationFS annotation;
@@ -46,7 +46,7 @@ public class LabelledAnnotation {
 	}
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this)
+		return MoreObjects.toStringHelper(this)
 				.add("label", label)
 				.add("ignored", ignored)
 				.add("begin", annotation.getBegin())
