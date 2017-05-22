@@ -236,6 +236,7 @@ JavaLetterOrDigit
 	
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
-Regex: '/' (~[/\/]| EscapeSequence)* '/';
+
+Regex: '/' (~[/]| EscapeSequence)* '/';
 
 
