@@ -28,7 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.uima.UIMAFramework;
@@ -54,11 +55,11 @@ public class RegexListResource implements SharedResourceObject {
 	
 	@Override
 	public void load(DataResource aData) throws ResourceInitializationException {
-		ANTLRInputStream input;
+		CharStream input;
 		try {
 			UIMAFramework.getLogger().log(Level.FINE, "Loading resource " + KEY_TOKEN_REGEX_RULES + " at: " + aData.getUri());
 			
-			input = new ANTLRInputStream(aData.getInputStream());
+			input = CharStreams.fromStream(aData.getInputStream());
 			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
