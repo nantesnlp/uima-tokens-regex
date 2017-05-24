@@ -51,6 +51,7 @@ import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
 import fr.univnantes.lina.uima.tkregex.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AndexpressionContext;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.BuiltinFunctionContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ExpressionContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureMatcherDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureNameContext;
@@ -180,6 +181,9 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 				if(annotationMatcher == null)
 					throw new AutomataParsingException("No such matcher defined: " + matcherName);
 				matcher = annotationMatcher;
+			} else if(ctx.builtinFunction() != null) {
+				String functionName = ctx.builtinFunction().getText();
+				matcher = BuiltinMatcher.get(functionName);
 			} else
 				matcher = new ExpressionMatcher(
 					feature, 
@@ -605,6 +609,18 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		} catch (Exception e) {
 			throw new AutomataParsingException("Failed to load type system " + filePath, e);
 		}
+	}
+
+	@Override
+	public void enterBuiltinFunction(BuiltinFunctionContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void exitBuiltinFunction(BuiltinFunctionContext ctx) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

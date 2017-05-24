@@ -80,6 +80,7 @@ orexpression
 expression
 	: Identifier
 	| featureName operator literal
+	| builtinFunction
 	| '(' andexpression ')'
 	;
 	
@@ -88,6 +89,10 @@ quantifierDeclaration
 	| '*'
 	| '?'
 	| '+'
+	;
+	
+builtinFunction
+	:  Identifier '(' ')'
 	;
 
 featureName
@@ -163,6 +168,7 @@ RPAREN          : ')';
 LBRACK          : '[';
 RBRACK          : ']';
 SEMI            : ';';
+
 
 
 //  Regex Quantifiers
