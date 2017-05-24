@@ -95,21 +95,21 @@ public class AutomatonParserTestCase extends TestCase {
 		}
 	}
 	
-	private String file1 = "term \"Tata\": [lemma==\"mang\"] /^(et|ou)$/ [];";
-	private String file2 = "term \"Test expression parsing\", \"freq\": [specificity >= 0.9];";
-	private String file3 = "term \"Or expression\", \"edee\": [lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
-	private String file4 = "term \"Or/And tree expression\", \"bonj\": [stem == \"bonj\" & (lemma == \"efbve\" | (specificity >= 0.9 & occurrences < 17) | stem != \"mang\" | (specificity >= 0.9 & occurrences > 18 & (lemma != \"salut\" | begin > 15 )))][lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
-	private String file5_1 = "term \"With quatifiers\", \"V\": [lemma==\"mang\"]*;";
-	private String file5_2 = "term \"With quatifiers\", \"V\": [lemma==\"mang\"]{2};";
-	private String file5_3 = "term \"With quatifiers\", \"V\": [lemma==\"mang\"]+;";
-	private String file5_4 = "term \"With quatifiers\", \"V\": [lemma==\"mang\"]?;";
-	private String file6 = "term \"Tata\": [];";
-	private String file7 = "term \"Regex\":    /Ftd?\"^\\\\a-Z/;";
-	private String file8_1 = "term \"With ignore matcher\":    /Ftd?\"^\\\\a-Z/ ~[lemma==\"mang\"];";
-	private String file8_2 = "term \"With ignore matcher\":    ~/Ftd?\"^\\\\a-Z/ [lemma==\"mang\"];";
-	private String file9_1 = "matcher A: [lemma==\"mang\"]; term \"a\": A A;";
-	private String file9_2 = "matcher A as D: [lemma==\"mang\"]; term \"a\": A A;";
-	private String file9_3 = "matcher A as D: [lemma==\"mang\"]; matcher B: [lemma==\"mang\"]; term \"a\": A B A;";
+	private String file1 = "rule \"Tata\": [lemma==\"mang\"] /^(et|ou)$/ [];";
+	private String file2 = "rule \"Test expression parsing\", \"freq\": [specificity >= 0.9];";
+	private String file3 = "rule \"Or expression\", \"edee\": [lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
+	private String file4 = "rule \"Or/And tree expression\", \"bonj\": [stem == \"bonj\" & (lemma == \"efbve\" | (specificity >= 0.9 & occurrences < 17) | stem != \"mang\" | (specificity >= 0.9 & occurrences > 18 & (lemma != \"salut\" | begin > 15 )))][lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
+	private String file5_1 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]*;";
+	private String file5_2 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]{2};";
+	private String file5_3 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]+;";
+	private String file5_4 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]?;";
+	private String file6 = "rule \"Tata\": [];";
+	private String file7 = "rule \"Regex\":    /Ftd?\"^\\\\a-Z/;";
+	private String file8_1 = "rule \"With ignore matcher\":    /Ftd?\"^\\\\a-Z/ ~[lemma==\"mang\"];";
+	private String file8_2 = "rule \"With ignore matcher\":    ~/Ftd?\"^\\\\a-Z/ [lemma==\"mang\"];";
+	private String file9_1 = "matcher A: [lemma==\"mang\"]; rule \"a\": A A;";
+	private String file9_2 = "matcher A as D: [lemma==\"mang\"]; rule \"a\": A A;";
+	private String file9_3 = "matcher A as D: [lemma==\"mang\"]; matcher B: [lemma==\"mang\"]; rule \"a\": A B A;";
 
 	@Test
 	public void testThrowExceptionIfMatchesEmptySequence1() {

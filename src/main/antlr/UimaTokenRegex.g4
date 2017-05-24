@@ -35,7 +35,7 @@ labelIdentifier
 	;
 	
 ruleDeclaration
-	: (TERM | VARIANT) ruleName (',' grammaticalCategory)? ':' orBranch ';'
+	: RULE ruleName (',' grammaticalCategory)? ':' orBranch ';'
 	;
 
 ruleName
@@ -204,9 +204,7 @@ LINE_COMMENT
 // Matcher declaration
 MATCHER	: 'matcher';
 // Rule declaration
-TERM	: 'term';
-// Variant declaration
-VARIANT	: 'variant';
+RULE	: 'rule';
 
 
 Identifier
