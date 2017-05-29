@@ -36,7 +36,8 @@ public class BuiltinMatcher {
 
 	public static AnnotationMatcher get(String matcherName) {
 		Preconditions.checkArgument(matchers.containsKey(matcherName), "No such matcher: %s.", matcherName);
-		return matchers.get(matcherName);
+		AnnotationMatcher annotationMatcher = matchers.get(matcherName);
+		return annotationMatcher;
 	}
 	
 	public static <T extends AnnotationMatcher> T get(Class<T> cls) {

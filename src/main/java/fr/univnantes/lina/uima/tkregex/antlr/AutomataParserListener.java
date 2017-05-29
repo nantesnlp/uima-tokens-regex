@@ -24,6 +24,7 @@ package fr.univnantes.lina.uima.tkregex.antlr;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,19 +46,20 @@ import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.Automaton;
 import fr.univnantes.lina.uima.tkregex.AutomatonFactory;
 import fr.univnantes.lina.uima.tkregex.AutomatonQuantifier;
+import fr.univnantes.lina.uima.tkregex.CustomMatcher;
 import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
 import fr.univnantes.lina.uima.tkregex.OrMatcher;
 import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
 import fr.univnantes.lina.uima.tkregex.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AndexpressionContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.BuiltinFunctionContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ExpressionContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureMatcherDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureNameContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.GrammaticalCategoryContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.HeaderBlockContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ImportDeclarationContext;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.JavaMatcherDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.LabelIdentifierContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.LiteralContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.MatcherDeclarationContext;
@@ -123,6 +125,9 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	
 	private TypeDescription usedType = null;
 	
+	public Map<String, CustomMatcher> getCustomJavaMatchers() {
+		return declaredJavaMatchers;
+	}
 	
 	public List<Rule> getRules() {
 		return ImmutableList.copyOf(this.rules);
@@ -174,16 +179,18 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			// do nothing
 		} else {
 //			System.out.println(ctx.toStringTree(parser));
-			AnnotationMatcher matcher;
+			AnnotationMatcher matcher = null;
 			if(ctx.Identifier() != null) {
 				String matcherName = ctx.Identifier().getText();
 				AnnotationMatcher annotationMatcher = shortcutMatchers.get(matcherName);
-				if(annotationMatcher == null)
-					throw new AutomataParsingException("No such matcher defined: " + matcherName);
-				matcher = annotationMatcher;
-			} else if(ctx.builtinFunction() != null) {
-				String functionName = ctx.builtinFunction().getText();
-				matcher = BuiltinMatcher.get(functionName);
+				if(annotationMatcher == null) {
+					if(declaredJavaMatchers.containsKey(matcherName))
+						matcher = declaredJavaMatchers.get(matcherName);
+					else if(BuiltinMatcher.isRegistered(matcherName))
+						matcher = BuiltinMatcher.get(matcherName);
+				} 
+				if(matcher == null)
+					throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
 			} else
 				matcher = new ExpressionMatcher(
 					feature, 
@@ -499,7 +506,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			String text = ctx.Regex().getText();
 			String regex = text.substring(1, text.length() - 1);
 			matcher = new RegexCoveredTextMatcher(regex);
-		} else throw new AutomataParsingException("Not a valid shortcutMatcherDeclaration: " + ctx.getText());
+		} else 
+			throw new AutomataParsingException("Not a valid shortcutMatcherDeclaration: " + ctx.getText());
 		if(this.shortcutMatchers.get(matcherName) != null)
 			throw new AutomataParsingException("There is already a matcher named " + matcherName);
 		if(matcherLabel == null)
@@ -594,6 +602,9 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		options.put(optName, ctx.literal().toString());
 	}
 
+
+			
+
 	@Override
 	public void enterImportDeclaration(ImportDeclarationContext ctx) {
 		
@@ -611,16 +622,19 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		}
 	}
 
+	private Map<String, CustomMatcher> declaredJavaMatchers = new ConcurrentHashMap<>();
+
 	@Override
-	public void enterBuiltinFunction(BuiltinFunctionContext ctx) {
-		// TODO Auto-generated method stub
+	public void enterJavaMatcherDeclaration(JavaMatcherDeclarationContext ctx) {
 		
 	}
 
 	@Override
-	public void exitBuiltinFunction(BuiltinFunctionContext ctx) {
-		// TODO Auto-generated method stub
+	public void exitJavaMatcherDeclaration(JavaMatcherDeclarationContext ctx) {
+		String javaMatcherName = ctx.Identifier().getText();
+		CustomMatcher matcher = new CustomMatcher(javaMatcherName);
+		declaredJavaMatchers.put(javaMatcherName, matcher);
 		
 	}
-	
+
 }

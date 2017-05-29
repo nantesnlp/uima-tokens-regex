@@ -31,12 +31,17 @@ import org.apache.uima.fit.descriptor.ExternalResource;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import com.google.common.base.Preconditions;
+
+import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.CustomMatcher;
 import fr.univnantes.lina.uima.tkregex.RecognitionHandler;
 import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.Rule;
 
 
 public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
+	private static final String ERR_NO_MATCHER_IMPLEMENTATION_FOUND = "No implementation found for custom matcher %s";
 
 	public static final String TOKEN_REGEX_RULES = "TokenRegexRules";
 	@ExternalResource(key = TOKEN_REGEX_RULES, mandatory = true)
@@ -55,8 +60,18 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	protected void beforeRuleProcessing(JCas jCas) {}
 	protected void afterRuleProcessing(JCas jCas) {}
 	
+	protected synchronized void registerBuiltinMatcher(String matcherName, AnnotationMatcher matcher) {
+		Preconditions.checkArgument(resource.getCustomJavaMatchers().containsKey(matcherName), "No such matcher declared in regex file: %s", matcherName);
+		resource.getCustomJavaMatchers().remove(matcherName).setMatcher(matcher);
+	}
+	
 	@Override
 	public void process(final JCas jCas) throws AnalysisEngineProcessException {
+		for(String matcherName: resource.getCustomJavaMatchers().keySet()) {
+			CustomMatcher customMatcher = resource.getCustomJavaMatchers().get(matcherName);
+			Preconditions.checkState(customMatcher.isReady(), ERR_NO_MATCHER_IMPLEMENTATION_FOUND, matcherName);
+		}
+		
 		beforeRuleProcessing(jCas);
 		
 		if(!this.labelFeature.equals(NO_SET_LABEL)) {

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.antlr.v4.runtime.CharStream;
@@ -42,6 +43,7 @@ import org.apache.uima.util.Level;
 
 import com.google.common.base.Joiner;
 
+import fr.univnantes.lina.uima.tkregex.CustomMatcher;
 import fr.univnantes.lina.uima.tkregex.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
@@ -76,6 +78,11 @@ public class RegexListResource implements SharedResourceObject {
 		return Collections.unmodifiableList(this.listener.getRules());
 	}
 	
+	public Map<String, CustomMatcher> getCustomJavaMatchers() {
+		return listener.getCustomJavaMatchers();
+	}
+
+
 	public TypeDescription getIteratedTypeDescription() {
 		return this.listener.getIteraredType();
 	}
@@ -103,4 +110,6 @@ public class RegexListResource implements SharedResourceObject {
 		}
 		return l;
 	}
+
+
 }

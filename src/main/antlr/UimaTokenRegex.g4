@@ -11,7 +11,7 @@ ruleList
 	;
 	
 headerBlock 
-	:  importDeclaration useDeclaration optionDeclaration* 
+	:  importDeclaration useDeclaration javaMatcherDeclaration* optionDeclaration* 
 	;
 
 importDeclaration
@@ -22,6 +22,10 @@ useDeclaration
 	:  USE Identifier ('as' IdentifierPart )? ';'
 	;
 
+javaMatcherDeclaration
+	: JAVA_MATCHER ':' Identifier ';'
+	;
+	
 optionDeclaration
 	:  SET Identifier '=' literal ';'
 	;
@@ -80,7 +84,6 @@ orexpression
 expression
 	: Identifier
 	| featureName operator literal
-	| builtinFunction
 	| '(' andexpression ')'
 	;
 	
@@ -91,10 +94,6 @@ quantifierDeclaration
 	| '+'
 	;
 	
-builtinFunction
-	:  Identifier '(' ')'
-	;
-
 featureName
 	: Identifier
 	;
@@ -195,6 +194,7 @@ IN        : 'in';
 IMPORT	: 'import';
 USE	: 'use';
 SET	: 'set';
+JAVA_MATCHER	: 'java-matcher';
 
 // Comments
 LINE_COMMENT

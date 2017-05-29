@@ -22,13 +22,13 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import junit.framework.TestCase;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -40,6 +40,7 @@ import com.google.common.collect.ImmutableSet;
 import fr.univnantes.lina.uima.tkregex.AndMatcher;
 import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.Automaton;
+import fr.univnantes.lina.uima.tkregex.CustomMatcher;
 import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
 import fr.univnantes.lina.uima.tkregex.OrMatcher;
 import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
@@ -52,6 +53,8 @@ import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ImportDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.UseDeclarationContext;
+import fr.univnantes.lina.uima.tkregex.matchers.TitleCased;
+import junit.framework.TestCase;
 
 public class AutomatonParserTestCase extends TestCase {
 	
@@ -62,12 +65,17 @@ public class AutomatonParserTestCase extends TestCase {
 	}
 	
 	
-	public void initAutomata(String string, boolean allowMatchingEmptySequences) {
+	public void initAutomata(String body, boolean allowMatchingEmptySequences) {
+		String defaultHeader = "import tata;\nuse toto;\n";
+		initAutomataWithCustomHeader(body, allowMatchingEmptySequences, defaultHeader);
+	}
+
+
+	private void initAutomataWithCustomHeader(String body, boolean allowMatchingEmptySequences, String header) {
 		try {
-			string = "use toto;\n" + string;
-			string = "import tata;\n" + string;
+			body = header + body;
 			
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(string.getBytes());
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(body.getBytes());
 			ANTLRInputStream input;
 			input = new ANTLRInputStream(inputStream);
 			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
@@ -156,6 +164,49 @@ public class AutomatonParserTestCase extends TestCase {
 		}
 	}
 	
+	
+	@Test
+	public void testParseCustomJavaMatcher() {
+		initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
+				true,
+				"import tata;\nuse toto;\njava-matcher: Tatayoyo;");
+		Automaton a = rules.get(0).getAutomaton();
+		Transition t1 = a.getInitState().getTransitions().iterator().next();
+		assertEquals("A", t1.getMatcher().getLabel());
+		assertThat(t1.getMatcher())
+			.isInstanceOf(CustomMatcher.class);
+
+	}
+
+	@Test
+	public void testParseBuiltMatcher() {
+		initAutomata("matcher A: [TitleCased]; rule \"a\": A A;",
+				true);
+		Automaton a = rules.get(0).getAutomaton();
+		Transition t1 = a.getInitState().getTransitions().iterator().next();
+		assertEquals("A", t1.getMatcher().getLabel());
+		assertThat(t1.getMatcher())
+			.isInstanceOf(TitleCased.class);
+
+	}
+	
+
+	@Test
+	public void testParseCustomJavaMatcherFailedWhenBuiltinNotDeclared() {
+		try {
+			initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
+					true,
+					"import tata;\nuse toto;");
+			fail("Should have raised exception");
+		} catch(AutomataParsingException e) {
+			assertThat(e.getMessage())
+				.contains("No such custom nor builtin matcher: Tatayoyo");
+		} catch(Exception e) {
+			fail("Should have raised IllegalArgumentException, got: " + e.getClass());
+		}
+	}
+
+
 	@Test
 	public void testParseLabel() {
 		initAutomata(file9_1, true);
