@@ -21,6 +21,8 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.antlr;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,8 @@ import org.apache.uima.resource.metadata.FeatureDescription;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -53,6 +57,9 @@ import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
 import fr.univnantes.lina.uima.tkregex.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AndexpressionContext;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextArrayContext;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextExactlyContext;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextIgnoreCaseContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ExpressionContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureMatcherDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureNameContext;
@@ -74,6 +81,9 @@ import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.Rule
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.RuleNameContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ShortcutMatcherDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.UseDeclarationContext;
+import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
 
 
 public class AutomataParserListener implements UimaTokenRegexListener {
@@ -191,6 +201,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 				} 
 				if(matcher == null)
 					throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
+			} else if(ctx.coveredTextArray() != null) {
+				matcher = new StringArrayMatcher(true, coveredTextArray.get());
+			} else if(ctx.coveredTextExactly() != null) {
+				matcher = new StringExactlyMatcher(coveredTextExactly.get());
+			} else if(ctx.coveredTextIgnoreCase() != null) {
+				matcher = new StringIgnoreCaseMatcher(coveredTextIgnoredCase.get());
 			} else
 				matcher = new ExpressionMatcher(
 					feature, 
@@ -637,4 +653,52 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		
 	}
 
+
+	private Optional<String> coveredTextIgnoredCase = Optional.absent();
+	
+	@Override
+	public void enterCoveredTextIgnoreCase(CoveredTextIgnoreCaseContext ctx) {
+		coveredTextIgnoredCase = Optional.absent();
+	}
+
+	@Override
+	public void exitCoveredTextIgnoreCase(CoveredTextIgnoreCaseContext ctx) {
+		coveredTextIgnoredCase = Optional.of(prepareStringLiteral(ctx.StringLiteral().toString()));
+	}
+
+	private Optional<String> coveredTextExactly = Optional.absent();
+
+	@Override
+	public void enterCoveredTextExactly(CoveredTextExactlyContext ctx) {
+		coveredTextExactly = Optional.absent();
+	}
+
+	@Override
+	public void exitCoveredTextExactly(CoveredTextExactlyContext ctx) {
+		coveredTextExactly = Optional.of(prepareStringLiteral(ctx.StringLiteral().toString()));
+	}
+
+	private Optional<String[]> coveredTextArray = Optional.absent();
+
+	@Override
+	public void enterCoveredTextArray(CoveredTextArrayContext ctx) {
+		coveredTextArray = Optional.absent();		
+	}
+
+	@Override
+	public void exitCoveredTextArray(CoveredTextArrayContext ctx) {
+		List<String> values = ctx.StringLiteral().stream()
+				.map(TerminalNode::toString)
+				.map(this::prepareStringLiteral)
+				.collect(toList());
+		coveredTextArray = Optional.of(values.toArray(new String[values.size()]));
+	}
+
+	private static final String ERR_STRING_LITERAL = "Invalid string literal. Should start and end with double quotes. Got %s";
+	private static final String QUOTE = "\"";
+	private String prepareStringLiteral(String stringLiteral) {
+		Preconditions.checkArgument(stringLiteral.startsWith(QUOTE) && stringLiteral.endsWith(QUOTE),
+				ERR_STRING_LITERAL, stringLiteral);
+		return stringLiteral.substring(1, stringLiteral.length()-1);
+	}
 }

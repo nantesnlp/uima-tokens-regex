@@ -84,6 +84,9 @@ orexpression
 expression
 	: Identifier
 	| featureName operator literal
+	| 'text' '==' coveredTextIgnoreCase
+	| 'text' '===' coveredTextExactly
+	| 'text' 'in' coveredTextArray
 	| '(' andexpression ')'
 	;
 	
@@ -111,6 +114,20 @@ operator
 IgnoreMatcher
 	: '~'
 	;	
+	
+// covered text
+coveredTextArray
+	: '[' StringLiteral (',' StringLiteral)* ']'
+	;
+
+// covered text
+coveredTextIgnoreCase
+	: StringLiteral;
+	
+// covered text
+coveredTextExactly
+	: StringLiteral;
+	
 // Literals
 literal
 	: StringLiteral

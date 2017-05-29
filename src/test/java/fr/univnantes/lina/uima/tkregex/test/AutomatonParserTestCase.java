@@ -24,13 +24,12 @@ package fr.univnantes.lina.uima.tkregex.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
@@ -53,6 +52,9 @@ import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ImportDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.UseDeclarationContext;
+import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
 import fr.univnantes.lina.uima.tkregex.matchers.TitleCased;
 import junit.framework.TestCase;
 
@@ -72,35 +74,28 @@ public class AutomatonParserTestCase extends TestCase {
 
 
 	private void initAutomataWithCustomHeader(String body, boolean allowMatchingEmptySequences, String header) {
-		try {
-			body = header + body;
-			
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(body.getBytes());
-			ANTLRInputStream input;
-			input = new ANTLRInputStream(inputStream);
-			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
-			
-			AutomataParserListener listener = new AutomataParserListener( parser ) {
-				@Override
-				public void exitImportDeclaration(ImportDeclarationContext ctx) {
-				}
-				@Override
-				public void exitUseDeclaration(UseDeclarationContext ctx) {
-				}
-				@Override
-				protected String resolveFeature(String shortName) {
-					return shortName;
-				}
-			};
-			listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
-			ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
-			this.rules = listener.getRules();
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail();
-		}
+		body = header + body;
+		
+		CharStream input = CharStreams.fromString(body);
+		UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
+		
+		AutomataParserListener listener = new AutomataParserListener( parser ) {
+			@Override
+			public void exitImportDeclaration(ImportDeclarationContext ctx) {
+			}
+			@Override
+			public void exitUseDeclaration(UseDeclarationContext ctx) {
+			}
+			@Override
+			protected String resolveFeature(String shortName) {
+				return shortName;
+			}
+		};
+		listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
+		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
+		this.rules = listener.getRules();
 	}
 	
 	private String file1 = "rule \"Tata\": [lemma==\"mang\"] /^(et|ou)$/ [];";
@@ -505,6 +500,50 @@ public class AutomatonParserTestCase extends TestCase {
 		assertTrue(AnnotationMatcher.EMPTY_MATCHER == matcher.getMatcher());
 	}
 
+
+	@Test
+	public void testParseCoveredTextIgnoreCase() {
+		initAutomata("rule \"Tata\": [text == \"mang\"];");
+		Automaton a = rules.get(0).getAutomaton();
+		assertEquals(1, a.getInitState().getTransitions().size());
+		Transition transition1 = a.getInitState().getTransitions().iterator().next();
+		assertThat(transition1.getMatcher())
+			.isInstanceOf(StringIgnoreCaseMatcher.class);
+		assertThat(((StringIgnoreCaseMatcher)transition1.getMatcher()).getRef())
+			.isEqualTo("mang");
+	}
+	
+	@Test
+	public void testParseCoveredTextArray() {
+		initAutomata("rule \"Tata\": [text in [ \"A\" , \"B\" , \"c\"]];");
+		Automaton a = rules.get(0).getAutomaton();
+		assertEquals(1, a.getInitState().getTransitions().size());
+		Transition transition1 = a.getInitState().getTransitions().iterator().next();
+		assertThat(transition1.getMatcher())
+			.isInstanceOf(StringArrayMatcher.class);
+		StringArrayMatcher matcher = (StringArrayMatcher)transition1.getMatcher();
+		assertThat(matcher.getValues())
+			.hasSize(3)
+			.containsOnly("a", "b", "c")
+			;
+		assertThat(matcher.isIgnoreCase())
+			.isTrue();
+	}
+
+
+	
+	@Test
+	public void testParseCoveredTextExactly() {
+		initAutomata("rule \"Tata\": [text ===  \"mang\"];");
+		Automaton a = rules.get(0).getAutomaton();
+		assertEquals(1, a.getInitState().getTransitions().size());
+		Transition transition1 = a.getInitState().getTransitions().iterator().next();
+		assertThat(transition1.getMatcher())
+			.isInstanceOf(StringExactlyMatcher.class);
+		
+		assertThat(((StringExactlyMatcher)transition1.getMatcher()).getRef())
+			.isEqualTo("mang");
+	}
 
 	@Test
 	public void testParseExpressionMatcherAndOrTree() {
