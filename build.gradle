@@ -26,13 +26,6 @@ task javadocJar(type: Jar) {
 	from javadoc
 }
 
-task jarWithSources(type: Jar) {
-	from sourceSets.main.output
-	if (gradle.startParameter.taskNames.any{it == "publishToMavenLocal"}) {
-		from sourceSets.main.allJava
-	}
-}
-
 task sourcesJar(type: Jar) {
 	classifier = 'sources'
 	from sourceSets.main.allSource
@@ -78,10 +71,9 @@ publishing {
 		maven(MavenPublication) {
 			groupId group
 			artifactId archivesBaseName
-			artifact jarWithSources
 			version version
 
-			//from components.java
+			from components.java
 		}
 	}
 }

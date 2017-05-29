@@ -192,14 +192,15 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			AnnotationMatcher matcher = null;
 			if(ctx.Identifier() != null) {
 				String matcherName = ctx.Identifier().getText();
-				AnnotationMatcher annotationMatcher = shortcutMatchers.get(matcherName);
-				if(annotationMatcher == null) {
-					if(declaredJavaMatchers.containsKey(matcherName))
-						matcher = declaredJavaMatchers.get(matcherName);
-					else if(BuiltinMatcher.isRegistered(matcherName))
-						matcher = BuiltinMatcher.get(matcherName);
-				} 
-				if(matcher == null)
+				
+				
+				if(shortcutMatchers.containsKey(matcherName)) 
+					matcher = shortcutMatchers.get(matcherName);
+				else if(declaredJavaMatchers.containsKey(matcherName))
+					matcher = declaredJavaMatchers.get(matcherName);
+				else if(BuiltinMatcher.isRegistered(matcherName))
+					matcher = BuiltinMatcher.get(matcherName);
+				else
 					throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
 			} else if(ctx.coveredTextArray() != null) {
 				matcher = new StringArrayMatcher(true, coveredTextArray.get());

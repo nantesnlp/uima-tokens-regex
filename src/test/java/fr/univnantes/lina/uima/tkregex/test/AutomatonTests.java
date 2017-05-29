@@ -31,6 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	AutomatonParserTestCase.class,
 	AutomatonTestCase.class,
 	AutomatonFactoryTestCase.class,
+	TermSuiteFrenchMWTParserTestCase.class,
 	RegexCoveredTextMatcherTestCase.class 
 	}
 )
