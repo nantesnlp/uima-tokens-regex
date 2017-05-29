@@ -29,9 +29,15 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.uima.cas.text.AnnotationFS;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -48,6 +54,24 @@ public class Automaton implements Cloneable {
 	
 	private LinkedList<AutomatonInstance> instances;
 	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
+	
+	boolean useMatcherCache = false;
+	
+	LoadingCache<AnnotationFS, ConcurrentMap<AnnotationMatcher, Boolean>> matcherCache = CacheBuilder.newBuilder()
+			.initialCapacity(10)
+			.maximumSize(50)
+			
+			.build(new CacheLoader<AnnotationFS, ConcurrentMap<AnnotationMatcher, Boolean>>() {
+				@Override
+				public ConcurrentMap<AnnotationMatcher, Boolean> load(AnnotationFS key) throws Exception {
+					return new ConcurrentHashMap<>();
+				}
+			})
+			;
+
+	public void setUseMatcherCache(boolean useMatcherCache) {
+		this.useMatcherCache = useMatcherCache;
+	}
 	
 	Automaton(State initState,
 			Set<State> acceptingStates, Set<State> states) {
@@ -162,6 +186,7 @@ public class Automaton implements Cloneable {
 	
 	public void reset() {
 		this.instances = Lists.newLinkedList();
+		this.matcherCache.invalidateAll();
 	}
 	
 	void notifyHandlers(RegexOccurrence episode) {
@@ -357,7 +382,7 @@ class AutomatonInstance implements Cloneable {
 			Transition t = null;
 			while (transitionIt.hasNext()) {
 				Transition transition = transitionIt.next();
-				if(transition.match(a)) {
+				if(doesAnnotationMatchTransition(a, transition)) {
 					AnnotationFS matchedAnnotation = annotations.pop();
 					
 					this.trace.addLast(new StateExploration(
@@ -380,6 +405,22 @@ class AutomatonInstance implements Cloneable {
 				propagateAnnotations(annotations);
 			}
 		}
+	}
+
+	
+	private boolean doesAnnotationMatchTransition(AnnotationFS a, Transition transition) {
+		if(automaton.useMatcherCache) {
+			ConcurrentMap<AnnotationMatcher, Boolean> annotationCache;
+			try {
+				annotationCache = automaton.matcherCache.get(a);
+			} catch (ExecutionException e) {
+				throw new RuntimeException("Using automaton cache failed", e);
+			}
+			return annotationCache.computeIfAbsent(
+					transition.getMatcher(), 
+					matcher -> matcher.match(a));
+		} else
+			return transition.match(a);
 	}
 
 	private void backtrack(LinkedList<AnnotationFS> annotations) {
