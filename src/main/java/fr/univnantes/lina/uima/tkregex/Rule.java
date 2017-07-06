@@ -25,15 +25,12 @@ package fr.univnantes.lina.uima.tkregex;
 public class Rule {
 	private Automaton automaton;
 	private String name;
-	private String grammaticalCategory;
 	
-	public Rule(Automaton automaton, String name,
-			String grammaticalCategory) {
+	public Rule(Automaton automaton, String name) {
 		super();
 		this.automaton = automaton;
 		this.automaton.setRule(this);
 		this.name = name;
-		this.grammaticalCategory = grammaticalCategory;
 	}
 
 	public Automaton getAutomaton() {
@@ -44,10 +41,6 @@ public class Rule {
 		return name;
 	}
 
-	public String getGrammaticalCategory() {
-		return grammaticalCategory;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof Rule)

@@ -22,7 +22,6 @@
 package fr.univnantes.lina.uima.tkregex;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.uima.cas.text.AnnotationFS;
@@ -52,25 +51,30 @@ public class OrMatcher implements AnnotationMatcher {
 	}
 	/* End of Ignorer aspect */
 	
-	private LinkedList<AnnotationMatcher> expr = Lists.newLinkedList();
+	private List<AnnotationMatcher> expresions = Lists.newArrayList();
 	
+	
+	public OrMatcher(Iterable<AnnotationMatcher> expresions) {
+		super();
+		this.expresions = Lists.newArrayList(expresions);
+	}
 	public List<AnnotationMatcher> getDisjonctionParts() {
-		return expr;
+		return expresions;
 	}
 
 
 	public boolean addConjonctionPart(AnnotationMatcher e) {
-		return expr.add(e);
+		return expresions.add(e);
 	}
 
 
 	public boolean addAllDijonctionParts(Collection<? extends AnnotationMatcher> c) {
-		return expr.addAll(c);
+		return expresions.addAll(c);
 	}
 	
 	@Override
 	public boolean match(AnnotationFS annotation) {
-		for(AnnotationMatcher matcher:expr) {
+		for(AnnotationMatcher matcher:expresions) {
 			if(matcher.match(annotation)) 
 				return true;
 		}
@@ -79,6 +83,6 @@ public class OrMatcher implements AnnotationMatcher {
 	
 	@Override
 	public String toString() {
-		return "OrMatcher: (" + Joiner.on(" & ").join(expr) + ")";
+		return "OrMatcher: (" + Joiner.on(" & ").join(expresions) + ")";
 	}
 }

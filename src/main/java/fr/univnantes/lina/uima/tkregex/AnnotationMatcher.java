@@ -46,7 +46,6 @@ public interface AnnotationMatcher {
 		}
 		@Override
 		public void setIgnoreMatcher(boolean ignoreMatcher) {
-			throw new UnsupportedOperationException("Not allowed for empty matcher");
 		}
 	};
 

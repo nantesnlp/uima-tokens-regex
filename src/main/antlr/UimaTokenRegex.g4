@@ -39,14 +39,10 @@ labelIdentifier
 	;
 	
 ruleDeclaration
-	: RULE ruleName (',' grammaticalCategory)? ':' orBranch ';'
+	: RULE ruleName ':' orBranchingDeclaration + ';'
 	;
 
 ruleName
-	:	StringLiteral 
-	;
-
-grammaticalCategory
 	:	StringLiteral 
 	;
 	
@@ -55,25 +51,23 @@ matcherDeclaration
 	:  ( IgnoreMatcher? Regex 
 		| IgnoreMatcher? Identifier 
 		| IgnoreMatcher? featureMatcherDeclaration  
-		| orBranchingDeclaration
-	  ) quantifierDeclaration?
+	  ) 
 	;
 	
 orBranchingDeclaration
-	:('(' orBranch ('|' orBranch)+)
-	;
-
-orBranch
-	: matcherDeclaration+
+	: (	'(' orBranchingDeclaration ('|' orBranchingDeclaration)* ')'
+		| 	matcherDeclaration
+		) quantifierDeclaration? 
 	;
 
 featureMatcherDeclaration
-	:  '[' andexpression? ']'
+	: '[' ']'
+	|  '[' ( expression | andexpression | orexpression ) ']'
 	;
 
 //first, we try to match all first level && (e.g. && not included in some sub-expression)
 andexpression 
-	: orexpression (AND orexpression)*
+	: expression (AND expression)*
 	;
 
 //second, we try to match all first level || (e.g. || not included in some sub-expression)
@@ -82,12 +76,18 @@ orexpression
 	;
 
 expression
+	: atomicExpression
+	| '(' orexpression  ')'
+	| '(' andexpression ')'
+	;
+	
+	
+atomicExpression
 	: Identifier
 	| featureName operator literal
 	| 'text' '==' coveredTextIgnoreCase
 	| 'text' '===' coveredTextExactly
 	| 'text' 'in' coveredTextArray
-	| '(' andexpression ')'
 	;
 	
 quantifierDeclaration

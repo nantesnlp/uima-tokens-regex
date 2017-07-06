@@ -92,7 +92,7 @@ public class AutomatonFactory {
 		if (automata.size() == 0)
 			return createEmptyAutomaton();
 		else if (automata.size() == 1)
-			return automata.get(1).deepClone();
+			return automata.get(0).deepClone();
 		else {
 			List<Automaton> clonedAutomata = getClonedAutomataList(automata);
 			Set<State> states = new TreeSet<State>();

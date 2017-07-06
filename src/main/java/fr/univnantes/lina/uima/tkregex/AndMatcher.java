@@ -22,13 +22,11 @@
 package fr.univnantes.lina.uima.tkregex;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.uima.cas.text.AnnotationFS;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class AndMatcher implements AnnotationMatcher {
@@ -53,22 +51,30 @@ public class AndMatcher implements AnnotationMatcher {
 	}
 	/* End of Label aspect */
 	
-	private LinkedList<AnnotationMatcher> expr = Lists.newLinkedList();
+	private List<AnnotationMatcher> expressions = Lists.newArrayList();
 	
+	public AndMatcher() {
+		super();
+	}
+
+	public AndMatcher(Iterable<AnnotationMatcher> expressions) {
+		super();
+		this.expressions = Lists.newArrayList(expressions);
+	}
 	
 	public boolean addConjonctionPart(AnnotationMatcher e) {
-		return expr.add(e);
+		return expressions.add(e);
 	}
 
 
 	public boolean addAllConjonctionPart(Collection<? extends AnnotationMatcher> c) {
-		return expr.addAll(c);
+		return expressions.addAll(c);
 	}
 
 
 	@Override
 	public boolean match(AnnotationFS annotation) {
-		for(AnnotationMatcher matcher:expr) {
+		for(AnnotationMatcher matcher:expressions) {
 			if(!matcher.match(annotation)) {
 				return false;
 			}
@@ -78,11 +84,11 @@ public class AndMatcher implements AnnotationMatcher {
 	
 	@Override
 	public String toString() {
-		return "AndMatcher: (" + Joiner.on(" & ").join(expr) + ")";
+		return "AndMatcher: (" + Joiner.on(" & ").join(expressions) + ")";
 	}
 	
-	public List<AnnotationMatcher> getConjonctionParts() {
-		return ImmutableList.copyOf(expr);
+	public List<AnnotationMatcher> getSubExpressions() {
+		return expressions;
 	}
 	
 }

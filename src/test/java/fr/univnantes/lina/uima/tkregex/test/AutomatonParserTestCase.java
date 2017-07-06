@@ -99,13 +99,13 @@ public class AutomatonParserTestCase extends TestCase {
 	}
 	
 	private String file1 = "rule \"Tata\": [lemma==\"mang\"] /^(et|ou)$/ [];";
-	private String file2 = "rule \"Test expression parsing\", \"freq\": [specificity >= 0.9];";
-	private String file3 = "rule \"Or expression\", \"edee\": [lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
-	private String file4 = "rule \"Or/And tree expression\", \"bonj\": [stem == \"bonj\" & (lemma == \"efbve\" | (specificity >= 0.9 & occurrences < 17) | stem != \"mang\" | (specificity >= 0.9 & occurrences > 18 & (lemma != \"salut\" | begin > 15 )))][lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
-	private String file5_1 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]*;";
-	private String file5_2 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]{2};";
-	private String file5_3 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]+;";
-	private String file5_4 = "rule \"With quatifiers\", \"V\": [lemma==\"mang\"]?;";
+	private String file2 = "rule \"Test expression parsing\": [specificity >= 0.9];";
+	private String file3 = "rule \"Or expression\": [lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
+	private String file4 = "rule \"Or/And tree expression\": [stem == \"bonj\" & (lemma == \"efbve\" | (specificity >= 0.9 & occurrences < 17) | stem != \"mang\" | (specificity >= 0.9 & occurrences > 18 & (lemma != \"salut\" | begin > 15 )))][lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
+	private String file5_1 = "rule \"With quatifiers\": [lemma==\"mang\"]*;";
+	private String file5_2 = "rule \"With quatifiers\": [lemma==\"mang\"]{2};";
+	private String file5_3 = "rule \"With quatifiers\": [lemma==\"mang\"]+;";
+	private String file5_4 = "rule \"With quatifiers\": [lemma==\"mang\"]?;";
 	private String file6 = "rule \"Tata\": [];";
 	private String file7 = "rule \"Regex\":    /Ftd?\"^\\\\a-Z/;";
 	private String file8_1 = "rule \"With ignore matcher\":    /Ftd?\"^\\\\a-Z/ ~[lemma==\"mang\"];";
@@ -549,11 +549,12 @@ public class AutomatonParserTestCase extends TestCase {
 	public void testParseExpressionMatcherAndOrTree() {
 		initAutomata(file4);
 		
-		State initState = this.rules.get(0).getAutomaton().getInitState();
+		Automaton automaton = this.rules.get(0).getAutomaton();
+		State initState = automaton.getInitState();
 		Transition transition = initState.getTransitions().iterator().next();
 		AndMatcher matcher = (AndMatcher)transition.getMatcher();
 		
-		List<AnnotationMatcher> conjonctionParts = matcher.getConjonctionParts();
+		List<AnnotationMatcher> conjonctionParts = matcher.getSubExpressions();
 		assertEquals(2, conjonctionParts.size());
 
 		ExpressionMatcher expr1 = (ExpressionMatcher)conjonctionParts.get(0);
@@ -579,7 +580,7 @@ public class AutomatonParserTestCase extends TestCase {
 
 		// 1st depth-2 AndMatcher
 		AndMatcher andMatcher = (AndMatcher)disjonctionParts.get(1);
-		List<AnnotationMatcher> conjonctionParts2 = andMatcher.getConjonctionParts();
+		List<AnnotationMatcher> conjonctionParts2 = andMatcher.getSubExpressions();
 		assertEquals(2, conjonctionParts2.size());
 
 		
@@ -608,7 +609,7 @@ public class AutomatonParserTestCase extends TestCase {
 		
 		// 2nd depth-2 AndMatcher
 		AndMatcher andMatcher2 = (AndMatcher)disjonctionParts.get(3);
-		List<AnnotationMatcher> conjonctionParts3 = andMatcher2.getConjonctionParts();
+		List<AnnotationMatcher> conjonctionParts3 = andMatcher2.getSubExpressions();
 		assertEquals(3, conjonctionParts3.size());
 
 		ExpressionMatcher expr6 = (ExpressionMatcher) conjonctionParts3.get(0);
