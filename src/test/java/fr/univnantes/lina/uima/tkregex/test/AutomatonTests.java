@@ -32,9 +32,11 @@ import org.junit.runners.Suite.SuiteClasses;
 	AutomatonTestCase.class,
 	AutomatonFactoryTestCase.class,
 	TermSuiteFrenchMWTParserTestCase.class,
+	OnCasFunctionalTestCase.class,
 	RegexCoveredTextMatcherTestCase.class 
 	}
 )
+
 public class AutomatonTests {
 
 }

@@ -21,8 +21,8 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test;
 
-import static fr.univnantes.lina.uima.tkregex.test.TestUtils.automatonTest;
-import static fr.univnantes.lina.uima.tkregex.test.TestUtils.getSimpleLetterAutomaton;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automatonTest;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.getSimpleLetterAutomaton;
 
 import org.junit.Before;
 import org.junit.Test;

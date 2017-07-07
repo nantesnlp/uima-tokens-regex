@@ -19,11 +19,20 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.test.utils;
 
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,10 +53,10 @@ import fr.univnantes.lina.uima.tkregex.Automaton;
 import fr.univnantes.lina.uima.tkregex.AutomatonBuilder;
 import fr.univnantes.lina.uima.tkregex.AutomatonFactory;
 import fr.univnantes.lina.uima.tkregex.AutomatonQuantifier;
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.Ignorer;
 import fr.univnantes.lina.uima.tkregex.Labeller;
 import fr.univnantes.lina.uima.tkregex.RecognitionHandler;
+import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.State;
 
 public class TestUtils {
@@ -151,6 +160,22 @@ public class TestUtils {
 		return automaton;
 	}
 	
+	public static String readFile(Path path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(path);
+		return new String(encoded, encoding);
+	}
+	
+	public static void writeToFile(File destFile, Charset charset, String str) {
+		Writer out;
+		try {
+			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), charset));
+			out.write(str);
+			out.close();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private static AutomatonQuantifier getQuantifier(String quantifierStr) {
 		if(quantifierStr == null || quantifierStr.isEmpty())
 			return new AutomatonQuantifier(AutomatonQuantifier.ONE);
@@ -242,5 +267,6 @@ public class TestUtils {
 				result, 
 				matchSequence(a, sequence));
 	}
+
 
 }

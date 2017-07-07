@@ -100,6 +100,16 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitRuleDeclaration(UimaTokenRegexParser.RuleDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#automatonDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterAutomatonDeclaration(UimaTokenRegexParser.AutomatonDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#automatonDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitAutomatonDeclaration(UimaTokenRegexParser.AutomatonDeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#ruleName}.
 	 * @param ctx the parse tree
 	 */

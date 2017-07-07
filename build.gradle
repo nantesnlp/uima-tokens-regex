@@ -17,7 +17,7 @@ apply plugin: 'maven-publish'
 
 group = 'fr.univ-nantes.julestar'
 archivesBaseName = 'uima-tokens-regex'
-version = '1.4'
+version = '1.5'
 
 ////////////////////////////////////////////////////////////////// DEPENDENCIES
 
@@ -55,6 +55,8 @@ dependencies {
 	testCompile "eu.codearte.catch-exception:catch-exception:1.4.1"
 	testCompile "org.assertj:assertj-core:2.0.0"
 	testCompile "org.mockito:mockito-all:1.10.19"
+	testCompile "org.apache.uima:uimaj-tools:2.8.1"
+	testCompile "fr.univ-nantes.julestar:uima-test:1.0.0"
 
 	// UIMA
 	compile 'org.apache.uima:uimaj-core:2.10.0'
@@ -138,3 +140,20 @@ generateGrammarSource {
      */
     outputDirectory = new File("src/main/java/fr/univnantes/lina/uima/tkregex/antlr/generated")
 }
+
+
+task jcasgen(type: JavaExec) {
+	description = 'Generate UIMA TS classes'
+	ext.srcFile = file("$projectDir/src/test/resources/TestTypeSystem.xml")
+	ext.outputDir = file("$projectDir/src/test/java")
+	inputs.file srcFile
+	outputs.dir outputDir
+	println configurations
+	classpath configurations.testCompile
+	// This ensures availability of type system imports
+	// however, assumes that files are in desc subfolder
+	systemProperty 'uima.datapath', "$projectDir/desc"
+	main = 'org.apache.uima.tools.jcasgen.Jg'
+	args = ['-jcasgeninput', srcFile, '-jcasgenoutput', outputDir]
+}
+

@@ -1,2 +1,3 @@
 classpath*:TermSuite_TS.xml
+classpath*:TestTypeSystem.xml
 classpath*:SourceDocumentInformation.xml

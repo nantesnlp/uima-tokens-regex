@@ -40,6 +40,7 @@ import fr.univnantes.lina.uima.tkregex.AndMatcher;
 import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.Automaton;
 import fr.univnantes.lina.uima.tkregex.CustomMatcher;
+import fr.univnantes.lina.uima.tkregex.EpsilonTransition;
 import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
 import fr.univnantes.lina.uima.tkregex.OrMatcher;
 import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
@@ -545,6 +546,122 @@ public class AutomatonParserTestCase extends TestCase {
 			.isEqualTo("mang");
 	}
 
+	
+	@Test
+	public void testTryParseVeryComplexExpression() {
+		initAutomata("matcher A: /a/; matcher B: /b/; matcher C: /c/; rule \"plussub\": C (A B | (C (~B{5} | A B)?)+)* A;");
+	}
+
+	
+	@Test
+	public void testParseExpressionWithOrSubautomata() {
+		initAutomata("matcher A: /a/; matcher B: /b/; matcher C: /c/; rule \"plussub\": C (A B | C);");
+
+		Automaton automaton = this.rules.get(0).getAutomaton();
+		
+		State initState = automaton.getInitState();
+		assertThat(initState.getTransitions()).hasSize(1);
+		Transition transition = initState.getTransitions().iterator().next();
+		assertThat(transition.getMatcher().getLabel())
+			.isEqualTo("C");
+		State state1 = transition.getToState();
+		assertThat(state1.getTransitions()).hasSize(1);
+		Transition epsilonTransition = state1.getTransitions().get(0);
+		assertThat(epsilonTransition).isInstanceOf(EpsilonTransition.class);
+		State state2 = epsilonTransition.getToState();
+		assertThat(state2.getTransitions()).hasSize(2);
+		assertThat(state2.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("A");
+		assertThat(state2.getTransitions().get(1)).isInstanceOf(EpsilonTransition.class);
+
+		State state3 = state2.getTransitions().get(0).getToState();
+		assertThat(state3.getTransitions()).hasSize(1);
+		assertThat(state3.getTransitions().get(0)).isInstanceOf(EpsilonTransition.class);
+		State state4 = state3.getTransitions().get(0).getToState();
+		
+		assertThat(state4.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("B");
+		assertThat(automaton.getAcceptingStates()).contains(state4.getTransitions().get(0).getToState());
+
+
+		State state5 = state2.getTransitions().get(1).getToState();
+		assertThat(state5.getTransitions()).hasSize(1);
+		assertThat(state5.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("C");
+		State state6 = state5.getTransitions().get(0).getToState();
+		assertThat(state6.getTransitions()).hasSize(0);
+		assertThat(automaton.getAcceptingStates()).contains(state6);
+	}
+
+	@Test
+	public void testParseExpressionWithPlusSubautomata() {
+		initAutomata("matcher A: /a/; matcher B: /b/; matcher C: /c/; rule \"plussub\": C (A B)*;");
+		
+		Automaton automaton = this.rules.get(0).getAutomaton();
+		State initState = automaton.getInitState();
+		assertThat(initState.getTransitions()).hasSize(1);
+		Transition transition = initState.getTransitions().iterator().next();
+		assertThat(transition.getMatcher().getLabel())
+			.isEqualTo("C");
+		State state1 = transition.getToState();
+		assertThat(state1.getTransitions()).hasSize(1);
+		Transition epsilonTransition = state1.getTransitions().get(0);
+		assertThat(epsilonTransition).isInstanceOf(EpsilonTransition.class);
+		State state2 = epsilonTransition.getToState();
+		assertThat(state2.getTransitions()).hasSize(1);
+		assertThat(state2.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("A");
+		State state3 = state2.getTransitions().get(0).getToState();
+		assertThat(state3.getTransitions()).hasSize(1);
+		Transition transition2 = state3.getTransitions().get(0);
+		assertThat(transition2).isInstanceOf(EpsilonTransition.class);
+
+		State state4 = transition2.getToState();
+		assertThat(state4.getTransitions()).hasSize(1);
+		Transition transition3 = state4.getTransitions().get(0);
+		assertThat(transition3.getMatcher().getLabel()).isEqualTo("B");
+		State state5 = transition3.getToState();
+		assertThat(state5.getTransitions()).hasSize(1);
+		assertThat(state5.getTransitions().get(0)).isInstanceOf(EpsilonTransition.class);
+		assertThat(state5.getTransitions().get(0).getToState()).isEqualTo(state2);
+		assertThat(automaton.getAcceptingStates()).contains(state5);
+	}
+
+	
+	@Test
+	public void testParseExpressionWithBasicOrBranching() {
+		initAutomata("matcher A: /a/; matcher B: /b/; matcher C: /c/; rule \"or\": C (A | B | C);");
+		
+		Automaton automaton = this.rules.get(0).getAutomaton();
+		State initState = automaton.getInitState();
+		assertThat(initState.getTransitions())
+			.hasSize(1);
+		Transition transition = initState.getTransitions().iterator().next();
+		assertThat(transition.getMatcher().getLabel())
+			.isEqualTo("C");
+		State state1 = transition.getToState();
+		assertThat(state1.getTransitions()).hasSize(1);
+		Transition epsilonTransition = state1.getTransitions().get(0);
+		assertThat(epsilonTransition).isInstanceOf(EpsilonTransition.class);
+
+		State state2 = epsilonTransition.getToState();
+		assertThat(state2.getTransitions()).hasSize(3);
+		assertThat(state2.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("A");
+		assertThat(state2.getTransitions().get(1)).isInstanceOf(EpsilonTransition.class);
+		assertThat(state2.getTransitions().get(2)).isInstanceOf(EpsilonTransition.class);
+		assertThat(automaton.getAcceptingStates())
+			.contains(state2.getTransitions().get(0).getToState());
+		State state3 = state2.getTransitions().get(1).getToState();
+		assertThat(state3.getTransitions()).hasSize(1);
+		assertThat(state3.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("B");
+		assertThat(automaton.getAcceptingStates())
+			.contains(state3.getTransitions().get(0).getToState());
+
+		State state4 = state2.getTransitions().get(2).getToState();
+		assertThat(state4.getTransitions()).hasSize(1);
+		assertThat(state4.getTransitions().get(0).getMatcher().getLabel()).isEqualTo("C");
+		assertThat(automaton.getAcceptingStates())
+			.contains(state4.getTransitions().get(0).getToState());
+	}
+
+	
+	
 	@Test
 	public void testParseExpressionMatcherAndOrTree() {
 		initAutomata(file4);

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>TestTypesystem</name>
+  <description>The description.</description>
+  <version>1.0</version>
+  <vendor>University of Nantes (LS2N, UMR CNRS 6004)</vendor>
+  <imports />
+  <types>
+    <typeDescription>
+      <name>fr.univnantes.lina.test.uima.TestAnno</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>lemma</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>   
+    <typeDescription>
+      <name>fr.univnantes.lina.test.uima.OccAnno</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>rule</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>pattern</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>    
+
+  </types>
+</typeSystemDescription>

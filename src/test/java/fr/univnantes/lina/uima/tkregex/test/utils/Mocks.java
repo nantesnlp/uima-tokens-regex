@@ -1,4 +1,4 @@
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.test.utils;
 
 import org.apache.uima.cas.text.AnnotationFS;
 import org.mockito.Mockito;

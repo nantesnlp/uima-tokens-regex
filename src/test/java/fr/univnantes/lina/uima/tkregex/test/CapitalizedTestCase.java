@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.matchers.Capitalized;
+import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 
 public class CapitalizedTestCase {
 	

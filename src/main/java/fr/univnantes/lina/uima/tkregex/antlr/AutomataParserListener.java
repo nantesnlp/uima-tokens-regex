@@ -58,6 +58,7 @@ import fr.univnantes.lina.uima.tkregex.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AndexpressionContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AtomicExpressionContext;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AutomatonDeclarationContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextArrayContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextExactlyContext;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextIgnoreCaseContext;
@@ -103,7 +104,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	
 	private boolean allowMatchingEmptySequences = false;
 
-	private boolean allowInlineMatcherDeclaration = true;
+	private boolean inlineAllowed = true;
 
 	private boolean inRule = false;
 	
@@ -134,7 +135,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	public void setAllowOnlineMatcherDeclaration(
 			boolean allowOnlineMatcherDeclaration) {
-		this.allowInlineMatcherDeclaration = allowOnlineMatcherDeclaration;
+		this.inlineAllowed = allowOnlineMatcherDeclaration;
 	}
 	
 	public void setAllowMatchingEmptySequences(
@@ -176,8 +177,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		if(ctx.matcherDeclaration() != null)
 			automaton = toMatcherDeclarationAutomaton(ctx.matcherDeclaration());
 		else {
-			List<Automaton> orAutomata = ctx.orBranchingDeclaration().stream()
-					.map(this::toOrBanchingAutomaton)
+			List<Automaton> orAutomata = ctx.automatonDeclaration().stream()
+					.map(this::toAutomaton)
 					.collect(Collectors.toList());
 			automaton = AutomatonFactory.createOrAutomaton(orAutomata);
 		}
@@ -185,9 +186,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 	private Automaton toMatcherDeclarationAutomaton(MatcherDeclarationContext ctx) {
+		TerminalNode ignoreMatcher = ctx.IgnoreMatcher();
+		boolean isIgnored = ignoreMatcher != null && ignoreMatcher.getText().equalsIgnoreCase("~");
 		
-		if(!this.allowInlineMatcherDeclaration && ctx.Identifier() == null && this.inRule) 
-			throw new AutomataParsingException("undefined matcher "
+		if(!this.inlineAllowed && ctx.Identifier() == null && this.inRule) 
+			if(!isIgnored)
+				throw new AutomataParsingException("undefined matcher "
 					+ " at line " + ctx.getStart().getLine() + ":" + ctx.getText());
 		
 		AnnotationMatcher annotationMatcher;
@@ -206,8 +210,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			annotationMatcher = toAnnotationMatcher(ctx.featureMatcherDeclaration());
 		} else 
 			throw new AutomataParsingException("Not a valid matcher context");
-		TerminalNode ignoreMatcher = ctx.IgnoreMatcher();
-		annotationMatcher.setIgnoreMatcher(ignoreMatcher != null && ignoreMatcher.getText().equalsIgnoreCase("~"));
+		annotationMatcher.setIgnoreMatcher(isIgnored);
 		return AutomatonFactory.createSimpleAutomaton(annotationMatcher);
 	}
 
@@ -309,8 +312,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	@Override
 	public void exitRuleDeclaration(RuleDeclarationContext ctx) {
-		List<Automaton> subAutomata = ctx.orBranchingDeclaration().stream().map(this::toOrBanchingAutomaton).collect(Collectors.toList());
-		Automaton a = AutomatonFactory.createConcatenation(subAutomata);
+		Automaton a = toAutomaton(ctx.automatonDeclaration());
 		RuleNameContext ruleCtx = ctx.ruleName();
 		String ruleName = ruleCtx.getText().substring(1, ruleCtx.getText().length()-1);
 		Rule rule = new Rule(a, ruleName);
@@ -318,6 +320,11 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			throw new AutomataParsingException("The automata " + ruleName + " matches the empty sequence");
 		this.rules.add(rule);
 		this.inRule = false;
+	}
+
+	private Automaton toAutomaton(AutomatonDeclarationContext ctx) {
+		List<Automaton> subAutomata = ctx.orBranchingDeclaration().stream().map(this::toOrBanchingAutomaton).collect(Collectors.toList());
+		return AutomatonFactory.createConcatenation(subAutomata);
 	}
 
 	@Override
@@ -509,12 +516,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	public void exitHeaderBlock(HeaderBlockContext ctx) {
 		if(options.get(OPTION_INLINE) != null)
 			try {
-				this.allowInlineMatcherDeclaration = Boolean.parseBoolean(options.get(OPTION_INLINE));
+				this.inlineAllowed = Boolean.parseBoolean(options.get(OPTION_INLINE));
 			} catch(Exception e) {
 				throw new AutomataParsingException("Bad value for parameter " + OPTION_INLINE + " (expeted true or false)");
 			}
 		else {
-			this.allowInlineMatcherDeclaration = true;
+			this.inlineAllowed = true;
 		}
 	}
 
@@ -649,13 +656,17 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	@Override
 	public void enterAtomicExpression(AtomicExpressionContext ctx) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void exitAtomicExpression(AtomicExpressionContext ctx) {
-		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void enterAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+	}
+
+	@Override
+	public void exitAutomatonDeclaration(AutomatonDeclarationContext ctx) {
 	}
 }

@@ -1,0 +1,16 @@
+import fr.univnantes.lina.test.uima.TestTypeSystem;
+use fr.univnantes.lina.test.uima.TestAnno;
+set inline = false;
+
+
+matcher A: [lemma=="a"];
+matcher B: [lemma=="b"];
+matcher C: [lemma=="c"];
+matcher D: [lemma=="d"];
+matcher E: [lemma=="e"];
+matcher F: [lemma=="f"];
+matcher G: [lemma=="g"];
+matcher H: [lemma=="h"];
+matcher I: [lemma=="i"];
+
+rule "rule1" : RULE_PATTERN ;

@@ -39,9 +39,14 @@ labelIdentifier
 	;
 	
 ruleDeclaration
-	: RULE ruleName ':' orBranchingDeclaration + ';'
+	: RULE ruleName ':' automatonDeclaration ';'
 	;
-
+	
+	
+automatonDeclaration
+	: orBranchingDeclaration +
+	;
+	
 ruleName
 	:	StringLiteral 
 	;
@@ -55,7 +60,7 @@ matcherDeclaration
 	;
 	
 orBranchingDeclaration
-	: (	'(' orBranchingDeclaration ('|' orBranchingDeclaration)* ')'
+	: (	'(' automatonDeclaration ('|' automatonDeclaration)* ')'
 		| 	matcherDeclaration
 		) quantifierDeclaration? 
 	;

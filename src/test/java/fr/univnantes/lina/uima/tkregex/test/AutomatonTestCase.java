@@ -22,10 +22,11 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
-import static fr.univnantes.lina.uima.tkregex.test.TestUtils.automaton;
-import static fr.univnantes.lina.uima.tkregex.test.TestUtils.automatonTest;
-import static fr.univnantes.lina.uima.tkregex.test.TestUtils.javaTest;
 import junit.framework.TestCase;
+
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automaton;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automatonTest;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.javaTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

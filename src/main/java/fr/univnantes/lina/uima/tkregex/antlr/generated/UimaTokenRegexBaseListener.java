@@ -126,6 +126,18 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAutomatonDeclaration(UimaTokenRegexParser.AutomatonDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAutomatonDeclaration(UimaTokenRegexParser.AutomatonDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRuleName(UimaTokenRegexParser.RuleNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
