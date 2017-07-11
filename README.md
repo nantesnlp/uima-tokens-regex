@@ -29,7 +29,7 @@
        * [The covered text string matcher, defined with /~/](#the-covered-text-string-matcher-defined-with-)
     * [Matcher predefinition: the keyword matcher](#matcher-predefinition-the-keyword-matcher)
     * [The keyword as](#the-keyword-as)
-    * [The quantifiers: <code>?</code>, <code>*</code>, <code>+</code>, <code>{n}</code>, <code>{m,n}</code>](#the-quantifiers-zeroone-zeron-onen-n-mn)
+    * [The quantifiers: <code>?</code>, <code>*</code>, <code>+</code>, <code>{n}</code>, <code>{m,n}</code>](#the-quantifiers----n-mn)
     * [The universal matcher []](#the-universal-matcher-)
     * [Ignoring labels with ~](#ignoring-labels-with-)
     * [Commenting with #](#commenting-with-)
