@@ -29,7 +29,7 @@
        * [The covered text string matcher, defined with /~/](#the-covered-text-string-matcher-defined-with-)
     * [Matcher predefinition: the keyword matcher](#matcher-predefinition-the-keyword-matcher)
     * [The keyword as](#the-keyword-as)
-    * [The quantifiers: zeroone, <code>zeron</code>, <code>onen</code>, <code>n</code>, <code>mn</code>](#the-quantifiers-zeroone-zeron-onen-n-mn)
+    * [The quantifiers: <code>?</code>, <code>*</code>, <code>+</code>, <code>{n}</code>, <code>{m,n}</code>](#the-quantifiers-zeroone-zeron-onen-n-mn)
     * [The universal matcher []](#the-universal-matcher-)
     * [Ignoring labels with ~](#ignoring-labels-with-)
     * [Commenting with #](#commenting-with-)
@@ -330,17 +330,17 @@ For both rules above, the sequence of matcher labels attached to each rule occur
 
 The keyword `as` has no effect in rule declaration nor in the way the *UIMA Tokens Regex* engine extracts rule occurrences, it only renames labels for later reuse by other AEs in the *UIMA* AE process flow.
 
-#### The quantifiers: `zeroone`, `zeron`, `onen`, `n`, `mn`
+#### The quantifiers: `?`, `*`, `+`, `{n}`, `{m,n}`
 
 Any matcher can be associated with one the the following regular expression quantifiers.
 
 | Quantifier | Quantity of successive matching annotations |
 |---|---|
-| `zeroone` | zero or one |
-| `zeron` | any number (zero or n) |
-| `onen` | at least one (one or n) |
-| `n` | exactly n |
-| `zeroone` | from m to n (m ≤ n) |
+| `?` | zero or one |
+| `*` | any number (zero or n) |
+| `+` | at least one (one or n) |
+| `{n}` | exactly n |
+| `{m,n}` | from m to n (m ≤ n) |
 
 Example:
 
