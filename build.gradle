@@ -45,7 +45,7 @@ if(hasProperty("signing.keyId")) {
 dependencies {
 
 	antlr "org.antlr:antlr4:4.7"
-    
+
 	// Logging
 	compile "org.slf4j:slf4j-api:1.7.25"
 
@@ -85,35 +85,35 @@ if(hasProperty("ossrh.username")) {
 		repositories {
 		  mavenDeployer {
 			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-	
+
 			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
 			  authentication(userName: project.getProperty("ossrh.username"), password: project.getProperty("ossrh.password"))
 			}
-	
+
 			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
 			  authentication(userName: project.getProperty("ossrh.username"), password: project.getProperty("ossrh.password"))
 			}
-	
+
 			pom.project {
 			  name 'UIMA Tokens Regex'
 			  packaging 'jar'
 			  // optionally artifactId can be defined here
 			  description 'A UIMA Analysis Engine that detects in a CAS occurrences of a regular expressions over UIMA annotations'
 			  url 'https://github.com/JuleStar/uima-tokens-regex'
-	
+
 			  scm {
 				  connection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
 				  developerConnection 'scm:git:git@github.com:julestar/uima-tokens-regex.git'
 				  url 'git@github.com:julestar/uima-tokens-regex.git'
 			  }
-	
+
 			  licenses {
 				  license {
 					  name 'The Apache License, Version 2.0'
 					  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 				  }
 			  }
-	
+
 			  developers {
 				  developer {
 					  id getProperty("developer.id")
@@ -131,9 +131,7 @@ logger.warn(msg)
 }
 ////////////////////////////////////////////////////////////////// ANTLR4
 
-generateGrammarSource {
-    maxHeapSize = "64m"
-    
+generateGrammarSource {    
     /*
      * Puts generated sources under src/main/java in order to
      * ease the integration with any IDE.
@@ -156,4 +154,3 @@ task jcasgen(type: JavaExec) {
 	main = 'org.apache.uima.tools.jcasgen.Jg'
 	args = ['-jcasgeninput', srcFile, '-jcasgenoutput', outputDir]
 }
-
