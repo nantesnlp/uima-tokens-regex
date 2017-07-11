@@ -1,111 +1,11 @@
-*UIMA Tokens Regex* is a *UIMA* Analysis Engine (AE) that implements regex-like pattern matching over a sequence of UIMA annotations.
+# UIMA Tokens Regex - Documentation for developers and language experts
 
+*UIMA Tokens Regex* is an *UIMA* Analysis Engine (AE) that implements rule-based pattern matching over a sequence of annotations, where rules are declared in a very simple regex-like language. This document aims at helping:
 
-#### Publication
+ * the developer of a text processing flow to implement rule-based tasks easily,
+ * the language expert to edit the rules.
 
-*UIMA Tokens Regex* has been described together with [TermSuite](http://termsuite.github.io/) and published as system demonstration at ACL2016:
-
-<blockquote>
-<p><span>Damien Cram and Béatrice Daille.</span> <em>Terminology Extraction with Term Variant Detection.</em> Proceedings of ACL-2016 System Demonstrations. <a href="https://aclweb.org/anthology/P/P16/P16-4003.pdf">Download PDF</a></p>
-</blockquote>
-
-
-# Getting started
-
-### 1. Classpath
-
-Add *UIMA Tokens Regex* to your classpath, with *Maven* or *Gradle*:
-
-Maven:
-
-```xml
-<dependency>
-    <groupId>fr.univ-nantes.julestar</groupId>
-    <artifactId>uima-tokens-regex</artifactId>
-    <version>1.5</version>
-</dependency>
-```
-
-Gradle:
-
-```
-compile 'fr.univ-nantes.julestar:uima-tokens-regex:1.5'
-```
-
-Or [download the *jar*](http://central.maven.org/maven2/fr/univ-nantes/julestar/uima-tokens-regex/1.5/uima-tokens-regex-1.5.jar) and add it manually to your classpath.
-
-
-### 2. Create your custom regex rule file
-
-The next thing to do is writing the regex rules in valid *UIMA Tokens Regex* format.
-Example:
-
-```
-# file: my-regex-list.txt
-
-# your UIMA type system
-import fr.univnantes.termsuite.types.TermSuiteTypeSystem;
-
-# the annotation type your need to analyse
-use fr.univnantes.termsuite.types.WordAnnotation;
-
-rule "rule 1": [category="noun"] /^of$/ /^the$/? [category="noun"] ;
-```
-The minimalist file above defines only one rule: `rule 1`, which matches in a sequence of word annotations any subsequence starting with a *noun*, followed by the preprosition *of*, followed optionnaly by (see the quantifier "`?`") the determiner *the*, followed by a *noun* again.
-
-For example, this rule matches the following subsequences: `top of the tower`, `source of energy`, `power of the wind`, etc.
-
-The `import` statement points to your UIMA type system  (must-be accessible from UIMAfit). The `use` statement points to the UIMA annotation type being analyzed in the type system. See [Documentation](#documentation) for more details on the syntax.
-
-
-### 3. Inherit from TokenRegexAE
-
-Create a java class extending `TokenRegexAE`. It will be called whenever a rule has matched. The following example creates a new UIMA annotation of type *OccAnno* whenever a rule matches.
-
-```java
-public class RecogEngine extends TokenRegexAE {
-	@Override
-	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence) {
-		OccAnno a = new OccAnno(jCas);
-		a.setBegin(occurrence.getBegin());
-		a.setEnd(occurrence.getEnd());
-		a.setRule(occurrence.getRule().getName());
-		a.setPattern(occurrence.getLabelledAnnotations().stream()
-        .map(LabelledAnnotation::getLabel)
-        .collect(Collectors.joining(" ")));
-		a.addToIndexes();
-	}
-}
-```
-
-### 4. Glue everything together with UIMAfit
-
-Create your AE description and and run the pipeline:
-
-```java
-// The AE description
-AnalysisEngineDescription ae = AnalysisEngineFactory.createEngineDescription(RecogEngine.class);
-
-// The UIMA resource description of your list of regex rules
-ExternalResourceDescription	resDesc = ExternalResourceFactory.createExternalResourceDescription(
-    RegexListResource.class,
-    "file:my-regex-list.txt"
-  );
-
-// Bind AE description to the resource description
-ExternalResourceFactory.bindResource(
-    ae,
-    TokenRegexAE.TOKEN_REGEX_RULES,
-    resDesc);
-
-// Run the pipeline
-AnalysisEngine engine = UIMAFramework.produceAnalysisEngine(ae);
-SimplePipeline.runPipeline(cas, engine);
-```
-
-# Documentation
-
-Getting *UIMA Tokens Regex* to work requires two mandatory phases: defining the *UIMA Tokens Regex* resource file (a list of rules, see [The *UIMA Tokens Regex* resource file](#the-uima-tokens-regex-resource-file)) and implementing the engine logic in `Java` ([*UIMA Tokens Regex* AE](#uima-tokens-regex-analysis-engine-ae)).
+Getting *UIMA Tokens Regex* to work requires two mandatory phases: defining the *UIMA Tokens Regex* resource file (a list of rules, see [The *UIMA Tokens Regex* resource file](#the-uima-tokens-regex-resource-file)) and implementing the engine logic in `Java` ([*UIMA Tokens Regex* AE](#uima-tokens-regex-analysis-engine-AE)).
 
 ### The *UIMA Tokens Regex* resource file
 
@@ -191,7 +91,7 @@ rule "My rule": [category=="noun" & (lemma == "chair" |
     (stem=="mang" & mood="participle" & tense="past") | lemma=="vitesse")];
 ```
 
-**UIMA types' features**
+**Features**
 
 All features declared in the type used (see [use](#use)}) can be referenced from the left part of a boolean expression in matchers. For example, if the type used is the UIMA `WordAnnotation` type from [platform TermSuite](https://termsuite.github.io/), the available features would be:
 
@@ -293,7 +193,7 @@ rule "My rule 1": A1 N;
 rule "My rule 2": A2 N;
 ```
 
-For both rules above, the sequence of matcher labels attached to each rule occurrence extracted by *UIMA Tokens Regex*'s engine (see [*UIMA Tokens Regex* AE](#uima-tokens-regex-analysis-engine-ae)) will be `A N`, instead of `A1 N` for the first rule and `A2 N` for the second rule, because of the `as` keyword.
+For both rules above, the sequence of matcher labels attached to each rule occurrence extracted by *UIMA Tokens Regex*'s engine (see [*UIMA Tokens Regex* AE](#uima-tokens-regex-analysis-engine-AE)) will be `A N`, instead of `A1 N` for the first rule and `A2 N` for the second rule, because of the `as` keyword.
 
 The keyword `as` has no effect in rule declaration nor in the way the *UIMA Tokens Regex* engine extracts rule occurrences, it only renames labels for later reuse by other AEs in the *UIMA* AE process flow.
 
@@ -344,12 +244,12 @@ rule "My rule 3": N A+;
 ```
 
 
-#### The universal matcher `[]`
+#### The any matcher `[]`
 
-The universal matcher `[]` matches any annotation. It is the equivalent of the dot `.` in string regular expressions.
+The any matcher `[]` matches any annotation. It is the equivalent of the dot `.` in string regular expressions.
 
 ```
-# Matches any subsequence of one of the forms: NPN, NPDN, NPAN, NPDAN, etc.
+# Matches any term of one of the forms: NPN, NPDN, NPAN, NPDAN, etc.
 rule "complex term 1": N P []* N;
 ```
 
@@ -358,7 +258,7 @@ rule "complex term 1": N P []* N;
 
 In the right part of rule declaration, any matcher label can be prefixed with the special character `~` to refrain the following label to appear in the rule occurrences extracted by *UIMA Tokens Regex*'s engine.
 
-Each time the engine finds a matching occurrence for a rule, it produces an instance of the class *Occurrence* (see [*UIMA Tokens Regex* AE](#uima-tokens-regex-analysis-engine-ae)). The class *Occurrence* has a method named `getPattern()` returning the sequence of matcher labels that have matched. The effect of the special character `~` is to remove some labels from the pattern.
+Each time the engine finds a matching occurrence for a rule, it produces an instance of the class *Occurrence* (see [*UIMA Tokens Regex* AE](#uima-tokens-regex-analysis-engine-AE)). The class *Occurrence* has a method named `getPattern()` returning the sequence of matcher labels that have matched. The effect of the special character `~` is to remove some labels from the pattern.
 
 This functionality is useful when some annotation are mandatory to specify a matching context but useless for further analysis.
 
@@ -430,6 +330,7 @@ See the complete regex file [here](https://github.com/termsuite/termsuite-core/b
 The *UIMA Tokens Regex* AE takes its resource file (*c.f.* [The *UIMA Tokens Regex* resource file](#the-uima-tokens-regex-resource-file)) as input, scans all annotations sequentially (see [Sequential scanning of annotations](#sequential-scanning-of-annotations) for more details) and notifies a `Java` handler method, which must be implemented (See [Definition of the Java handler method](#definition-of-the-java-handler-method)), every time a rule matches.
 
 #### Sequential scanning of annotations
+
 
 The *UIMA Tokens Regex* AE parses the rule list and creates for each rule exactly one finite state automaton, where each annotation matcher plays the role of a transition label (There are as many annotation matchers as there are transitions). The engine iterates over the sequence of all annotations of the type declared by the keyword `set` (*c.f.* [set](#set)) taken in their natural *UIMA* order (`begin` ascending, `end` descending). The engine propagates the current annotation to all automaton, *i.e.* to n automata, where n is the number of rules declared.
 
