@@ -11,6 +11,37 @@
 <p><span>Damien Cram and Béatrice Daille.</span> <em>Terminology Extraction with Term Variant Detection.</em> Proceedings of ACL-2016 System Demonstrations. <a href="https://aclweb.org/anthology/P/P16/P16-4003.pdf">Download PDF</a></p>
 </blockquote>
 
+* [Publication](#publication)
+* [Getting started](#getting-started)
+  * [1. Classpath](#1-classpath)
+  * [2. Create your custom regex rule file](#2-create-your-custom-regex-rule-file)
+  * [3. Inherit from TokenRegexAE](#3-inherit-from-tokenregexae)
+  * [4. Glue everything together with UIMAfit](#4-glue-everything-together-with-uimafit)
+* [Documentation](#documentation)
+  * [The <em>UIMA Tokens Regex</em> resource file](#the-uima-tokens-regex-resource-file)
+    * [Rule file header: import, <code>use</code>, <code>set</code>](#rule-file-header-import-use-set)
+      * [import](#import)
+       * [use](#use)
+       * [set](#set)
+    * [Rule definition: the keyword rule](#rule-definition-the-keyword-rule)
+    * [Matcher definition](#matcher-definition)
+       * [The feature structure matcher](#the-feature-structure-matcher)
+       * [The covered text string matcher, defined with /~/](#the-covered-text-string-matcher-defined-with-)
+    * [Matcher predefinition: the keyword matcher](#matcher-predefinition-the-keyword-matcher)
+    * [The keyword as](#the-keyword-as)
+    * [The quantifiers: zeroone, <code>zeron</code>, <code>onen</code>, <code>n</code>, <code>mn</code>](#the-quantifiers-zeroone-zeron-onen-n-mn)
+    * [The universal matcher []](#the-universal-matcher-)
+    * [Ignoring labels with ~](#ignoring-labels-with-)
+    * [Commenting with #](#commenting-with-)
+    * [Example rule list resource file](#example-rule-list-resource-file)
+  * [<em>UIMA Tokens Regex</em> Analysis Engine (AE)](#uima-tokens-regex-analysis-engine-ae)
+    * [Sequential scanning of annotations](#sequential-scanning-of-annotations)
+    * [Definition of the Java handler method](#definition-of-the-java-handler-method)
+     * [Extending the class TokenRegexAE](#extending-the-class-tokenregexae)
+     * [The Occurrence class](#the-occurrence-class)
+     * [The Rule class](#the-rule-class)
+  * [Example implementation of <em>UIMA Tokens Regex</em> AE](#example-implementation-of-uima-tokens-regex-ae)
+
 
 # Getting started
 
