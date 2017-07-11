@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/JuleStar/uima-tokens-regex.svg?branch=master)](https://travis-ci.org/JuleStar/uima-tokens-regex)
+
 *UIMA Tokens Regex* is a *UIMA* Analysis Engine (AE) that implements regex-like pattern matching over a sequence of UIMA annotations.
 
 
