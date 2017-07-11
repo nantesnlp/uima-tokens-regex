@@ -168,7 +168,7 @@ There are two types of matcher, each defined with its own syntax : the The featu
 
 The feature structure matcher applies to *UIMA* feature structures, *i.e.* annotations. It is a boolean expression defined within brackets `[` and `]`.
 
-Each boolean expression has the form `feature` `op` `literal`. In the example below, the rule has one matcher, where `feature` is *category*, `op` is the equality operator `$=,=$`, and `literal` is the string value *noun*.
+Each boolean expression has the form `feature` `op` `literal`. In the example below, the rule has one matcher, where `feature` is *category*, `op` is the equality operator `$==$`, and `literal` is the string value *noun*.
 
 ```
 rule "My rule": [category=="noun"];
@@ -221,7 +221,7 @@ There exists 6 different operators :
 
 | operator | description |
 |---|---|
-| `=,=` | the equality |
+| `==` | the equality |
 | `!=` | the inequality |
 | `<=` | less than or equal to |
 | `<` | less than |
