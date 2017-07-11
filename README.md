@@ -128,9 +128,9 @@ matcher A: [category=="adjective"];
 matcher N: [category=="noun"];
 
 # Definition of rules
-term "an": A N;
-term "nnn": N N N;
-term "nn": N N;
+rule "an": A N;
+rule "nnn": N N N;
+rule "nn": N N;
 ```
 
 #### Rule file header: `import`, `use`, `set`
@@ -362,7 +362,7 @@ Each time the engine finds a matching occurrence for a rule, it produces an inst
 
 This functionality is useful when some annotation are mandatory to specify a matching context but useless for further analysis.
 
-The example illustrates this functionality in the case of terminology extraction. We need the rule `My rule` to extract all term having the pattern `NPN`, but we need to appear after a determiner `D`. As we don't want the `D` to appear in the term's pattern, we hide it from the pattern by prefixing it with `~`.
+The example illustrates this functionality in the case of terminology extraction. We need the rule `My rule` to extract all subsequences having the pattern `NPN`, but we need to appear after a determiner `D`. As we don't want the `D` to appear in the subsequence's pattern, we hide it from the pattern by prefixing it with `~`.
 
 ```
 matcher N: [category=="noun"];
