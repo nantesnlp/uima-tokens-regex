@@ -11,7 +11,6 @@
 <p><span>Damien Cram and Béatrice Daille.</span> <em>Terminology Extraction with Term Variant Detection.</em> Proceedings of ACL-2016 System Demonstrations. <a href="https://aclweb.org/anthology/P/P16/P16-4003.pdf">Download PDF</a></p>
 </blockquote>
 
-* [Publication](#publication)
 * [Getting started](#getting-started)
   * [1. Classpath](#1-classpath)
   * [2. Create your custom regex rule file](#2-create-your-custom-regex-rule-file)
