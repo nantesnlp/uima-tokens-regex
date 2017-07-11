@@ -30,6 +30,8 @@
     * [Matcher predefinition: the keyword matcher](#matcher-predefinition-the-keyword-matcher)
     * [The keyword as](#the-keyword-as)
     * [The quantifiers: <code>?</code>, <code>*</code>, <code>+</code>, <code>{n}</code>, <code>{m,n}</code>](#the-quantifiers----n-mn)
+    * [Sub-rule disjunctions |](#sub-rule-disjunctions-)
+    * [Sub-rule quantifiers](#sub-rule-quantifiers)
     * [The universal matcher []](#the-universal-matcher-)
     * [Ignoring labels with ~](#ignoring-labels-with-)
     * [Commenting with #](#commenting-with-)
@@ -361,7 +363,6 @@ rule "My rule 3": N A+;
 
 The quantifiers can be associated to any type of matcher : feature structure matchers, regular expression matchers, and matcher labels :
 
-
 ```
 matcher N: [category=="noun"];
 matcher N: [category=="adjective"];
@@ -375,6 +376,24 @@ rule "My rule 2": N P /^(de)|(des)|(du)$/? N;
 # A quantifier associated to a matcher label (predefined matcher)
 rule "My rule 3": N A+;
 ```
+
+#### Sub-rule disjunctions `|`
+
+Since version 1.5, *UIMA Tokens Regex* allows to declare alternative sub-rule, as with usual regular expressions:
+
+```
+rule "My rule 4": N (P N | A) ;
+```
+
+#### Sub-rule quantifiers
+
+Since version 1.5, *UIMA Tokens Regex* allows to quantify sub-rule groups as with any matcher:
+
+```
+rule "My rule 4": N (P N | A)+ ;
+```
+
+All [matcher quantifiers available](#the-quantifiers----n-mn) are also allowed on sub-rules.
 
 
 #### The universal matcher `[]`
