@@ -25,3 +25,7 @@ artifacts/
 .project
 .settings/
 
+#IDEA
+.idea
+out
+*.iml

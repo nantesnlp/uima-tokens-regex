@@ -21,8 +21,34 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.antlr;
 
-import static java.util.stream.Collectors.toList;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import fr.univnantes.lina.uima.tkregex.*;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.*;
+import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.uima.UIMAException;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.TypeSystem;
+import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.metadata.FeatureDescription;
+import org.apache.uima.resource.metadata.TypeDescription;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,60 +56,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
-import org.apache.uima.resource.metadata.FeatureDescription;
-import org.apache.uima.resource.metadata.TypeDescription;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import fr.univnantes.lina.uima.tkregex.AndMatcher;
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.Automaton;
-import fr.univnantes.lina.uima.tkregex.AutomatonFactory;
-import fr.univnantes.lina.uima.tkregex.AutomatonQuantifier;
-import fr.univnantes.lina.uima.tkregex.CustomMatcher;
-import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
-import fr.univnantes.lina.uima.tkregex.OrMatcher;
-import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
-import fr.univnantes.lina.uima.tkregex.Rule;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AndexpressionContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AtomicExpressionContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.AutomatonDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextArrayContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextExactlyContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.CoveredTextIgnoreCaseContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ExpressionContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureMatcherDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.FeatureNameContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.HeaderBlockContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ImportDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.JavaMatcherDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.LabelIdentifierContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.LiteralContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.MatcherDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.OperatorContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.OptionDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.OrBranchingDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.OrexpressionContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.QuantifierDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.RuleDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.RuleListContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.RuleNameContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ShortcutMatcherDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.UseDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
+import static java.util.stream.Collectors.toList;
 
 
 public class AutomataParserListener implements UimaTokenRegexListener {
@@ -260,7 +233,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			else
 				throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
 		} else if(ctx.coveredTextArray() != null) {
-			matcher = new StringArrayMatcher(true, coveredTextArray.get());
+			matcher = new StringArrayMatcher(true, ctx.arrayOperator().getText(), coveredTextArray.get());
+		} else if(ctx.literalArray() != null) {
+			matcher = new ArrayMatcher(
+					toFeatureDescription(ctx.featureName()),
+					ctx.arrayOperator().getText(),
+					toLiteralArray(ctx.literalArray()));
 		} else if(ctx.coveredTextExactly() != null) {
 			matcher = new StringExactlyMatcher(coveredTextExactly.get());
 		} else if(ctx.coveredTextIgnoreCase() != null) {
@@ -274,6 +252,40 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 				);
 
 		return matcher;
+	}
+
+	private FeatureDescription toFeatureDescription(FeatureNameContext featName) {
+		try {
+			return Arrays.stream(typeSystemDescription.getType(usedType.getName()).getFeatures())
+					.filter(fd -> fd.getName().equals(featName.getText()))
+					.findFirst()
+					.get();
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Object[] toLiteralArray(LiteralArrayContext literalArrayContext) {
+		List<Object> literals = new ArrayList<>();
+		for(LiteralContext literalCtx:literalArrayContext.literal()) {
+			literals.add(toLiteral(literalCtx));
+		}
+		return literals.toArray();
+	}
+
+	private Object toLiteral(LiteralContext literalCtx) {
+		if(literalCtx.IntegerLiteral() != null)
+			return Integer.parseInt(literalCtx.IntegerLiteral().getText());
+		else if(literalCtx.BooleanLiteral() != null)
+			return Boolean.parseBoolean(literalCtx.BooleanLiteral().getText());
+		else if(literalCtx.FloatingPointLiteral() != null)
+			return Float.parseFloat(literalCtx.FloatingPointLiteral().getText());
+		else if(literalCtx.StringLiteral() != null) {
+			String textWithQuotes = literalCtx.StringLiteral().getText();
+			return textWithQuotes.substring(1,textWithQuotes.length()-1);
+		} else
+			throw new UnsupportedOperationException("Unexpected literal type: " + literalCtx.getText());
 	}
 
 	private String toLiteralType(LiteralContext ctx) {
@@ -335,10 +347,18 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	@Override
 	public void exitFeatureName(FeatureNameContext ctx) {
 	}
-	
-	
 
-	
+	@Override
+	public void enterArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
+
+	}
+
+	@Override
+	public void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
+
+	}
+
+
 	protected String resolveFeature(String shortName) {
 		String feature = featureMap.get(shortName);
 		if(feature == null) 
@@ -628,6 +648,16 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	@Override
 	public void exitCoveredTextExactly(CoveredTextExactlyContext ctx) {
 		coveredTextExactly = Optional.of(prepareStringLiteral(ctx.StringLiteral().toString()));
+	}
+
+	@Override
+	public void enterLiteralArray(UimaTokenRegexParser.LiteralArrayContext ctx) {
+
+	}
+
+	@Override
+	public void exitLiteralArray(UimaTokenRegexParser.LiteralArrayContext ctx) {
+
 	}
 
 	private Optional<String[]> coveredTextArray = Optional.absent();

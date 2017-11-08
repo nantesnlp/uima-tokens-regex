@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Fri Jul 07 14:21:28 CEST 2017 */
+/* First created by JCasGen Wed Nov 08 11:31:04 CET 2017 */
 package fr.univnantes.lina.test.uima;
 
 import org.apache.uima.jcas.JCas; 
@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Fri Jul 07 14:21:28 CEST 2017
- * XML source: /home/cram-d/git/uima-tokens-regex/src/test/resources/TestTypeSystem.xml
+ * Updated by JCasGen Wed Nov 08 11:31:04 CET 2017
+ * XML source: /home/damien/git/uima-tokens-regex/src/test/resources/TestTypeSystem.xml
  * @generated */
 public class TestAnno extends Annotation {
   /** @generated
@@ -90,7 +90,7 @@ public class TestAnno extends Annotation {
     
   /** setter for lemma - sets  
    * @generated
-   * @param v value to set into the feature 
+   * @param v value to testDifferentTypes into the feature
    */
   public void setLemma(String v) {
     if (TestAnno_Type.featOkTst && ((TestAnno_Type)jcasType).casFeat_lemma == null)

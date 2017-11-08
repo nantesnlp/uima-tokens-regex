@@ -111,9 +111,10 @@ expression
 atomicExpression
 	: Identifier
 	| featureName operator literal
+	| featureName arrayOperator literalArray
 	| 'text' '==' coveredTextIgnoreCase
 	| 'text' '===' coveredTextExactly
-	| 'text' 'in' coveredTextArray
+	| 'text' arrayOperator coveredTextArray
 	;
 	
 quantifierDeclaration
@@ -127,6 +128,10 @@ featureName
 	: Identifier
 	;
 	
+arrayOperator
+	: 'in'
+	| 'nin'
+	;
 
 operator
 	: '=='
@@ -153,7 +158,11 @@ coveredTextIgnoreCase
 // covered text
 coveredTextExactly
 	: StringLiteral;
-	
+
+literalArray
+	: '[' literal (',' literal)* ']'
+	;
+
 // Literals
 literal
 	: StringLiteral

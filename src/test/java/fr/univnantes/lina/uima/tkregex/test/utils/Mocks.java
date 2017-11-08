@@ -21,14 +21,89 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
+import fr.univnantes.lina.test.uima.TypeA;
+import org.apache.uima.UIMAException;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
+import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.mockito.Mockito;
 
 public class Mocks {
+
+	public static JCas cas() throws UIMAException {
+		return JCasFactory.createJCas();
+	}
+
+	public static <T extends Annotation> T anno(JCas cas, Class<T> cls, int begin, int end) throws CASException {
+		return (T) cas
+				.getCas().createAnnotation(
+						cas.getRequiredType(cls.getName()),
+						begin,
+						end);
+	}
+
+	public static <T extends Annotation> T anno(JCas cas, Class<T> cls) throws CASException {
+		return anno(cas, cls, 0,0);
+	}
+
+	public static <T extends Annotation> T anno(Class<T> cls, int begin, int end) throws UIMAException {
+		JCas cas = cas();
+		return (T) cas
+				.getCas().createAnnotation(
+						getType(cls, cas),
+						begin,
+						end);
+	}
+
+	private static <T extends Annotation> Type getType(T anno) throws CASException {
+		return anno.getCAS().getJCas().getRequiredType(anno.getClass().getName());
+	}
+
+	private static <T extends Annotation> Type getType(Class<T> cls, JCas cas) throws CASException {
+		return cas.getRequiredType(cls.getName());
+	}
+
+	public static <T extends Annotation> T anno(Class<T> cls) throws UIMAException {
+		return anno(cls, 0,0);
+	}
+
 
 	public static AnnotationFS anno(String text) {
 		AnnotationFS anno = Mockito.mock(AnnotationFS.class);
 		Mockito.when(anno.getCoveredText()).thenReturn(text);
 		return anno;
+	}
+
+	public static <T extends Annotation> T anno(Class<T> cls, String feat, boolean value) throws UIMAException {
+		T a = anno(cls);
+		a.setBooleanValue(getFeature(a, feat), value);
+		return a;
+	}
+
+	public static <T extends Annotation> T anno(Class<T> cls, String feat, String value) throws UIMAException {
+		T a = anno(cls);
+		a.setStringValue(getFeature(a, feat), value);
+		return a;
+	}
+
+	public static <T extends Annotation> T anno(Class<T> cls, String feat, int value) throws UIMAException {
+		T a = anno(cls);
+		a.setIntValue(getFeature(a, feat), value);
+		return a;
+	}
+
+	public static <T extends Annotation> T anno(Class<T> cls, String feat, float value) throws UIMAException {
+		T a = anno(cls);
+		a.setFloatValue(getFeature(a, feat), value);
+		return a;
+	}
+
+	private static  <T extends Annotation> Feature getFeature(T a, String feat) throws CASException {
+		return a.getCAS().getJCas().getRequiredFeature(getType(a), feat);
 	}
 }

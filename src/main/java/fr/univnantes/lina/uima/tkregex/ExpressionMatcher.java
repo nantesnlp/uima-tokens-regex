@@ -100,7 +100,7 @@ public class ExpressionMatcher implements AnnotationMatcher{
 		}
 	}
 
-	private Object getValue(AnnotationFS annotation) {
+	protected Object getValue(AnnotationFS annotation) {
 		switch(valueType) {
 		case TYPE_BOOLEAN:
 			return annotation.getBooleanValue(getFeature(annotation));

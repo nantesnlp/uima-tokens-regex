@@ -258,6 +258,18 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterOperator(UimaTokenRegexParser.OperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -301,6 +313,18 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCoveredTextExactly(UimaTokenRegexParser.CoveredTextExactlyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLiteralArray(UimaTokenRegexParser.LiteralArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLiteralArray(UimaTokenRegexParser.LiteralArrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

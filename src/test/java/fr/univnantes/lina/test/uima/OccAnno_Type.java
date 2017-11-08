@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Fri Jul 07 14:21:28 CEST 2017 */
+/* First created by JCasGen Wed Nov 08 11:31:04 CET 2017 */
 package fr.univnantes.lina.test.uima;
 
 import org.apache.uima.jcas.JCas;
@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Fri Jul 07 14:21:28 CEST 2017
+ * Updated by JCasGen Wed Nov 08 11:31:04 CET 2017
  * @generated */
 public class OccAnno_Type extends Annotation_Type {
   /** @generated 
@@ -61,7 +61,7 @@ public class OccAnno_Type extends Annotation_Type {
   }
   /** @generated
    * @param addr low level Feature Structure reference
-   * @param v value to set 
+   * @param v value to testDifferentTypes
    */    
   public void setRule(int addr, String v) {
         if (featOkTst && casFeat_rule == null)
@@ -85,7 +85,7 @@ public class OccAnno_Type extends Annotation_Type {
   }
   /** @generated
    * @param addr low level Feature Structure reference
-   * @param v value to set 
+   * @param v value to testDifferentTypes
    */    
   public void setPattern(int addr, String v) {
         if (featOkTst && casFeat_pattern == null)

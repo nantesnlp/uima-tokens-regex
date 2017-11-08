@@ -24,13 +24,16 @@ package fr.univnantes.lina.uima.tkregex.matchers;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
 
 public class StringArrayMatcher  extends CoveredTextMatcher {
 	private Set<String> values;
 	private boolean ignoreCase;
-	
-	public StringArrayMatcher(boolean ignoreCase, String... values) {
+	private String operator;
+
+	public StringArrayMatcher(boolean ignoreCase, String operator, String... values) {
 		super();
+		this.operator = operator;
 		this.values = Sets.newHashSetWithExpectedSize(values.length);
 		this.ignoreCase = ignoreCase;
 		for(String v:values)
@@ -39,12 +42,16 @@ public class StringArrayMatcher  extends CoveredTextMatcher {
 
 	@Override
 	protected boolean match(String text) {
+		return operator.equals(ArrayMatcher.IN) ? isIn(text) : !isIn(text);
+	}
+
+	private boolean isIn(String text) {
 		if(ignoreCase)
 			return values.contains(text.toLowerCase());
 		else
 			return values.contains(text);
 	}
-	
+
 	public Set<String> getValues() {
 		return values;
 	}

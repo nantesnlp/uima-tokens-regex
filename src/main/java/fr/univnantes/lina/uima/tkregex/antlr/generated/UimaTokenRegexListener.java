@@ -210,6 +210,16 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitFeatureName(UimaTokenRegexParser.FeatureNameContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#arrayOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#arrayOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#operator}.
 	 * @param ctx the parse tree
 	 */
@@ -249,6 +259,16 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCoveredTextExactly(UimaTokenRegexParser.CoveredTextExactlyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#literalArray}.
+	 * @param ctx the parse tree
+	 */
+	void enterLiteralArray(UimaTokenRegexParser.LiteralArrayContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#literalArray}.
+	 * @param ctx the parse tree
+	 */
+	void exitLiteralArray(UimaTokenRegexParser.LiteralArrayContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#literal}.
 	 * @param ctx the parse tree
