@@ -67,7 +67,7 @@ public class TestUtils {
 			super();
 			this.letter = letter;
 		}
-		public boolean match(AnnotationFS annotation) {
+		public boolean matches(AnnotationFS annotation) {
 			return annotation.getCoveredText().equals(letter);
 		};
 		/* Label aspect */
@@ -91,7 +91,7 @@ public class TestUtils {
 	}
 
 	private static AnnotationMatcher anyMatcher = new AnnotationMatcher() {
-		public boolean match(AnnotationFS annotation) {
+		public boolean matches(AnnotationFS annotation) {
 			return true;
 		}
 		@Override

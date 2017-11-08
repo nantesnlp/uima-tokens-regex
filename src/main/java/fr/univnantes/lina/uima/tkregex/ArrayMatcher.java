@@ -21,7 +21,6 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.text.AnnotationFS;
@@ -29,59 +28,27 @@ import org.apache.uima.resource.metadata.FeatureDescription;
 
 import java.util.Set;
 
-public class ArrayMatcher implements AnnotationMatcher {
+public class ArrayMatcher extends FeatureMatcher {
 
-	/* Ignorer aspect */
-	private Ignorer ignorer = new Ignorer();
-	public boolean isIgnoreMatcher() {
-		return ignorer.isIgnoreMatcher();
-	}
-	public void setIgnoreMatcher(boolean ignoreMatcher) {
-		ignorer.setIgnoreMatcher(ignoreMatcher);
-	}
-	/* End of Ignorer aspect */
-
-
-	/* Label aspect */
-	private Labeller labeller = new Labeller();
-	public String getLabel() {
-		return labeller.getLabel();
-	}
-	public void setLabel(String label) {
-		labeller.setLabel(label);
-	}
-	/* End of Label aspect */
-
-
-	public static final String UIMA_CAS_INTEGER = "uima.cas.Integer";
-	public static final String UIMA_CAS_STRING = "uima.cas.String";
-	public static final String UIMA_CAS_FLOAT = "uima.cas.Float";
-	public static final String UIMA_CAS_BOOLEAN = "uima.cas.Boolean";
 	private Set<Object> values;
 
-	public static final String IN="in";
-	public static final String NIN="nin";
+	private Op operator;
 
-	private Feature feature;
-	private FeatureDescription featureDescription;
-	private String operator;
+//	public ArrayMatcher(Feature feature, Op operator, Object... values) {
+//		super(feature);
+//		init(operator, values);
+//	}
 
-	public ArrayMatcher(Feature feature, String operator, Object... values) {
-		Preconditions.checkNotNull(feature);
-		this.feature = feature;
+	private void init(Op operator, Object[] values) {
 		this.operator = operator;
 		this.values = Sets.newHashSetWithExpectedSize(values.length);
 		for(Object v:values)
 			this.values.add(v);
 	}
 
-	public ArrayMatcher(FeatureDescription feature, String operator, Object... values) {
-		Preconditions.checkNotNull(feature);
-		this.featureDescription = feature;
-		this.operator = operator;
-		this.values = Sets.newHashSetWithExpectedSize(values.length);
-		for(Object v:values)
-			this.values.add(v);
+	public ArrayMatcher(Feature feature, Op operator, Object... values) {
+		super(feature);
+		init(operator, values);
 	}
 
 	private boolean isIn(Object value) {
@@ -89,40 +56,21 @@ public class ArrayMatcher implements AnnotationMatcher {
 	}
 
 	@Override
-	public boolean match(AnnotationFS annotation) {
+	public boolean matches(AnnotationFS annotation) {
 		Object value = getValue(annotation);
-
-		return isInOperator() ? isIn(value) : !isIn(value);
-	}
-
-	private Object getValue(AnnotationFS annotation) {
-		Feature feature = getFeature(annotation, featureDescription);
-		switch(feature.getRange().getName()) {
-			case UIMA_CAS_INTEGER:
-				return annotation.getIntValue(feature);
-			case UIMA_CAS_STRING:
-				return annotation.getStringValue(feature);
-			case UIMA_CAS_FLOAT:
-				return annotation.getFloatValue(feature);
-			case UIMA_CAS_BOOLEAN:
-				return annotation.getBooleanValue(feature);
+		switch (operator) {
+			case IN: return isIn(value);
+			case NIN: return !isIn(value);
 			default:
-				return annotation.getStringValue(feature);
+				throw new UnsupportedOperationException("Unexpected operator: " + operator);
 		}
-
 	}
 
-	private Feature getFeature(AnnotationFS annotation, FeatureDescription featureDescription) {
-		if(feature == null) {
-			String name = featureDescription.getName();
-			return annotation.getType().getFeatureByBaseName(name);
-		}
-		else
-			return feature;
+	public Op getOperator() {
+		return operator;
 	}
 
-
-	private boolean isInOperator() {
-		return operator.equals(IN);
+	public Set<Object> getValues() {
+		return values;
 	}
 }

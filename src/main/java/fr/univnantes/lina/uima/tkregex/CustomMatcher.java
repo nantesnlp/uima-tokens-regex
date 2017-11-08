@@ -42,8 +42,8 @@ public class CustomMatcher extends AbstractAnnotationMatcher {
 	}
 	
 	@Override
-	public boolean match(AnnotationFS annotation) {
-		return matcher.get().match(annotation);
+	public boolean matches(AnnotationFS annotation) {
+		return matcher.get().matches(annotation);
 	}
 	
 	public String getName() {

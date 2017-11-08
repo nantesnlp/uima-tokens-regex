@@ -28,7 +28,7 @@ import fr.univnantes.lina.uima.tkregex.AbstractAnnotationMatcher;
 public abstract class CoveredTextMatcher extends AbstractAnnotationMatcher {
 
 	@Override
-	public boolean match(AnnotationFS annotation) {
+	public boolean matches(AnnotationFS annotation) {
 		return !annotation.getCoveredText().isEmpty() && match(annotation.getCoveredText());
 	}
 	

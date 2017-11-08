@@ -54,6 +54,6 @@ public class RegexCoveredTextMatcherTestCase extends TestCase {
 
 	public void doTest(String coveredText, String regex, boolean matches) {
 		RegexCoveredTextMatcher m = new RegexCoveredTextMatcher(regex);
-		assertEquals(matches, m.match(getAnnotation(coveredText)));
+		assertEquals(matches, m.matches(getAnnotation(coveredText)));
 	}
 }

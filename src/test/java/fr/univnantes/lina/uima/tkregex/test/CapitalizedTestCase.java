@@ -43,11 +43,11 @@ public class CapitalizedTestCase {
 	@Test
 	public void set() {
 		// FALSE
-		assertFalse(matcher.match(Mocks.anno("tata")));
+		assertFalse(matcher.matches(Mocks.anno("tata")));
 
 		// TRUE
-		assertTrue(matcher.match(Mocks.anno("Tata")));
-		assertTrue(matcher.match(Mocks.anno("TATA")));
-		assertTrue(matcher.match(Mocks.anno("ÀATA")));
+		assertTrue(matcher.matches(Mocks.anno("Tata")));
+		assertTrue(matcher.matches(Mocks.anno("TATA")));
+		assertTrue(matcher.matches(Mocks.anno("ÀATA")));
 	}
 }

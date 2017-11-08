@@ -57,18 +57,7 @@ public class TermSuiteFrenchMWTParserTestCase {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
 		
-		AutomataParserListener listener = new AutomataParserListener( parser ) {
-			@Override
-			public void exitImportDeclaration(ImportDeclarationContext ctx) {
-			}
-			@Override
-			public void exitUseDeclaration(UseDeclarationContext ctx) {
-			}
-			@Override
-			protected String resolveFeature(String shortName) {
-				return shortName;
-			}
-		};
+		AutomataParserListener listener = new AutomataParserListener( parser );
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
 

@@ -26,7 +26,7 @@ import org.apache.uima.cas.text.AnnotationFS;
 public interface AnnotationMatcher {
 	public static final AnnotationMatcher EMPTY_MATCHER = new AnnotationMatcher() {
 		@Override
-		public boolean match(AnnotationFS annotation) {
+		public boolean matches(AnnotationFS annotation) {
 			return true;
 		}
 
@@ -49,7 +49,7 @@ public interface AnnotationMatcher {
 		}
 	};
 
-	public boolean match(AnnotationFS annotation);
+	public boolean matches(AnnotationFS annotation);
 
 	public String getLabel();
 	public void setLabel(String label);

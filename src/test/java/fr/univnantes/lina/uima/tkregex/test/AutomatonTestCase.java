@@ -186,7 +186,7 @@ public class AutomatonTestCase extends TestCase {
 	public void testDocile() {
 		/*
 		 *  docile (and backtrack) : give up characters a posteriori 
-		 *  and try match the regex
+		 *  and try matches the regex
 		 */
 		javaTest(
 				"aaa",
@@ -205,7 +205,7 @@ public class AutomatonTestCase extends TestCase {
 
 		/*
 		 *  impatient : take the first alternative,
-		 *  while the second one would match more characters
+		 *  while the second one would matches more characters
 		 */
 		javaTest(
 				"aba",

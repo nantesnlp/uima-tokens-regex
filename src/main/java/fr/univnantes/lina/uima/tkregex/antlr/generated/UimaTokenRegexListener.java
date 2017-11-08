@@ -190,6 +190,36 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitAtomicExpression(UimaTokenRegexParser.AtomicExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#externalListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalListDefinition(UimaTokenRegexParser.ExternalListDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#externalListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalListDefinition(UimaTokenRegexParser.ExternalListDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#separator}.
+	 * @param ctx the parse tree
+	 */
+	void enterSeparator(UimaTokenRegexParser.SeparatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#separator}.
+	 * @param ctx the parse tree
+	 */
+	void exitSeparator(UimaTokenRegexParser.SeparatorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#keypath}.
+	 * @param ctx the parse tree
+	 */
+	void enterKeypath(UimaTokenRegexParser.KeypathContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#keypath}.
+	 * @param ctx the parse tree
+	 */
+	void exitKeypath(UimaTokenRegexParser.KeypathContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#quantifierDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -219,6 +249,16 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#inListOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterInListOperator(UimaTokenRegexParser.InListOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#inListOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitInListOperator(UimaTokenRegexParser.InListOperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#operator}.
 	 * @param ctx the parse tree

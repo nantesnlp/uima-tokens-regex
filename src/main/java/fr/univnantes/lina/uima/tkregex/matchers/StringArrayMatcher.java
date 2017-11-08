@@ -25,38 +25,51 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.Op;
 
 public class StringArrayMatcher  extends CoveredTextMatcher {
 	private Set<String> values;
-	private boolean ignoreCase;
-	private String operator;
+	private Op operator;
 
-	public StringArrayMatcher(boolean ignoreCase, String operator, String... values) {
+	public StringArrayMatcher(Op operator, String... values) {
 		super();
 		this.operator = operator;
 		this.values = Sets.newHashSetWithExpectedSize(values.length);
-		this.ignoreCase = ignoreCase;
-		for(String v:values)
+		boolean ignoreCase = isIgnoreCase();
+		for(String v:values) {
 			this.values.add(ignoreCase ? v.toLowerCase() : v);
+		}
+	}
+
+	private boolean isIgnoreCase() {
+		return operator == Op.IN_IGNORE_CASE || operator == Op.NIN_IGNORE_CASE;
 	}
 
 	@Override
 	protected boolean match(String text) {
-		return operator.equals(ArrayMatcher.IN) ? isIn(text) : !isIn(text);
+		switch(operator) {
+			case IN:
+				return isIn(text);
+			case NIN:
+				return !isIn(text);
+			case IN_IGNORE_CASE:
+				return isIn(text.toLowerCase());
+			case NIN_IGNORE_CASE:
+				return !isIn(text.toLowerCase());
+			default:
+				throw new UnsupportedOperationException("Unexpected operator: " + operator);
+		}
+	}
+
+	public Op getOperator() {
+		return operator;
 	}
 
 	private boolean isIn(String text) {
-		if(ignoreCase)
-			return values.contains(text.toLowerCase());
-		else
-			return values.contains(text);
+		return values.contains(text);
 	}
 
 	public Set<String> getValues() {
 		return values;
-	}
-	
-	public boolean isIgnoreCase() {
-		return ignoreCase;
 	}
 }

@@ -91,6 +91,17 @@
           <description/>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
+      <featureDescription>
+          <name>wordFloatTestFeat</name>
+          <description/>
+          <rangeTypeName>uima.cas.Float</rangeTypeName>
+      </featureDescription>
+          <featureDescription>
+              <name>wordIntTestFeat</name>
+              <description/>
+              <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          </featureDescription>
+
       </features>
     </typeDescription>
     <typeDescription>

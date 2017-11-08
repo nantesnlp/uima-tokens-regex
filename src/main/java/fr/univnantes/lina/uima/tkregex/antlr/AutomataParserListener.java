@@ -39,10 +39,10 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.uima.UIMAException;
 import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.FeatureDescription;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
@@ -82,8 +82,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	private boolean inRule = false;
 	
 	private TypeSystemDescription typeSystemDescription = null;
-	
-	private TypeDescription usedType = null;
+
+	private TypeDescription usedTypeDescription = null;
 	
 	public Map<String, CustomMatcher> getCustomJavaMatchers() {
 		return declaredJavaMatchers;
@@ -98,7 +98,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 	
 	public TypeDescription getIteraredType() {
-		return usedType;
+		return usedTypeDescription;
 	}
 	
 	public AutomataParserListener(Parser parser) {
@@ -233,11 +233,13 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			else
 				throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
 		} else if(ctx.coveredTextArray() != null) {
-			matcher = new StringArrayMatcher(true, ctx.arrayOperator().getText(), coveredTextArray.get());
+			matcher = new StringArrayMatcher(toOperator(ctx.inListOperator()), coveredTextArray.get());
+		} else if(ctx.externalListDefinition() != null) {
+
 		} else if(ctx.literalArray() != null) {
 			matcher = new ArrayMatcher(
 					toFeatureDescription(ctx.featureName()),
-					ctx.arrayOperator().getText(),
+					toOperator(ctx.arrayOperator()),
 					toLiteralArray(ctx.literalArray()));
 		} else if(ctx.coveredTextExactly() != null) {
 			matcher = new StringExactlyMatcher(coveredTextExactly.get());
@@ -245,8 +247,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			matcher = new StringIgnoreCaseMatcher(coveredTextIgnoredCase.get());
 		} else 
 			matcher = new ExpressionMatcher(
-					toFeature(ctx.featureName()), 
-					ctx.operator().getText(), 
+					toFeatureDescription(ctx.featureName()),
+					toOperator(ctx.operator()),
 					toLiteralValue(ctx.literal()), 
 					toLiteralType(ctx.literal())
 				);
@@ -254,16 +256,43 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return matcher;
 	}
 
-	private FeatureDescription toFeatureDescription(FeatureNameContext featName) {
-		try {
-			return Arrays.stream(typeSystemDescription.getType(usedType.getName()).getFeatures())
-					.filter(fd -> fd.getName().equals(featName.getText()))
-					.findFirst()
-					.get();
+	private Op toOperator(InListOperatorContext ctxt) {
+		return Op.fromString(ctxt.getText());
+	}
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	private Op toOperator(OperatorContext ctxt) {
+		return Op.fromString(ctxt.getText());
+	}
+	private Op toOperator(ArrayOperatorContext ctxt) {
+		return Op.fromString(ctxt.getText());
+	}
+
+	private Feature toFeatureDescription(FeatureNameContext featName) {
+		java.util.Optional<Feature> featureDescription = findFeatureDescription(toType(this.usedTypeDescription), featName.getText());
+		if(featureDescription.isPresent())
+			return featureDescription.get();
+		else
+			throw new AutomataParsingException(String.format("No feature named <%s> for type <%s>", featName.getText(), this.usedTypeDescription.getName()));
+	}
+
+	private Type toType(TypeDescription typeDescription) {
+		return getTypeSystem().getType(typeDescription.getName());
+	}
+
+	private TypeSystem typeSystem = null;
+	private TypeSystem getTypeSystem() {
+		if(typeSystem == null)
+			try {
+				typeSystem = JCasFactory.createJCas().getTypeSystem();
+			} catch (UIMAException e) {
+				throw new AutomataParsingException(e);
+			}
+		return typeSystem;
+
+	}
+
+	private java.util.Optional<Feature> findFeatureDescription(Type type, String featName) {
+		return java.util.Optional.ofNullable(type.getFeatureByBaseName(featName));
 	}
 
 	private Object[] toLiteralArray(LiteralArrayContext literalArrayContext) {
@@ -315,13 +344,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		
 	}
 
-	private String toFeature(FeatureNameContext ctx) {
-		String feature = resolveFeature(ctx.getText());
-		if(feature == null) 
-			throw new AutomataParsingException("No such feature: " + ctx.getText());
-		return feature;
-	}
-
 	@Override
 	public void exitRuleDeclaration(RuleDeclarationContext ctx) {
 		Automaton a = toAutomaton(ctx.automatonDeclaration());
@@ -355,6 +377,16 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	@Override
 	public void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
+
+	}
+
+	@Override
+	public void enterInListOperator(InListOperatorContext ctx) {
+
+	}
+
+	@Override
+	public void exitInListOperator(InListOperatorContext ctx) {
 
 	}
 
@@ -554,10 +586,10 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	@Override
 	public void exitUseDeclaration(UseDeclarationContext ctx) {
 		String value = ctx.Identifier().getText();
-		usedType = typeSystemDescription.getType(value);
-		if(usedType == null)
+		usedTypeDescription = typeSystemDescription.getType(value);
+		if(usedTypeDescription == null)
 			throw new AutomataParsingException("No such type in type system: " + value);
-		inferFeatureMap(usedType);
+		inferFeatureMap(usedTypeDescription);
 	}
 	
 	protected Map<String, String> featureMap = Maps.newHashMap();
@@ -690,6 +722,36 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	@Override
 	public void exitAtomicExpression(AtomicExpressionContext ctx) {
+	}
+
+	@Override
+	public void enterExternalListDefinition(ExternalListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void exitExternalListDefinition(ExternalListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void enterSeparator(SeparatorContext ctx) {
+
+	}
+
+	@Override
+	public void exitSeparator(SeparatorContext ctx) {
+
+	}
+
+	@Override
+	public void enterKeypath(KeypathContext ctx) {
+
+	}
+
+	@Override
+	public void exitKeypath(KeypathContext ctx) {
+
 	}
 
 	@Override

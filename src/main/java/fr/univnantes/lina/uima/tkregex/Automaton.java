@@ -418,7 +418,7 @@ class AutomatonInstance implements Cloneable {
 			}
 			return annotationCache.computeIfAbsent(
 					transition.getMatcher(), 
-					matcher -> matcher.match(a));
+					matcher -> matcher.matches(a));
 		} else
 			return transition.match(a);
 	}

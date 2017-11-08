@@ -3,6 +3,8 @@ package fr.univnantes.lina.uima.tkregex.test;
 import fr.univnantes.lina.test.uima.TypeA;
 import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.Op;
+import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
 import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.apache.uima.UIMAException;
 import org.apache.uima.cas.Feature;
@@ -31,21 +33,16 @@ public class ArrayMatcherTestCase {
 	@Before
 	public void setup() throws UIMAException {
 		cas = JCasFactory.createJCas();
-		System.out.println(cas.getTypeSystem());
 		type = cas.getRequiredType(TypeA.class.getName());
 
-		Feature pString = cas.getRequiredFeature(type,"fString");
-		Feature pInt = type.getFeatureByBaseName("fInt");
-		Feature pBoolean = type.getFeatureByBaseName("fBoolean");
-		Feature pFloat = type.getFeatureByBaseName("fFloat");
-		strMatcherIn = new ArrayMatcher(pString, "in", 1, "3", "tata", true, 5.2f);
-		strMatcherNin = new ArrayMatcher(pString, "nin", 1, "3", "tata", true, 5.2f);
-		intMatcherIn = new ArrayMatcher(pInt, "in", 1, "3", "tata", true, 5.2f);
-		intMatcherNin = new ArrayMatcher(pInt, "nin", 1, "3", "tata", true, 5.2f);
-		floatMatcherIn = new ArrayMatcher(pFloat, "in", 1, "3", "tata", true, 5.2f);
-		floatMatcherNin = new ArrayMatcher(pFloat, "nin", 1, "3", "tata", true, 5.2f);
-		booleanMatcherIn = new ArrayMatcher(pBoolean, "in", 1, "3", "tata", true, 5.2f);
-		booleanMatcherNin = new ArrayMatcher(pBoolean, "nin", 1, "3", "tata", true, 5.2f);
+		strMatcherIn = new ArrayMatcher(Fixtures.feature("fString"), Op.IN, 1, "3", "tata", true, 5.2f);
+		strMatcherNin = new ArrayMatcher(Fixtures.feature("fString"), Op.NIN, 1, "3", "tata", true, 5.2f);
+		intMatcherIn = new ArrayMatcher(Fixtures.feature("fInt"), Op.IN, 1, "3", "tata", true, 5.2f);
+		intMatcherNin = new ArrayMatcher(Fixtures.feature("fInt"), Op.NIN, 1, "3", "tata", true, 5.2f);
+		floatMatcherIn = new ArrayMatcher(Fixtures.feature("fFloat"), Op.IN, 1, "3", "tata", true, 5.2f);
+		floatMatcherNin = new ArrayMatcher(Fixtures.feature("fFloat"), Op.NIN, 1, "3", "tata", true, 5.2f);
+		booleanMatcherIn = new ArrayMatcher(Fixtures.feature("fBoolean"), Op.IN, 1, "3", "tata", true, 5.2f);
+		booleanMatcherNin = new ArrayMatcher(Fixtures.feature("fBoolean"), Op.NIN, 1, "3", "tata", true, 5.2f);
 	}
 
 	@Test
@@ -55,49 +52,49 @@ public class ArrayMatcherTestCase {
 
 		// tata
 		a = Mocks.anno(TypeA.class, "fString", "tata");
-		assertTrue(strMatcherIn.match(a));
-		assertFalse(strMatcherNin.match(a));
+		assertTrue(strMatcherIn.matches(a));
+		assertFalse(strMatcherNin.matches(a));
 		a = Mocks.anno(TypeA.class, "fString", "Tata");
-		assertFalse(strMatcherIn.match(a));
-		assertTrue(strMatcherNin.match(a));
+		assertFalse(strMatcherIn.matches(a));
+		assertTrue(strMatcherNin.matches(a));
 
 		// 1
 		a = Mocks.anno(TypeA.class, "fInt", 1);
-		assertTrue(intMatcherIn.match(a));
-		assertFalse(intMatcherNin.match(a));
+		assertTrue(intMatcherIn.matches(a));
+		assertFalse(intMatcherNin.matches(a));
 
 		a = Mocks.anno(TypeA.class, "fString", "1");
-		assertFalse(strMatcherIn.match(a));
-		assertTrue(strMatcherNin.match(a));
+		assertFalse(strMatcherIn.matches(a));
+		assertTrue(strMatcherNin.matches(a));
 
 
 		// 3
 		a = Mocks.anno(TypeA.class, "fString", "3");
-		assertTrue(strMatcherIn.match(a));
-		assertFalse(strMatcherNin.match(a));
+		assertTrue(strMatcherIn.matches(a));
+		assertFalse(strMatcherNin.matches(a));
 
 		a = Mocks.anno(TypeA.class, "fInt", 3);
-		assertFalse(intMatcherIn.match(a));
-		assertTrue(intMatcherNin.match(a));
+		assertFalse(intMatcherIn.matches(a));
+		assertTrue(intMatcherNin.matches(a));
 
 
 		// 5.2
 		a = Mocks.anno(TypeA.class, "fFloat", 5.2f);
-		assertTrue(floatMatcherIn.match(a));
-		assertFalse(floatMatcherNin.match(a));
+		assertTrue(floatMatcherIn.matches(a));
+		assertFalse(floatMatcherNin.matches(a));
 
 		a = Mocks.anno(TypeA.class, "fString", "5.2");
-		assertFalse(strMatcherIn.match(a));
-		assertTrue(strMatcherNin.match(a));
+		assertFalse(strMatcherIn.matches(a));
+		assertTrue(strMatcherNin.matches(a));
 
 		// 5.2
 		a = Mocks.anno(TypeA.class, "fBoolean", true);
-		assertTrue(booleanMatcherIn.match(a));
-		assertFalse(booleanMatcherNin.match(a));
+		assertTrue(booleanMatcherIn.matches(a));
+		assertFalse(booleanMatcherNin.matches(a));
 
 		a = Mocks.anno(TypeA.class, "fString", "true");
-		assertFalse(strMatcherIn.match(a));
-		assertTrue(strMatcherNin.match(a));
+		assertFalse(strMatcherIn.matches(a));
+		assertTrue(strMatcherNin.matches(a));
 
 	}
 }

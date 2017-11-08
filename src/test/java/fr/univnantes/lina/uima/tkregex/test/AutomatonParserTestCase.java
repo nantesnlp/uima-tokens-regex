@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import fr.univnantes.lina.uima.tkregex.*;
+import fr.univnantes.lina.uima.tkregex.test.asserts.Asserts;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -36,17 +38,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 
-import fr.univnantes.lina.uima.tkregex.AndMatcher;
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.Automaton;
-import fr.univnantes.lina.uima.tkregex.CustomMatcher;
-import fr.univnantes.lina.uima.tkregex.EpsilonTransition;
-import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
-import fr.univnantes.lina.uima.tkregex.OrMatcher;
-import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
-import fr.univnantes.lina.uima.tkregex.Rule;
-import fr.univnantes.lina.uima.tkregex.State;
-import fr.univnantes.lina.uima.tkregex.Transition;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
@@ -69,7 +60,8 @@ public class AutomatonParserTestCase extends TestCase {
 	
 	
 	public void initAutomata(String body, boolean allowMatchingEmptySequences) {
-		String defaultHeader = "import tata;\nuse toto;\n";
+		String defaultHeader = "import fr.univnantes.termsuite.types.TermSuiteTypeSystem;\n" +
+				"use fr.univnantes.termsuite.types.WordAnnotation;\n";
 		initAutomataWithCustomHeader(body, allowMatchingEmptySequences, defaultHeader);
 	}
 
@@ -82,27 +74,16 @@ public class AutomatonParserTestCase extends TestCase {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
 		
-		AutomataParserListener listener = new AutomataParserListener( parser ) {
-			@Override
-			public void exitImportDeclaration(ImportDeclarationContext ctx) {
-			}
-			@Override
-			public void exitUseDeclaration(UseDeclarationContext ctx) {
-			}
-			@Override
-			protected String resolveFeature(String shortName) {
-				return shortName;
-			}
-		};
+		AutomataParserListener listener = new AutomataParserListener( parser );
 		listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
 	}
 	
 	private String file1 = "rule \"Tata\": [lemma==\"mang\"] /^(et|ou)$/ [];";
-	private String file2 = "rule \"Test expression parsing\": [specificity >= 0.9];";
-	private String file3 = "rule \"Or expression\": [lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
-	private String file4 = "rule \"Or/And tree expression\": [stem == \"bonj\" & (lemma == \"efbve\" | (specificity >= 0.9 & occurrences < 17) | stem != \"mang\" | (specificity >= 0.9 & occurrences > 18 & (lemma != \"salut\" | begin > 15 )))][lemma==\"edee\" | specificity >= 0.9 | stem != \"mang\"];";
+	private String file2 = "rule \"Test expression parsing\": [wordFloatTestFeat >= 0.9];";
+	private String file3 = "rule \"Or expression\": [lemma==\"edee\" | wordFloatTestFeat >= 0.9 | stem != \"mang\"];";
+	private String file4 = "rule \"Or/And tree expression\": [stem == \"bonj\" & (lemma == \"efbve\" | (wordFloatTestFeat >= 0.9 & wordIntTestFeat < 17) | stem != \"mang\" | (wordFloatTestFeat >= 0.9 & wordIntTestFeat > 18 & (lemma != \"salut\" | begin > 15 )))][lemma==\"edee\" | wordFloatTestFeat >= 0.9 | stem != \"mang\"];";
 	private String file5_1 = "rule \"With quatifiers\": [lemma==\"mang\"]*;";
 	private String file5_2 = "rule \"With quatifiers\": [lemma==\"mang\"]{2};";
 	private String file5_3 = "rule \"With quatifiers\": [lemma==\"mang\"]+;";
@@ -165,7 +146,7 @@ public class AutomatonParserTestCase extends TestCase {
 	public void testParseCustomJavaMatcher() {
 		initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
 				true,
-				"import tata;\nuse toto;\njava-matcher: Tatayoyo;");
+				"import tata;\nuse fr.univnantes.lina.test.uima.TypeA;\njava-matcher: Tatayoyo;");
 		Automaton a = rules.get(0).getAutomaton();
 		Transition t1 = a.getInitState().getTransitions().iterator().next();
 		assertEquals("A", t1.getMatcher().getLabel());
@@ -192,7 +173,7 @@ public class AutomatonParserTestCase extends TestCase {
 		try {
 			initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
 					true,
-					"import tata;\nuse toto;");
+					"import tata;\nuse fr.univnantes.lina.test.uima.TypeA;");
 			fail("Should have raised exception");
 		} catch(AutomataParsingException e) {
 			assertThat(e.getMessage())
@@ -256,7 +237,8 @@ public class AutomatonParserTestCase extends TestCase {
 		
 		
 		Transition transit1 = initState.getTransitions().get(0);
-		assertEquals("lemma", ((ExpressionMatcher) transit1.getMatcher()).getFeature());
+		Asserts.assertThat((ExpressionMatcher) transit1.getMatcher())
+				.hasFeatureName("lemma");
 
 		State state2 = transit1.getToState();
 		assertTrue(!state2.equals(initState));
@@ -284,7 +266,8 @@ public class AutomatonParserTestCase extends TestCase {
 		Iterator<Transition> iterator = initState.getTransitions().iterator();
 		
 		Transition transit1 = iterator.next();
-		assertEquals("lemma", ((ExpressionMatcher) transit1.getMatcher()).getFeature());
+		Asserts.assertThat((ExpressionMatcher) transit1.getMatcher())
+				.hasFeatureName("lemma");
 		
 		State state2 = transit1.getToState();
 		assertTrue(!state2.equals(initState));
@@ -300,7 +283,8 @@ public class AutomatonParserTestCase extends TestCase {
 		assertEquals(1, state3.getTransitions().size());
 		
 		Transition transit3 = state3.getTransitions().get(0);
-		assertEquals("lemma", ((ExpressionMatcher) transit3.getMatcher()).getFeature());
+		Asserts.assertThat((ExpressionMatcher) transit3.getMatcher())
+				.hasFeatureName("lemma");
 
 		State state4 = transit3.getToState();
 		assertTrue(!state3.equals(initState));
@@ -324,7 +308,8 @@ public class AutomatonParserTestCase extends TestCase {
 		Iterator<Transition> iterator = initState.getTransitions().iterator();
 		
 		Transition transit1 = iterator.next();
-		assertEquals("lemma", ((ExpressionMatcher) transit1.getMatcher()).getFeature());
+		Asserts.assertThat((ExpressionMatcher) transit1.getMatcher())
+				.hasFeatureName("lemma");
 		
 		State state2 = transit1.getToState();
 		assertTrue(!state2.equals(initState));
@@ -341,7 +326,8 @@ public class AutomatonParserTestCase extends TestCase {
 		
 		
 		Transition transit3 = state3.getTransitions().get(0);
-		assertEquals("lemma", ((ExpressionMatcher) transit3.getMatcher()).getFeature());
+		Asserts.assertThat((ExpressionMatcher) transit3.getMatcher())
+				.hasFeatureName("lemma");
 
 		State state4 = transit3.getToState();
 		assertTrue(!state3.equals(initState));
@@ -367,7 +353,8 @@ public class AutomatonParserTestCase extends TestCase {
 		assertEquals(2, initState.getTransitions().size());
 		
 		Transition transit11 = initState.getTransitions().get(0);
-		assertEquals("lemma", ((ExpressionMatcher) transit11.getMatcher()).getFeature());
+		Asserts.assertThat((ExpressionMatcher) transit11.getMatcher())
+				.hasFeatureName("lemma");
 		
 		State state2 = transit11.getToState();
 		assertTrue(!state2.equals(initState));
@@ -403,25 +390,30 @@ public class AutomatonParserTestCase extends TestCase {
 		assertEquals(3, disjonctionParts.size());
 
 		ExpressionMatcher expr1 = (ExpressionMatcher)disjonctionParts.get(0);
-		assertEquals("lemma", expr1.getFeature());
-		assertEquals(ExpressionMatcher.OP_EQ, expr1.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_STRING, expr1.getValueType());
-		assertEquals(String.class, expr1.getValue().getClass());
-		assertEquals("edee", expr1.getValue());
+		Asserts.assertThat(expr1)
+				.hasOperator(Op.EQ)
+				.hasValueType(ExpressionMatcher.TYPE_STRING)
+				.hasValue("edee")
+				.hasFeatureName("lemma")
+				;
 
 		ExpressionMatcher expr2 = (ExpressionMatcher)disjonctionParts.get(1);
-		assertEquals("specificity", expr2.getFeature());
-		assertEquals(ExpressionMatcher.OP_GTE, expr2.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_FLOAT, expr2.getValueType());
-		assertEquals(Float.class, expr2.getValue().getClass());
-		assertEquals(0.9f, expr2.getValue());
+		Asserts.assertThat(expr2)
+				.hasOperator(Op.GTE)
+				.hasValueType(ExpressionMatcher.TYPE_FLOAT)
+				.hasValue(0.9f)
+				.hasFeatureName("wordFloatTestFeat")
+				;
+
 
 		ExpressionMatcher expr3 = (ExpressionMatcher)disjonctionParts.get(2);
-		assertEquals("stem", expr3.getFeature());
-		assertEquals(ExpressionMatcher.OP_NE, expr3.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_STRING, expr3.getValueType());
-		assertEquals(String.class, expr3.getValue().getClass());
-		assertEquals("mang", expr3.getValue());
+		Asserts.assertThat(expr3)
+				.hasOperator(Op.NEQ)
+				.hasValueType(ExpressionMatcher.TYPE_STRING)
+				.hasValue("mang")
+				.hasFeatureName("stem")
+		;
+
 
 	}
 
@@ -431,11 +423,11 @@ public class AutomatonParserTestCase extends TestCase {
 		State initState = this.rules.get(0).getAutomaton().getInitState();
 		Transition transition = initState.getTransitions().iterator().next();
 		ExpressionMatcher matcher = (ExpressionMatcher)transition.getMatcher();
-		assertEquals("specificity", matcher.getFeature());
-		assertEquals(ExpressionMatcher.OP_GTE, matcher.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_FLOAT, matcher.getValueType());
-		assertEquals(Float.class, matcher.getValue().getClass());
-		assertEquals(0.9f, matcher.getValue());
+		Asserts.assertThat(matcher)
+				.hasOperator(Op.GTE)
+				.hasValueType(ExpressionMatcher.TYPE_FLOAT)
+				.hasValue(0.9f)
+				.hasFeatureName("wordFloatTestFeat");
 	}
 
 	@Test
@@ -525,14 +517,29 @@ public class AutomatonParserTestCase extends TestCase {
 		StringArrayMatcher matcher = (StringArrayMatcher)transition1.getMatcher();
 		assertThat(matcher.getValues())
 			.hasSize(3)
-			.containsOnly("a", "b", "c")
+			.containsOnly("A", "B", "c")
 			;
-		assertThat(matcher.isIgnoreCase())
-			.isTrue();
+		Asserts.assertThat(matcher).doesNotIgnoreCase();
+	}
+
+	@Test
+	public void testParseCoveredTextArrayIgnoreCase() {
+		initAutomata("rule \"Tata\": [text inIgnoreCase [ \"A\" , \"B\" , \"c\"]];");
+		Automaton a = rules.get(0).getAutomaton();
+		assertEquals(1, a.getInitState().getTransitions().size());
+		Transition transition1 = a.getInitState().getTransitions().iterator().next();
+		assertThat(transition1.getMatcher())
+				.isInstanceOf(StringArrayMatcher.class);
+		StringArrayMatcher matcher = (StringArrayMatcher)transition1.getMatcher();
+		assertThat(matcher.getValues())
+				.hasSize(3)
+				.containsOnly("a", "b", "c")
+		;
+		Asserts.assertThat(matcher).ignoresCase();
 	}
 
 
-	
+
 	@Test
 	public void testParseCoveredTextExactly() {
 		initAutomata("rule \"Tata\": [text ===  \"mang\"];");
@@ -675,11 +682,11 @@ public class AutomatonParserTestCase extends TestCase {
 		assertEquals(2, conjonctionParts.size());
 
 		ExpressionMatcher expr1 = (ExpressionMatcher)conjonctionParts.get(0);
-		assertEquals("stem", expr1.getFeature());
-		assertEquals(ExpressionMatcher.OP_EQ, expr1.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_STRING, expr1.getValueType());
-		assertEquals(String.class, expr1.getValue().getClass());
-		assertEquals("bonj", expr1.getValue());
+		Asserts.assertThat(expr1)
+				.hasOperator(Op.EQ)
+				.hasValueType(ExpressionMatcher.TYPE_STRING)
+				.hasValue("bonj")
+				.hasFeatureName("stem");
 
 		// 1st depth-1 OrMatcher
 		OrMatcher orMatcher = (OrMatcher)conjonctionParts.get(1);
@@ -688,12 +695,11 @@ public class AutomatonParserTestCase extends TestCase {
 
 		
 		ExpressionMatcher expr2 = (ExpressionMatcher) disjonctionParts.get(0);
-		assertEquals("lemma", expr2.getFeature());
-		assertEquals(ExpressionMatcher.OP_EQ, expr2.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_STRING, expr2.getValueType());
-		assertEquals(String.class, expr2.getValue().getClass());
-		assertEquals("efbve", expr2.getValue());
-
+		Asserts.assertThat(expr2)
+				.hasOperator(Op.EQ)
+				.hasValueType(ExpressionMatcher.TYPE_STRING)
+				.hasValue("efbve")
+				.hasFeatureName("lemma");
 
 		// 1st depth-2 AndMatcher
 		AndMatcher andMatcher = (AndMatcher)disjonctionParts.get(1);
@@ -702,46 +708,48 @@ public class AutomatonParserTestCase extends TestCase {
 
 		
 		ExpressionMatcher expr3 = (ExpressionMatcher) conjonctionParts2.get(0);
-		assertEquals("specificity", expr3.getFeature());
-		assertEquals(ExpressionMatcher.OP_GTE, expr3.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_FLOAT, expr3.getValueType());
-		assertEquals(Float.class, expr3.getValue().getClass());
-		assertEquals(0.9f, expr3.getValue());
+		Asserts.assertThat(expr3)
+				.hasOperator(Op.GTE)
+				.hasValueType(ExpressionMatcher.TYPE_FLOAT)
+				.hasValue(0.9f)
+				.hasFeatureName("wordFloatTestFeat");
 
-		
 		ExpressionMatcher expr4 = (ExpressionMatcher)conjonctionParts2.get(1);
-		assertEquals("occurrences", expr4.getFeature());
-		assertEquals(ExpressionMatcher.OP_LT, expr4.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_INT, expr4.getValueType());
-		assertEquals(Integer.class, expr4.getValue().getClass());
-		assertEquals(17, expr4.getValue());
+		Asserts.assertThat(expr4)
+				.hasOperator(Op.LT)
+				.hasValueType(ExpressionMatcher.TYPE_INT)
+				.hasValue(17)
+				.hasFeatureName("wordIntTestFeat");
+
 		// end depth-2 AndMatcher
 		
 		ExpressionMatcher expr5 = (ExpressionMatcher)disjonctionParts.get(2);
-		assertEquals("stem", expr5.getFeature());
-		assertEquals(ExpressionMatcher.OP_NE, expr5.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_STRING, expr5.getValueType());
-		assertEquals(String.class, expr5.getValue().getClass());
-		assertEquals("mang", expr5.getValue());
-		
+		Asserts.assertThat(expr5)
+				.hasOperator(Op.NEQ)
+				.hasValueType(ExpressionMatcher.TYPE_STRING)
+				.hasValue("mang")
+				.hasFeatureName("stem");
+
+
 		// 2nd depth-2 AndMatcher
 		AndMatcher andMatcher2 = (AndMatcher)disjonctionParts.get(3);
 		List<AnnotationMatcher> conjonctionParts3 = andMatcher2.getSubExpressions();
 		assertEquals(3, conjonctionParts3.size());
 
 		ExpressionMatcher expr6 = (ExpressionMatcher) conjonctionParts3.get(0);
-		assertEquals("specificity", expr6.getFeature());
-		assertEquals(ExpressionMatcher.OP_GTE, expr6.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_FLOAT, expr6.getValueType());
-		assertEquals(Float.class, expr6.getValue().getClass());
-		assertEquals(0.9f, expr3.getValue());
-		
+		Asserts.assertThat(expr6)
+				.hasOperator(Op.GTE)
+				.hasValueType(ExpressionMatcher.TYPE_FLOAT)
+				.hasValue(0.9f)
+				.hasFeatureName("wordFloatTestFeat");
+
+
 		ExpressionMatcher expr7 = (ExpressionMatcher) conjonctionParts3.get(1);
-		assertEquals("occurrences", expr7.getFeature());
-		assertEquals(ExpressionMatcher.OP_GT, expr7.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_INT, expr7.getValueType());
-		assertEquals(Integer.class, expr7.getValue().getClass());
-		assertEquals(18, expr7.getValue());
+		Asserts.assertThat(expr7)
+				.hasOperator(Op.GT)
+				.hasValueType(ExpressionMatcher.TYPE_INT)
+				.hasValue(18)
+				.hasFeatureName("wordIntTestFeat");
 
 
 		// depth-3 OrMatcher
@@ -750,18 +758,20 @@ public class AutomatonParserTestCase extends TestCase {
 		assertEquals(2, disjonctionParts2.size());
 		
 		ExpressionMatcher expr8 = (ExpressionMatcher) disjonctionParts2.get(0);
-		assertEquals("lemma", expr8.getFeature());
-		assertEquals(ExpressionMatcher.OP_NE, expr8.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_STRING, expr8.getValueType());
-		assertEquals(String.class, expr8.getValue().getClass());
-		assertEquals("salut", expr8.getValue());
-		
+		Asserts.assertThat(expr8)
+				.hasOperator(Op.NEQ)
+				.hasValueType(ExpressionMatcher.TYPE_STRING)
+				.hasValue("salut")
+				.hasFeatureName("lemma");
+
+
 		ExpressionMatcher expr9 = (ExpressionMatcher) disjonctionParts2.get(1);
-		assertEquals("begin", expr9.getFeature());
-		assertEquals(ExpressionMatcher.OP_GT, expr9.getOperator());
-		assertEquals(ExpressionMatcher.TYPE_INT, expr9.getValueType());
-		assertEquals(Integer.class, expr9.getValue().getClass());
-		assertEquals(15, expr9.getValue());
+		Asserts.assertThat(expr9)
+				.hasOperator(Op.GT)
+				.hasValueType(ExpressionMatcher.TYPE_INT)
+				.hasValue(15)
+				.hasFeatureName("begin");
+
 		// end depth-3 OrMatcher
 		// end depth-2 AndMatcher
 	}

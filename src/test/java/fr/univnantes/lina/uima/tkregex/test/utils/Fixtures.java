@@ -22,17 +22,44 @@
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Streams;
+import org.apache.uima.UIMAException;
+import org.apache.uima.cas.Feature;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.resource.metadata.FeatureDescription;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 
 import fr.univnantes.lina.test.uima.TestAnno;
 
 public class Fixtures {
-	
+
+	public static Feature feature(String featShortName) throws UIMAException {
+		List<Feature> features = new ArrayList<>();
+		Iterator<Feature> iterator = JCasFactory.createJCas().getTypeSystem().getFeatures();
+		while(iterator.hasNext()) {
+			Feature f = iterator.next();
+			if(f.getShortName().equals(featShortName))
+				features.add(f);
+		}
+		if(features.isEmpty())
+			throw new IllegalArgumentException("No such feature found: " + featShortName);
+		else if(features.size() > 1)
+			throw new IllegalArgumentException(String.format("Amibiguous feature name <%s>. Features: <%s>", featShortName, features) );
+		else
+			return features.get(0);
+
+	}
+
 	public static JCas createTestCas(String documentString) {
 		String tsPath = Paths.get("src", "test", "resources", "TestTypeSystem.xml").toString();
 		TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(tsPath);

@@ -73,9 +73,9 @@ public class OrMatcher implements AnnotationMatcher {
 	}
 	
 	@Override
-	public boolean match(AnnotationFS annotation) {
+	public boolean matches(AnnotationFS annotation) {
 		for(AnnotationMatcher matcher:expresions) {
-			if(matcher.match(annotation)) 
+			if(matcher.matches(annotation))
 				return true;
 		}
 		return false;

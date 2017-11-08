@@ -73,9 +73,9 @@ public class AndMatcher implements AnnotationMatcher {
 
 
 	@Override
-	public boolean match(AnnotationFS annotation) {
+	public boolean matches(AnnotationFS annotation) {
 		for(AnnotationMatcher matcher:expressions) {
-			if(!matcher.match(annotation)) {
+			if(!matcher.matches(annotation)) {
 				return false;
 			}
 		}

@@ -234,6 +234,42 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExternalListDefinition(UimaTokenRegexParser.ExternalListDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternalListDefinition(UimaTokenRegexParser.ExternalListDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSeparator(UimaTokenRegexParser.SeparatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSeparator(UimaTokenRegexParser.SeparatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterKeypath(UimaTokenRegexParser.KeypathContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitKeypath(UimaTokenRegexParser.KeypathContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterQuantifierDeclaration(UimaTokenRegexParser.QuantifierDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -265,6 +301,18 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInListOperator(UimaTokenRegexParser.InListOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInListOperator(UimaTokenRegexParser.InListOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

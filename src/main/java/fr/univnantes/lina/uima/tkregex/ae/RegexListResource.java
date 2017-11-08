@@ -91,7 +91,7 @@ public class RegexListResource implements SharedResourceObject {
 		List<String> matcherNames = new LinkedList<String>();
 		Set<String> labels = new HashSet<String>();
 		for(String matcherName:this.listener.getShortcutMatchers().keySet()) {
-			if(listener.getShortcutMatchers().get(matcherName).match(word)) {
+			if(listener.getShortcutMatchers().get(matcherName).matches(word)) {
 				matcherNames.add(matcherName);
 				labels.add(listener.getShortcutMatchers().get(matcherName).getLabel());
 			}
@@ -104,7 +104,7 @@ public class RegexListResource implements SharedResourceObject {
 	public List<String> getMatchingLabels(Annotation word) {
 		List<String> l = new LinkedList<String>();
 		for(String matcherName:this.listener.getShortcutMatchers().keySet()) {
-			if(listener.getShortcutMatchers().get(matcherName).match(word)) {
+			if(listener.getShortcutMatchers().get(matcherName).matches(word)) {
 				l.add(matcherName + ">" + listener.getShortcutMatchers().get(matcherName).getLabel());
 			}
 		}

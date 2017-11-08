@@ -56,7 +56,7 @@ public class RegexCoveredTextMatcher implements
 	}
 
 	@Override
-	public boolean match(AnnotationFS annotation) {
+	public boolean matches(AnnotationFS annotation) {
 		return pattern.matcher(annotation.getCoveredText()).find();
 	}
 	@Override

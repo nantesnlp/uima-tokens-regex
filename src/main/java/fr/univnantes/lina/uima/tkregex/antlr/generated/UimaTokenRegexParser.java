@@ -19,47 +19,52 @@ public class UimaTokenRegexParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, IgnoreMatcher=7, IntegerLiteral=8, 
-		NonZeroDigit=9, Digit=10, BooleanLiteral=11, StringLiteral=12, FloatingPointLiteral=13, 
-		LCURL=14, RCURL=15, LPAREN=16, RPAREN=17, LBRACK=18, RBRACK=19, SEMI=20, 
-		QUESTION=21, COLON=22, MUL=23, PLUS=24, AND=25, OR=26, GT=27, LT=28, EQUAL=29, 
-		LE=30, GE=31, NOTEQUAL=32, IN=33, IMPORT=34, USE=35, SET=36, JAVA_MATCHER=37, 
-		LINE_COMMENT=38, MATCHER=39, RULE=40, Identifier=41, IdentifierPart=42, 
-		WS=43, Regex=44;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
+		T__9=10, T__10=11, T__11=12, IgnoreMatcher=13, IntegerLiteral=14, NonZeroDigit=15, 
+		Digit=16, BooleanLiteral=17, StringLiteral=18, FloatingPointLiteral=19, 
+		LCURL=20, RCURL=21, LPAREN=22, RPAREN=23, LBRACK=24, RBRACK=25, SEMI=26, 
+		QUESTION=27, COLON=28, MUL=29, PLUS=30, AND=31, OR=32, GT=33, LT=34, EQUAL=35, 
+		LE=36, GE=37, NOTEQUAL=38, IN=39, IMPORT=40, USE=41, SET=42, JAVA_MATCHER=43, 
+		LINE_COMMENT=44, MATCHER=45, RULE=46, Identifier=47, IdentifierPart=48, 
+		WS=49, Regex=50;
 	public static final int
 		RULE_ruleList = 0, RULE_headerBlock = 1, RULE_importDeclaration = 2, RULE_useDeclaration = 3, 
 		RULE_javaMatcherDeclaration = 4, RULE_optionDeclaration = 5, RULE_shortcutMatcherDeclaration = 6, 
 		RULE_labelIdentifier = 7, RULE_ruleDeclaration = 8, RULE_automatonDeclaration = 9, 
 		RULE_ruleName = 10, RULE_matcherDeclaration = 11, RULE_orBranchingDeclaration = 12, 
 		RULE_featureMatcherDeclaration = 13, RULE_andexpression = 14, RULE_orexpression = 15, 
-		RULE_expression = 16, RULE_atomicExpression = 17, RULE_quantifierDeclaration = 18, 
-		RULE_featureName = 19, RULE_arrayOperator = 20, RULE_operator = 21, RULE_coveredTextArray = 22, 
-		RULE_coveredTextIgnoreCase = 23, RULE_coveredTextExactly = 24, RULE_literalArray = 25, 
-		RULE_literal = 26;
+		RULE_expression = 16, RULE_atomicExpression = 17, RULE_externalListDefinition = 18, 
+		RULE_separator = 19, RULE_keypath = 20, RULE_quantifierDeclaration = 21, 
+		RULE_featureName = 22, RULE_arrayOperator = 23, RULE_inListOperator = 24, 
+		RULE_operator = 25, RULE_coveredTextArray = 26, RULE_coveredTextIgnoreCase = 27, 
+		RULE_coveredTextExactly = 28, RULE_literalArray = 29, RULE_literal = 30;
 	public static final String[] ruleNames = {
 		"ruleList", "headerBlock", "importDeclaration", "useDeclaration", "javaMatcherDeclaration", 
 		"optionDeclaration", "shortcutMatcherDeclaration", "labelIdentifier", 
 		"ruleDeclaration", "automatonDeclaration", "ruleName", "matcherDeclaration", 
 		"orBranchingDeclaration", "featureMatcherDeclaration", "andexpression", 
-		"orexpression", "expression", "atomicExpression", "quantifierDeclaration", 
-		"featureName", "arrayOperator", "operator", "coveredTextArray", "coveredTextIgnoreCase", 
+		"orexpression", "expression", "atomicExpression", "externalListDefinition", 
+		"separator", "keypath", "quantifierDeclaration", "featureName", "arrayOperator", 
+		"inListOperator", "operator", "coveredTextArray", "coveredTextIgnoreCase", 
 		"coveredTextExactly", "literalArray", "literal"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'as'", "'='", "'text'", "'==='", "'nin'", "','", "'~'", null, null, 
+		null, "'as'", "'='", "'text'", "'==='", "'list'", "'csv'", "','", "'json'", 
+		"'yaml'", "'nin'", "'inIgnoreCase'", "'ninIgnoreCase'", "'~'", null, null, 
 		null, null, null, null, "'{'", "'}'", "'('", "')'", "'['", "']'", "';'", 
 		"'?'", "':'", "'*'", "'+'", "'&'", "'|'", "'>'", "'<'", "'=='", "'<='", 
 		"'>='", "'!='", "'in'", "'import'", "'use'", "'set'", "'java-matcher'", 
 		null, "'matcher'", "'rule'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, "IgnoreMatcher", "IntegerLiteral", 
-		"NonZeroDigit", "Digit", "BooleanLiteral", "StringLiteral", "FloatingPointLiteral", 
-		"LCURL", "RCURL", "LPAREN", "RPAREN", "LBRACK", "RBRACK", "SEMI", "QUESTION", 
-		"COLON", "MUL", "PLUS", "AND", "OR", "GT", "LT", "EQUAL", "LE", "GE", 
-		"NOTEQUAL", "IN", "IMPORT", "USE", "SET", "JAVA_MATCHER", "LINE_COMMENT", 
-		"MATCHER", "RULE", "Identifier", "IdentifierPart", "WS", "Regex"
+		null, null, null, null, null, null, null, null, null, null, null, null, 
+		null, "IgnoreMatcher", "IntegerLiteral", "NonZeroDigit", "Digit", "BooleanLiteral", 
+		"StringLiteral", "FloatingPointLiteral", "LCURL", "RCURL", "LPAREN", "RPAREN", 
+		"LBRACK", "RBRACK", "SEMI", "QUESTION", "COLON", "MUL", "PLUS", "AND", 
+		"OR", "GT", "LT", "EQUAL", "LE", "GE", "NOTEQUAL", "IN", "IMPORT", "USE", 
+		"SET", "JAVA_MATCHER", "LINE_COMMENT", "MATCHER", "RULE", "Identifier", 
+		"IdentifierPart", "WS", "Regex"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -147,33 +152,33 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(54);
+			setState(62);
 			headerBlock();
-			setState(58);
+			setState(66);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==MATCHER) {
 				{
 				{
-				setState(55);
+				setState(63);
 				shortcutMatcherDeclaration();
 				}
 				}
-				setState(60);
+				setState(68);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(62); 
+			setState(70); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(61);
+				setState(69);
 				ruleDeclaration();
 				}
 				}
-				setState(64); 
+				setState(72); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==RULE );
@@ -230,35 +235,35 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(66);
+			setState(74);
 			importDeclaration();
-			setState(67);
+			setState(75);
 			useDeclaration();
-			setState(71);
+			setState(79);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==JAVA_MATCHER) {
 				{
 				{
-				setState(68);
+				setState(76);
 				javaMatcherDeclaration();
 				}
 				}
-				setState(73);
+				setState(81);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(77);
+			setState(85);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==SET) {
 				{
 				{
-				setState(74);
+				setState(82);
 				optionDeclaration();
 				}
 				}
-				setState(79);
+				setState(87);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -298,11 +303,11 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(80);
+			setState(88);
 			match(IMPORT);
-			setState(81);
+			setState(89);
 			match(Identifier);
-			setState(82);
+			setState(90);
 			match(SEMI);
 			}
 		}
@@ -342,23 +347,23 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(84);
+			setState(92);
 			match(USE);
-			setState(85);
+			setState(93);
 			match(Identifier);
-			setState(88);
+			setState(96);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__0) {
 				{
-				setState(86);
+				setState(94);
 				match(T__0);
-				setState(87);
+				setState(95);
 				match(IdentifierPart);
 				}
 			}
 
-			setState(90);
+			setState(98);
 			match(SEMI);
 			}
 		}
@@ -396,13 +401,13 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(92);
+			setState(100);
 			match(JAVA_MATCHER);
-			setState(93);
+			setState(101);
 			match(COLON);
-			setState(94);
+			setState(102);
 			match(Identifier);
-			setState(95);
+			setState(103);
 			match(SEMI);
 			}
 		}
@@ -443,15 +448,15 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(97);
+			setState(105);
 			match(SET);
-			setState(98);
+			setState(106);
 			match(Identifier);
-			setState(99);
+			setState(107);
 			match(T__1);
-			setState(100);
+			setState(108);
 			literal();
-			setState(101);
+			setState(109);
 			match(SEMI);
 			}
 		}
@@ -497,43 +502,43 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(103);
+			setState(111);
 			match(MATCHER);
-			setState(104);
+			setState(112);
 			match(Identifier);
-			setState(107);
+			setState(115);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__0) {
 				{
-				setState(105);
+				setState(113);
 				match(T__0);
-				setState(106);
+				setState(114);
 				labelIdentifier();
 				}
 			}
 
-			setState(109);
+			setState(117);
 			match(COLON);
-			setState(112);
+			setState(120);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LBRACK:
 				{
-				setState(110);
+				setState(118);
 				featureMatcherDeclaration();
 				}
 				break;
 			case Regex:
 				{
-				setState(111);
+				setState(119);
 				match(Regex);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(114);
+			setState(122);
 			match(SEMI);
 			}
 		}
@@ -570,7 +575,7 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(116);
+			setState(124);
 			match(Identifier);
 			}
 		}
@@ -613,15 +618,15 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(118);
+			setState(126);
 			match(RULE);
-			setState(119);
+			setState(127);
 			ruleName();
-			setState(120);
+			setState(128);
 			match(COLON);
-			setState(121);
+			setState(129);
 			automatonDeclaration();
-			setState(122);
+			setState(130);
 			match(SEMI);
 			}
 		}
@@ -664,17 +669,17 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(125); 
+			setState(133); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(124);
+				setState(132);
 				orBranchingDeclaration();
 				}
 				}
-				setState(127); 
+				setState(135); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IgnoreMatcher) | (1L << LPAREN) | (1L << LBRACK) | (1L << Identifier) | (1L << Regex))) != 0) );
@@ -713,7 +718,7 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(129);
+			setState(137);
 			match(StringLiteral);
 			}
 		}
@@ -756,42 +761,10 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(143);
+			setState(151);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
-				{
-				setState(132);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if (_la==IgnoreMatcher) {
-					{
-					setState(131);
-					match(IgnoreMatcher);
-					}
-				}
-
-				setState(134);
-				match(Regex);
-				}
-				break;
-			case 2:
-				{
-				setState(136);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if (_la==IgnoreMatcher) {
-					{
-					setState(135);
-					match(IgnoreMatcher);
-					}
-				}
-
-				setState(138);
-				match(Identifier);
-				}
-				break;
-			case 3:
 				{
 				setState(140);
 				_errHandler.sync(this);
@@ -804,6 +777,38 @@ public class UimaTokenRegexParser extends Parser {
 				}
 
 				setState(142);
+				match(Regex);
+				}
+				break;
+			case 2:
+				{
+				setState(144);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==IgnoreMatcher) {
+					{
+					setState(143);
+					match(IgnoreMatcher);
+					}
+				}
+
+				setState(146);
+				match(Identifier);
+				}
+				break;
+			case 3:
+				{
+				setState(148);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==IgnoreMatcher) {
+					{
+					setState(147);
+					match(IgnoreMatcher);
+					}
+				}
+
+				setState(150);
 				featureMatcherDeclaration();
 				}
 				break;
@@ -855,32 +860,32 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(157);
+			setState(165);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LPAREN:
 				{
-				setState(145);
+				setState(153);
 				match(LPAREN);
-				setState(146);
+				setState(154);
 				automatonDeclaration();
-				setState(151);
+				setState(159);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==OR) {
 					{
 					{
-					setState(147);
+					setState(155);
 					match(OR);
-					setState(148);
+					setState(156);
 					automatonDeclaration();
 					}
 					}
-					setState(153);
+					setState(161);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(154);
+				setState(162);
 				match(RPAREN);
 				}
 				break;
@@ -889,19 +894,19 @@ public class UimaTokenRegexParser extends Parser {
 			case Identifier:
 			case Regex:
 				{
-				setState(156);
+				setState(164);
 				matcherDeclaration();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(160);
+			setState(168);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LCURL) | (1L << QUESTION) | (1L << MUL) | (1L << PLUS))) != 0)) {
 				{
-				setState(159);
+				setState(167);
 				quantifierDeclaration();
 				}
 			}
@@ -947,46 +952,46 @@ public class UimaTokenRegexParser extends Parser {
 		FeatureMatcherDeclarationContext _localctx = new FeatureMatcherDeclarationContext(_ctx, getState());
 		enterRule(_localctx, 26, RULE_featureMatcherDeclaration);
 		try {
-			setState(172);
+			setState(180);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(162);
+				setState(170);
 				match(LBRACK);
-				setState(163);
+				setState(171);
 				match(RBRACK);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(164);
+				setState(172);
 				match(LBRACK);
-				setState(168);
+				setState(176);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
 				case 1:
 					{
-					setState(165);
+					setState(173);
 					expression();
 					}
 					break;
 				case 2:
 					{
-					setState(166);
+					setState(174);
 					andexpression();
 					}
 					break;
 				case 3:
 					{
-					setState(167);
+					setState(175);
 					orexpression();
 					}
 					break;
 				}
-				setState(170);
+				setState(178);
 				match(RBRACK);
 				}
 				break;
@@ -1035,21 +1040,21 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(174);
+			setState(182);
 			expression();
-			setState(179);
+			setState(187);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==AND) {
 				{
 				{
-				setState(175);
+				setState(183);
 				match(AND);
-				setState(176);
+				setState(184);
 				expression();
 				}
 				}
-				setState(181);
+				setState(189);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1098,21 +1103,21 @@ public class UimaTokenRegexParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(182);
+			setState(190);
 			expression();
-			setState(187);
+			setState(195);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==OR) {
 				{
 				{
-				setState(183);
+				setState(191);
 				match(OR);
-				setState(184);
+				setState(192);
 				expression();
 				}
 				}
-				setState(189);
+				setState(197);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1157,35 +1162,35 @@ public class UimaTokenRegexParser extends Parser {
 		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
 		enterRule(_localctx, 32, RULE_expression);
 		try {
-			setState(199);
+			setState(207);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(190);
+				setState(198);
 				atomicExpression();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(191);
+				setState(199);
 				match(LPAREN);
-				setState(192);
+				setState(200);
 				orexpression();
-				setState(193);
+				setState(201);
 				match(RPAREN);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(195);
+				setState(203);
 				match(LPAREN);
-				setState(196);
+				setState(204);
 				andexpression();
-				setState(197);
+				setState(205);
 				match(RPAREN);
 				}
 				break;
@@ -1219,6 +1224,12 @@ public class UimaTokenRegexParser extends Parser {
 		public LiteralArrayContext literalArray() {
 			return getRuleContext(LiteralArrayContext.class,0);
 		}
+		public InListOperatorContext inListOperator() {
+			return getRuleContext(InListOperatorContext.class,0);
+		}
+		public ExternalListDefinitionContext externalListDefinition() {
+			return getRuleContext(ExternalListDefinitionContext.class,0);
+		}
 		public CoveredTextIgnoreCaseContext coveredTextIgnoreCase() {
 			return getRuleContext(CoveredTextIgnoreCaseContext.class,0);
 		}
@@ -1246,71 +1257,269 @@ public class UimaTokenRegexParser extends Parser {
 		AtomicExpressionContext _localctx = new AtomicExpressionContext(_ctx, getState());
 		enterRule(_localctx, 34, RULE_atomicExpression);
 		try {
-			setState(220);
+			setState(232);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(201);
+				setState(209);
 				match(Identifier);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(202);
+				setState(210);
 				featureName();
-				setState(203);
+				setState(211);
 				operator();
-				setState(204);
+				setState(212);
 				literal();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(206);
+				setState(214);
 				featureName();
-				setState(207);
+				setState(215);
 				arrayOperator();
-				setState(208);
+				setState(216);
 				literalArray();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(210);
-				match(T__2);
-				setState(211);
-				match(EQUAL);
-				setState(212);
-				coveredTextIgnoreCase();
+				setState(218);
+				featureName();
+				setState(219);
+				inListOperator();
+				setState(220);
+				externalListDefinition();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(213);
+				setState(222);
 				match(T__2);
-				setState(214);
-				match(T__3);
-				setState(215);
-				coveredTextExactly();
+				setState(223);
+				match(EQUAL);
+				setState(224);
+				coveredTextIgnoreCase();
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(216);
+				setState(225);
 				match(T__2);
-				setState(217);
-				arrayOperator();
-				setState(218);
+				setState(226);
+				match(T__3);
+				setState(227);
+				coveredTextExactly();
+				}
+				break;
+			case 7:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(228);
+				match(T__2);
+				setState(229);
+				inListOperator();
+				setState(230);
 				coveredTextArray();
 				}
 				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ExternalListDefinitionContext extends ParserRuleContext {
+		public TerminalNode StringLiteral() { return getToken(UimaTokenRegexParser.StringLiteral, 0); }
+		public SeparatorContext separator() {
+			return getRuleContext(SeparatorContext.class,0);
+		}
+		public TerminalNode IntegerLiteral() { return getToken(UimaTokenRegexParser.IntegerLiteral, 0); }
+		public KeypathContext keypath() {
+			return getRuleContext(KeypathContext.class,0);
+		}
+		public ExternalListDefinitionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_externalListDefinition; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).enterExternalListDefinition(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).exitExternalListDefinition(this);
+		}
+	}
+
+	public final ExternalListDefinitionContext externalListDefinition() throws RecognitionException {
+		ExternalListDefinitionContext _localctx = new ExternalListDefinitionContext(_ctx, getState());
+		enterRule(_localctx, 36, RULE_externalListDefinition);
+		try {
+			setState(261);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+			case T__4:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(234);
+				match(T__4);
+				setState(235);
+				match(LPAREN);
+				setState(236);
+				match(StringLiteral);
+				setState(237);
+				match(RPAREN);
+				}
+				break;
+			case T__5:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(238);
+				match(T__5);
+				setState(239);
+				match(LPAREN);
+				setState(240);
+				match(StringLiteral);
+				setState(241);
+				match(T__6);
+				setState(242);
+				separator();
+				setState(243);
+				match(T__6);
+				setState(244);
+				match(IntegerLiteral);
+				setState(245);
+				match(RPAREN);
+				}
+				break;
+			case T__7:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(247);
+				match(T__7);
+				setState(248);
+				match(LPAREN);
+				setState(249);
+				match(StringLiteral);
+				setState(250);
+				match(T__6);
+				setState(251);
+				keypath();
+				setState(252);
+				match(RPAREN);
+				}
+				break;
+			case T__8:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(254);
+				match(T__8);
+				setState(255);
+				match(LPAREN);
+				setState(256);
+				match(StringLiteral);
+				setState(257);
+				match(T__6);
+				setState(258);
+				keypath();
+				setState(259);
+				match(RPAREN);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class SeparatorContext extends ParserRuleContext {
+		public TerminalNode StringLiteral() { return getToken(UimaTokenRegexParser.StringLiteral, 0); }
+		public SeparatorContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_separator; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).enterSeparator(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).exitSeparator(this);
+		}
+	}
+
+	public final SeparatorContext separator() throws RecognitionException {
+		SeparatorContext _localctx = new SeparatorContext(_ctx, getState());
+		enterRule(_localctx, 38, RULE_separator);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(263);
+			match(StringLiteral);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class KeypathContext extends ParserRuleContext {
+		public TerminalNode StringLiteral() { return getToken(UimaTokenRegexParser.StringLiteral, 0); }
+		public KeypathContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_keypath; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).enterKeypath(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).exitKeypath(this);
+		}
+	}
+
+	public final KeypathContext keypath() throws RecognitionException {
+		KeypathContext _localctx = new KeypathContext(_ctx, getState());
+		enterRule(_localctx, 40, RULE_keypath);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(265);
+			match(StringLiteral);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1342,40 +1551,40 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final QuantifierDeclarationContext quantifierDeclaration() throws RecognitionException {
 		QuantifierDeclarationContext _localctx = new QuantifierDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 36, RULE_quantifierDeclaration);
+		enterRule(_localctx, 42, RULE_quantifierDeclaration);
 		try {
-			setState(228);
+			setState(273);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LCURL:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(222);
+				setState(267);
 				match(LCURL);
-				setState(223);
+				setState(268);
 				match(IntegerLiteral);
-				setState(224);
+				setState(269);
 				match(RCURL);
 				}
 				break;
 			case MUL:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(225);
+				setState(270);
 				match(MUL);
 				}
 				break;
 			case QUESTION:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(226);
+				setState(271);
 				match(QUESTION);
 				}
 				break;
 			case PLUS:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(227);
+				setState(272);
 				match(PLUS);
 				}
 				break;
@@ -1412,11 +1621,11 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final FeatureNameContext featureName() throws RecognitionException {
 		FeatureNameContext _localctx = new FeatureNameContext(_ctx, getState());
-		enterRule(_localctx, 38, RULE_featureName);
+		enterRule(_localctx, 44, RULE_featureName);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(230);
+			setState(275);
 			match(Identifier);
 			}
 		}
@@ -1448,14 +1657,14 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final ArrayOperatorContext arrayOperator() throws RecognitionException {
 		ArrayOperatorContext _localctx = new ArrayOperatorContext(_ctx, getState());
-		enterRule(_localctx, 40, RULE_arrayOperator);
+		enterRule(_localctx, 46, RULE_arrayOperator);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(232);
+			setState(277);
 			_la = _input.LA(1);
-			if ( !(_la==T__4 || _la==IN) ) {
+			if ( !(_la==T__9 || _la==IN) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1463,6 +1672,68 @@ public class UimaTokenRegexParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class InListOperatorContext extends ParserRuleContext {
+		public ArrayOperatorContext arrayOperator() {
+			return getRuleContext(ArrayOperatorContext.class,0);
+		}
+		public InListOperatorContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_inListOperator; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).enterInListOperator(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof UimaTokenRegexListener ) ((UimaTokenRegexListener)listener).exitInListOperator(this);
+		}
+	}
+
+	public final InListOperatorContext inListOperator() throws RecognitionException {
+		InListOperatorContext _localctx = new InListOperatorContext(_ctx, getState());
+		enterRule(_localctx, 48, RULE_inListOperator);
+		try {
+			setState(282);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+			case T__9:
+			case IN:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(279);
+				arrayOperator();
+				}
+				break;
+			case T__10:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(280);
+				match(T__10);
+				}
+				break;
+			case T__11:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(281);
+				match(T__11);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1493,12 +1764,12 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final OperatorContext operator() throws RecognitionException {
 		OperatorContext _localctx = new OperatorContext(_ctx, getState());
-		enterRule(_localctx, 42, RULE_operator);
+		enterRule(_localctx, 50, RULE_operator);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(234);
+			setState(284);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GT) | (1L << LT) | (1L << EQUAL) | (1L << LE) | (1L << GE) | (1L << NOTEQUAL))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -1542,32 +1813,32 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final CoveredTextArrayContext coveredTextArray() throws RecognitionException {
 		CoveredTextArrayContext _localctx = new CoveredTextArrayContext(_ctx, getState());
-		enterRule(_localctx, 44, RULE_coveredTextArray);
+		enterRule(_localctx, 52, RULE_coveredTextArray);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(236);
+			setState(286);
 			match(LBRACK);
-			setState(237);
+			setState(287);
 			match(StringLiteral);
-			setState(242);
+			setState(292);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__5) {
+			while (_la==T__6) {
 				{
 				{
-				setState(238);
-				match(T__5);
-				setState(239);
+				setState(288);
+				match(T__6);
+				setState(289);
 				match(StringLiteral);
 				}
 				}
-				setState(244);
+				setState(294);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(245);
+			setState(295);
 			match(RBRACK);
 			}
 		}
@@ -1600,11 +1871,11 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final CoveredTextIgnoreCaseContext coveredTextIgnoreCase() throws RecognitionException {
 		CoveredTextIgnoreCaseContext _localctx = new CoveredTextIgnoreCaseContext(_ctx, getState());
-		enterRule(_localctx, 46, RULE_coveredTextIgnoreCase);
+		enterRule(_localctx, 54, RULE_coveredTextIgnoreCase);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(247);
+			setState(297);
 			match(StringLiteral);
 			}
 		}
@@ -1637,11 +1908,11 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final CoveredTextExactlyContext coveredTextExactly() throws RecognitionException {
 		CoveredTextExactlyContext _localctx = new CoveredTextExactlyContext(_ctx, getState());
-		enterRule(_localctx, 48, RULE_coveredTextExactly);
+		enterRule(_localctx, 56, RULE_coveredTextExactly);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(249);
+			setState(299);
 			match(StringLiteral);
 			}
 		}
@@ -1679,32 +1950,32 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final LiteralArrayContext literalArray() throws RecognitionException {
 		LiteralArrayContext _localctx = new LiteralArrayContext(_ctx, getState());
-		enterRule(_localctx, 50, RULE_literalArray);
+		enterRule(_localctx, 58, RULE_literalArray);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(251);
+			setState(301);
 			match(LBRACK);
-			setState(252);
+			setState(302);
 			literal();
-			setState(257);
+			setState(307);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__5) {
+			while (_la==T__6) {
 				{
 				{
-				setState(253);
-				match(T__5);
-				setState(254);
+				setState(303);
+				match(T__6);
+				setState(304);
 				literal();
 				}
 				}
-				setState(259);
+				setState(309);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(260);
+			setState(310);
 			match(RBRACK);
 			}
 		}
@@ -1740,12 +2011,12 @@ public class UimaTokenRegexParser extends Parser {
 
 	public final LiteralContext literal() throws RecognitionException {
 		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 52, RULE_literal);
+		enterRule(_localctx, 60, RULE_literal);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(262);
+			setState(312);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IntegerLiteral) | (1L << BooleanLiteral) | (1L << StringLiteral) | (1L << FloatingPointLiteral))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -1769,94 +2040,113 @@ public class UimaTokenRegexParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3.\u010b\4\2\t\2\4"+
-		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
-		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\64\u013d\4\2\t\2"+
+		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
+		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
-		"\4\32\t\32\4\33\t\33\4\34\t\34\3\2\3\2\7\2;\n\2\f\2\16\2>\13\2\3\2\6\2"+
-		"A\n\2\r\2\16\2B\3\3\3\3\3\3\7\3H\n\3\f\3\16\3K\13\3\3\3\7\3N\n\3\f\3\16"+
-		"\3Q\13\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\5\5[\n\5\3\5\3\5\3\6\3\6\3\6"+
-		"\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\5\bn\n\b\3\b\3\b\3\b"+
-		"\5\bs\n\b\3\b\3\b\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\13\6\13\u0080\n\13"+
-		"\r\13\16\13\u0081\3\f\3\f\3\r\5\r\u0087\n\r\3\r\3\r\5\r\u008b\n\r\3\r"+
-		"\3\r\5\r\u008f\n\r\3\r\5\r\u0092\n\r\3\16\3\16\3\16\3\16\7\16\u0098\n"+
-		"\16\f\16\16\16\u009b\13\16\3\16\3\16\3\16\5\16\u00a0\n\16\3\16\5\16\u00a3"+
-		"\n\16\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u00ab\n\17\3\17\3\17\5\17\u00af"+
-		"\n\17\3\20\3\20\3\20\7\20\u00b4\n\20\f\20\16\20\u00b7\13\20\3\21\3\21"+
-		"\3\21\7\21\u00bc\n\21\f\21\16\21\u00bf\13\21\3\22\3\22\3\22\3\22\3\22"+
-		"\3\22\3\22\3\22\3\22\5\22\u00ca\n\22\3\23\3\23\3\23\3\23\3\23\3\23\3\23"+
-		"\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\5\23\u00df"+
-		"\n\23\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u00e7\n\24\3\25\3\25\3\26\3\26"+
-		"\3\27\3\27\3\30\3\30\3\30\3\30\7\30\u00f3\n\30\f\30\16\30\u00f6\13\30"+
-		"\3\30\3\30\3\31\3\31\3\32\3\32\3\33\3\33\3\33\3\33\7\33\u0102\n\33\f\33"+
-		"\16\33\u0105\13\33\3\33\3\33\3\34\3\34\3\34\2\2\35\2\4\6\b\n\f\16\20\22"+
-		"\24\26\30\32\34\36 \"$&(*,.\60\62\64\66\2\5\4\2\7\7##\3\2\35\"\4\2\n\n"+
-		"\r\17\2\u0110\28\3\2\2\2\4D\3\2\2\2\6R\3\2\2\2\bV\3\2\2\2\n^\3\2\2\2\f"+
-		"c\3\2\2\2\16i\3\2\2\2\20v\3\2\2\2\22x\3\2\2\2\24\177\3\2\2\2\26\u0083"+
-		"\3\2\2\2\30\u0091\3\2\2\2\32\u009f\3\2\2\2\34\u00ae\3\2\2\2\36\u00b0\3"+
-		"\2\2\2 \u00b8\3\2\2\2\"\u00c9\3\2\2\2$\u00de\3\2\2\2&\u00e6\3\2\2\2(\u00e8"+
-		"\3\2\2\2*\u00ea\3\2\2\2,\u00ec\3\2\2\2.\u00ee\3\2\2\2\60\u00f9\3\2\2\2"+
-		"\62\u00fb\3\2\2\2\64\u00fd\3\2\2\2\66\u0108\3\2\2\28<\5\4\3\29;\5\16\b"+
-		"\2:9\3\2\2\2;>\3\2\2\2<:\3\2\2\2<=\3\2\2\2=@\3\2\2\2><\3\2\2\2?A\5\22"+
-		"\n\2@?\3\2\2\2AB\3\2\2\2B@\3\2\2\2BC\3\2\2\2C\3\3\2\2\2DE\5\6\4\2EI\5"+
-		"\b\5\2FH\5\n\6\2GF\3\2\2\2HK\3\2\2\2IG\3\2\2\2IJ\3\2\2\2JO\3\2\2\2KI\3"+
-		"\2\2\2LN\5\f\7\2ML\3\2\2\2NQ\3\2\2\2OM\3\2\2\2OP\3\2\2\2P\5\3\2\2\2QO"+
-		"\3\2\2\2RS\7$\2\2ST\7+\2\2TU\7\26\2\2U\7\3\2\2\2VW\7%\2\2WZ\7+\2\2XY\7"+
-		"\3\2\2Y[\7,\2\2ZX\3\2\2\2Z[\3\2\2\2[\\\3\2\2\2\\]\7\26\2\2]\t\3\2\2\2"+
-		"^_\7\'\2\2_`\7\30\2\2`a\7+\2\2ab\7\26\2\2b\13\3\2\2\2cd\7&\2\2de\7+\2"+
-		"\2ef\7\4\2\2fg\5\66\34\2gh\7\26\2\2h\r\3\2\2\2ij\7)\2\2jm\7+\2\2kl\7\3"+
-		"\2\2ln\5\20\t\2mk\3\2\2\2mn\3\2\2\2no\3\2\2\2or\7\30\2\2ps\5\34\17\2q"+
-		"s\7.\2\2rp\3\2\2\2rq\3\2\2\2st\3\2\2\2tu\7\26\2\2u\17\3\2\2\2vw\7+\2\2"+
-		"w\21\3\2\2\2xy\7*\2\2yz\5\26\f\2z{\7\30\2\2{|\5\24\13\2|}\7\26\2\2}\23"+
-		"\3\2\2\2~\u0080\5\32\16\2\177~\3\2\2\2\u0080\u0081\3\2\2\2\u0081\177\3"+
-		"\2\2\2\u0081\u0082\3\2\2\2\u0082\25\3\2\2\2\u0083\u0084\7\16\2\2\u0084"+
-		"\27\3\2\2\2\u0085\u0087\7\t\2\2\u0086\u0085\3\2\2\2\u0086\u0087\3\2\2"+
-		"\2\u0087\u0088\3\2\2\2\u0088\u0092\7.\2\2\u0089\u008b\7\t\2\2\u008a\u0089"+
-		"\3\2\2\2\u008a\u008b\3\2\2\2\u008b\u008c\3\2\2\2\u008c\u0092\7+\2\2\u008d"+
-		"\u008f\7\t\2\2\u008e\u008d\3\2\2\2\u008e\u008f\3\2\2\2\u008f\u0090\3\2"+
-		"\2\2\u0090\u0092\5\34\17\2\u0091\u0086\3\2\2\2\u0091\u008a\3\2\2\2\u0091"+
-		"\u008e\3\2\2\2\u0092\31\3\2\2\2\u0093\u0094\7\22\2\2\u0094\u0099\5\24"+
-		"\13\2\u0095\u0096\7\34\2\2\u0096\u0098\5\24\13\2\u0097\u0095\3\2\2\2\u0098"+
-		"\u009b\3\2\2\2\u0099\u0097\3\2\2\2\u0099\u009a\3\2\2\2\u009a\u009c\3\2"+
-		"\2\2\u009b\u0099\3\2\2\2\u009c\u009d\7\23\2\2\u009d\u00a0\3\2\2\2\u009e"+
-		"\u00a0\5\30\r\2\u009f\u0093\3\2\2\2\u009f\u009e\3\2\2\2\u00a0\u00a2\3"+
-		"\2\2\2\u00a1\u00a3\5&\24\2\u00a2\u00a1\3\2\2\2\u00a2\u00a3\3\2\2\2\u00a3"+
-		"\33\3\2\2\2\u00a4\u00a5\7\24\2\2\u00a5\u00af\7\25\2\2\u00a6\u00aa\7\24"+
-		"\2\2\u00a7\u00ab\5\"\22\2\u00a8\u00ab\5\36\20\2\u00a9\u00ab\5 \21\2\u00aa"+
-		"\u00a7\3\2\2\2\u00aa\u00a8\3\2\2\2\u00aa\u00a9\3\2\2\2\u00ab\u00ac\3\2"+
-		"\2\2\u00ac\u00ad\7\25\2\2\u00ad\u00af\3\2\2\2\u00ae\u00a4\3\2\2\2\u00ae"+
-		"\u00a6\3\2\2\2\u00af\35\3\2\2\2\u00b0\u00b5\5\"\22\2\u00b1\u00b2\7\33"+
-		"\2\2\u00b2\u00b4\5\"\22\2\u00b3\u00b1\3\2\2\2\u00b4\u00b7\3\2\2\2\u00b5"+
-		"\u00b3\3\2\2\2\u00b5\u00b6\3\2\2\2\u00b6\37\3\2\2\2\u00b7\u00b5\3\2\2"+
-		"\2\u00b8\u00bd\5\"\22\2\u00b9\u00ba\7\34\2\2\u00ba\u00bc\5\"\22\2\u00bb"+
-		"\u00b9\3\2\2\2\u00bc\u00bf\3\2\2\2\u00bd\u00bb\3\2\2\2\u00bd\u00be\3\2"+
-		"\2\2\u00be!\3\2\2\2\u00bf\u00bd\3\2\2\2\u00c0\u00ca\5$\23\2\u00c1\u00c2"+
-		"\7\22\2\2\u00c2\u00c3\5 \21\2\u00c3\u00c4\7\23\2\2\u00c4\u00ca\3\2\2\2"+
-		"\u00c5\u00c6\7\22\2\2\u00c6\u00c7\5\36\20\2\u00c7\u00c8\7\23\2\2\u00c8"+
-		"\u00ca\3\2\2\2\u00c9\u00c0\3\2\2\2\u00c9\u00c1\3\2\2\2\u00c9\u00c5\3\2"+
-		"\2\2\u00ca#\3\2\2\2\u00cb\u00df\7+\2\2\u00cc\u00cd\5(\25\2\u00cd\u00ce"+
-		"\5,\27\2\u00ce\u00cf\5\66\34\2\u00cf\u00df\3\2\2\2\u00d0\u00d1\5(\25\2"+
-		"\u00d1\u00d2\5*\26\2\u00d2\u00d3\5\64\33\2\u00d3\u00df\3\2\2\2\u00d4\u00d5"+
-		"\7\5\2\2\u00d5\u00d6\7\37\2\2\u00d6\u00df\5\60\31\2\u00d7\u00d8\7\5\2"+
-		"\2\u00d8\u00d9\7\6\2\2\u00d9\u00df\5\62\32\2\u00da\u00db\7\5\2\2\u00db"+
-		"\u00dc\5*\26\2\u00dc\u00dd\5.\30\2\u00dd\u00df\3\2\2\2\u00de\u00cb\3\2"+
-		"\2\2\u00de\u00cc\3\2\2\2\u00de\u00d0\3\2\2\2\u00de\u00d4\3\2\2\2\u00de"+
-		"\u00d7\3\2\2\2\u00de\u00da\3\2\2\2\u00df%\3\2\2\2\u00e0\u00e1\7\20\2\2"+
-		"\u00e1\u00e2\7\n\2\2\u00e2\u00e7\7\21\2\2\u00e3\u00e7\7\31\2\2\u00e4\u00e7"+
-		"\7\27\2\2\u00e5\u00e7\7\32\2\2\u00e6\u00e0\3\2\2\2\u00e6\u00e3\3\2\2\2"+
-		"\u00e6\u00e4\3\2\2\2\u00e6\u00e5\3\2\2\2\u00e7\'\3\2\2\2\u00e8\u00e9\7"+
-		"+\2\2\u00e9)\3\2\2\2\u00ea\u00eb\t\2\2\2\u00eb+\3\2\2\2\u00ec\u00ed\t"+
-		"\3\2\2\u00ed-\3\2\2\2\u00ee\u00ef\7\24\2\2\u00ef\u00f4\7\16\2\2\u00f0"+
-		"\u00f1\7\b\2\2\u00f1\u00f3\7\16\2\2\u00f2\u00f0\3\2\2\2\u00f3\u00f6\3"+
-		"\2\2\2\u00f4\u00f2\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5\u00f7\3\2\2\2\u00f6"+
-		"\u00f4\3\2\2\2\u00f7\u00f8\7\25\2\2\u00f8/\3\2\2\2\u00f9\u00fa\7\16\2"+
-		"\2\u00fa\61\3\2\2\2\u00fb\u00fc\7\16\2\2\u00fc\63\3\2\2\2\u00fd\u00fe"+
-		"\7\24\2\2\u00fe\u0103\5\66\34\2\u00ff\u0100\7\b\2\2\u0100\u0102\5\66\34"+
-		"\2\u0101\u00ff\3\2\2\2\u0102\u0105\3\2\2\2\u0103\u0101\3\2\2\2\u0103\u0104"+
-		"\3\2\2\2\u0104\u0106\3\2\2\2\u0105\u0103\3\2\2\2\u0106\u0107\7\25\2\2"+
-		"\u0107\65\3\2\2\2\u0108\u0109\t\4\2\2\u0109\67\3\2\2\2\32<BIOZmr\u0081"+
-		"\u0086\u008a\u008e\u0091\u0099\u009f\u00a2\u00aa\u00ae\u00b5\u00bd\u00c9"+
-		"\u00de\u00e6\u00f4\u0103";
+		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \3\2"+
+		"\3\2\7\2C\n\2\f\2\16\2F\13\2\3\2\6\2I\n\2\r\2\16\2J\3\3\3\3\3\3\7\3P\n"+
+		"\3\f\3\16\3S\13\3\3\3\7\3V\n\3\f\3\16\3Y\13\3\3\4\3\4\3\4\3\4\3\5\3\5"+
+		"\3\5\3\5\5\5c\n\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7"+
+		"\3\b\3\b\3\b\3\b\5\bv\n\b\3\b\3\b\3\b\5\b{\n\b\3\b\3\b\3\t\3\t\3\n\3\n"+
+		"\3\n\3\n\3\n\3\n\3\13\6\13\u0088\n\13\r\13\16\13\u0089\3\f\3\f\3\r\5\r"+
+		"\u008f\n\r\3\r\3\r\5\r\u0093\n\r\3\r\3\r\5\r\u0097\n\r\3\r\5\r\u009a\n"+
+		"\r\3\16\3\16\3\16\3\16\7\16\u00a0\n\16\f\16\16\16\u00a3\13\16\3\16\3\16"+
+		"\3\16\5\16\u00a8\n\16\3\16\5\16\u00ab\n\16\3\17\3\17\3\17\3\17\3\17\3"+
+		"\17\5\17\u00b3\n\17\3\17\3\17\5\17\u00b7\n\17\3\20\3\20\3\20\7\20\u00bc"+
+		"\n\20\f\20\16\20\u00bf\13\20\3\21\3\21\3\21\7\21\u00c4\n\21\f\21\16\21"+
+		"\u00c7\13\21\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\5\22\u00d2\n"+
+		"\22\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3"+
+		"\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\5\23\u00eb\n\23\3\24"+
+		"\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24"+
+		"\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u0108"+
+		"\n\24\3\25\3\25\3\26\3\26\3\27\3\27\3\27\3\27\3\27\3\27\5\27\u0114\n\27"+
+		"\3\30\3\30\3\31\3\31\3\32\3\32\3\32\5\32\u011d\n\32\3\33\3\33\3\34\3\34"+
+		"\3\34\3\34\7\34\u0125\n\34\f\34\16\34\u0128\13\34\3\34\3\34\3\35\3\35"+
+		"\3\36\3\36\3\37\3\37\3\37\3\37\7\37\u0134\n\37\f\37\16\37\u0137\13\37"+
+		"\3\37\3\37\3 \3 \3 \2\2!\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&("+
+		"*,.\60\62\64\668:<>\2\5\4\2\f\f))\3\2#(\4\2\20\20\23\25\2\u0144\2@\3\2"+
+		"\2\2\4L\3\2\2\2\6Z\3\2\2\2\b^\3\2\2\2\nf\3\2\2\2\fk\3\2\2\2\16q\3\2\2"+
+		"\2\20~\3\2\2\2\22\u0080\3\2\2\2\24\u0087\3\2\2\2\26\u008b\3\2\2\2\30\u0099"+
+		"\3\2\2\2\32\u00a7\3\2\2\2\34\u00b6\3\2\2\2\36\u00b8\3\2\2\2 \u00c0\3\2"+
+		"\2\2\"\u00d1\3\2\2\2$\u00ea\3\2\2\2&\u0107\3\2\2\2(\u0109\3\2\2\2*\u010b"+
+		"\3\2\2\2,\u0113\3\2\2\2.\u0115\3\2\2\2\60\u0117\3\2\2\2\62\u011c\3\2\2"+
+		"\2\64\u011e\3\2\2\2\66\u0120\3\2\2\28\u012b\3\2\2\2:\u012d\3\2\2\2<\u012f"+
+		"\3\2\2\2>\u013a\3\2\2\2@D\5\4\3\2AC\5\16\b\2BA\3\2\2\2CF\3\2\2\2DB\3\2"+
+		"\2\2DE\3\2\2\2EH\3\2\2\2FD\3\2\2\2GI\5\22\n\2HG\3\2\2\2IJ\3\2\2\2JH\3"+
+		"\2\2\2JK\3\2\2\2K\3\3\2\2\2LM\5\6\4\2MQ\5\b\5\2NP\5\n\6\2ON\3\2\2\2PS"+
+		"\3\2\2\2QO\3\2\2\2QR\3\2\2\2RW\3\2\2\2SQ\3\2\2\2TV\5\f\7\2UT\3\2\2\2V"+
+		"Y\3\2\2\2WU\3\2\2\2WX\3\2\2\2X\5\3\2\2\2YW\3\2\2\2Z[\7*\2\2[\\\7\61\2"+
+		"\2\\]\7\34\2\2]\7\3\2\2\2^_\7+\2\2_b\7\61\2\2`a\7\3\2\2ac\7\62\2\2b`\3"+
+		"\2\2\2bc\3\2\2\2cd\3\2\2\2de\7\34\2\2e\t\3\2\2\2fg\7-\2\2gh\7\36\2\2h"+
+		"i\7\61\2\2ij\7\34\2\2j\13\3\2\2\2kl\7,\2\2lm\7\61\2\2mn\7\4\2\2no\5> "+
+		"\2op\7\34\2\2p\r\3\2\2\2qr\7/\2\2ru\7\61\2\2st\7\3\2\2tv\5\20\t\2us\3"+
+		"\2\2\2uv\3\2\2\2vw\3\2\2\2wz\7\36\2\2x{\5\34\17\2y{\7\64\2\2zx\3\2\2\2"+
+		"zy\3\2\2\2{|\3\2\2\2|}\7\34\2\2}\17\3\2\2\2~\177\7\61\2\2\177\21\3\2\2"+
+		"\2\u0080\u0081\7\60\2\2\u0081\u0082\5\26\f\2\u0082\u0083\7\36\2\2\u0083"+
+		"\u0084\5\24\13\2\u0084\u0085\7\34\2\2\u0085\23\3\2\2\2\u0086\u0088\5\32"+
+		"\16\2\u0087\u0086\3\2\2\2\u0088\u0089\3\2\2\2\u0089\u0087\3\2\2\2\u0089"+
+		"\u008a\3\2\2\2\u008a\25\3\2\2\2\u008b\u008c\7\24\2\2\u008c\27\3\2\2\2"+
+		"\u008d\u008f\7\17\2\2\u008e\u008d\3\2\2\2\u008e\u008f\3\2\2\2\u008f\u0090"+
+		"\3\2\2\2\u0090\u009a\7\64\2\2\u0091\u0093\7\17\2\2\u0092\u0091\3\2\2\2"+
+		"\u0092\u0093\3\2\2\2\u0093\u0094\3\2\2\2\u0094\u009a\7\61\2\2\u0095\u0097"+
+		"\7\17\2\2\u0096\u0095\3\2\2\2\u0096\u0097\3\2\2\2\u0097\u0098\3\2\2\2"+
+		"\u0098\u009a\5\34\17\2\u0099\u008e\3\2\2\2\u0099\u0092\3\2\2\2\u0099\u0096"+
+		"\3\2\2\2\u009a\31\3\2\2\2\u009b\u009c\7\30\2\2\u009c\u00a1\5\24\13\2\u009d"+
+		"\u009e\7\"\2\2\u009e\u00a0\5\24\13\2\u009f\u009d\3\2\2\2\u00a0\u00a3\3"+
+		"\2\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2\u00a4\3\2\2\2\u00a3"+
+		"\u00a1\3\2\2\2\u00a4\u00a5\7\31\2\2\u00a5\u00a8\3\2\2\2\u00a6\u00a8\5"+
+		"\30\r\2\u00a7\u009b\3\2\2\2\u00a7\u00a6\3\2\2\2\u00a8\u00aa\3\2\2\2\u00a9"+
+		"\u00ab\5,\27\2\u00aa\u00a9\3\2\2\2\u00aa\u00ab\3\2\2\2\u00ab\33\3\2\2"+
+		"\2\u00ac\u00ad\7\32\2\2\u00ad\u00b7\7\33\2\2\u00ae\u00b2\7\32\2\2\u00af"+
+		"\u00b3\5\"\22\2\u00b0\u00b3\5\36\20\2\u00b1\u00b3\5 \21\2\u00b2\u00af"+
+		"\3\2\2\2\u00b2\u00b0\3\2\2\2\u00b2\u00b1\3\2\2\2\u00b3\u00b4\3\2\2\2\u00b4"+
+		"\u00b5\7\33\2\2\u00b5\u00b7\3\2\2\2\u00b6\u00ac\3\2\2\2\u00b6\u00ae\3"+
+		"\2\2\2\u00b7\35\3\2\2\2\u00b8\u00bd\5\"\22\2\u00b9\u00ba\7!\2\2\u00ba"+
+		"\u00bc\5\"\22\2\u00bb\u00b9\3\2\2\2\u00bc\u00bf\3\2\2\2\u00bd\u00bb\3"+
+		"\2\2\2\u00bd\u00be\3\2\2\2\u00be\37\3\2\2\2\u00bf\u00bd\3\2\2\2\u00c0"+
+		"\u00c5\5\"\22\2\u00c1\u00c2\7\"\2\2\u00c2\u00c4\5\"\22\2\u00c3\u00c1\3"+
+		"\2\2\2\u00c4\u00c7\3\2\2\2\u00c5\u00c3\3\2\2\2\u00c5\u00c6\3\2\2\2\u00c6"+
+		"!\3\2\2\2\u00c7\u00c5\3\2\2\2\u00c8\u00d2\5$\23\2\u00c9\u00ca\7\30\2\2"+
+		"\u00ca\u00cb\5 \21\2\u00cb\u00cc\7\31\2\2\u00cc\u00d2\3\2\2\2\u00cd\u00ce"+
+		"\7\30\2\2\u00ce\u00cf\5\36\20\2\u00cf\u00d0\7\31\2\2\u00d0\u00d2\3\2\2"+
+		"\2\u00d1\u00c8\3\2\2\2\u00d1\u00c9\3\2\2\2\u00d1\u00cd\3\2\2\2\u00d2#"+
+		"\3\2\2\2\u00d3\u00eb\7\61\2\2\u00d4\u00d5\5.\30\2\u00d5\u00d6\5\64\33"+
+		"\2\u00d6\u00d7\5> \2\u00d7\u00eb\3\2\2\2\u00d8\u00d9\5.\30\2\u00d9\u00da"+
+		"\5\60\31\2\u00da\u00db\5<\37\2\u00db\u00eb\3\2\2\2\u00dc\u00dd\5.\30\2"+
+		"\u00dd\u00de\5\62\32\2\u00de\u00df\5&\24\2\u00df\u00eb\3\2\2\2\u00e0\u00e1"+
+		"\7\5\2\2\u00e1\u00e2\7%\2\2\u00e2\u00eb\58\35\2\u00e3\u00e4\7\5\2\2\u00e4"+
+		"\u00e5\7\6\2\2\u00e5\u00eb\5:\36\2\u00e6\u00e7\7\5\2\2\u00e7\u00e8\5\62"+
+		"\32\2\u00e8\u00e9\5\66\34\2\u00e9\u00eb\3\2\2\2\u00ea\u00d3\3\2\2\2\u00ea"+
+		"\u00d4\3\2\2\2\u00ea\u00d8\3\2\2\2\u00ea\u00dc\3\2\2\2\u00ea\u00e0\3\2"+
+		"\2\2\u00ea\u00e3\3\2\2\2\u00ea\u00e6\3\2\2\2\u00eb%\3\2\2\2\u00ec\u00ed"+
+		"\7\7\2\2\u00ed\u00ee\7\30\2\2\u00ee\u00ef\7\24\2\2\u00ef\u0108\7\31\2"+
+		"\2\u00f0\u00f1\7\b\2\2\u00f1\u00f2\7\30\2\2\u00f2\u00f3\7\24\2\2\u00f3"+
+		"\u00f4\7\t\2\2\u00f4\u00f5\5(\25\2\u00f5\u00f6\7\t\2\2\u00f6\u00f7\7\20"+
+		"\2\2\u00f7\u00f8\7\31\2\2\u00f8\u0108\3\2\2\2\u00f9\u00fa\7\n\2\2\u00fa"+
+		"\u00fb\7\30\2\2\u00fb\u00fc\7\24\2\2\u00fc\u00fd\7\t\2\2\u00fd\u00fe\5"+
+		"*\26\2\u00fe\u00ff\7\31\2\2\u00ff\u0108\3\2\2\2\u0100\u0101\7\13\2\2\u0101"+
+		"\u0102\7\30\2\2\u0102\u0103\7\24\2\2\u0103\u0104\7\t\2\2\u0104\u0105\5"+
+		"*\26\2\u0105\u0106\7\31\2\2\u0106\u0108\3\2\2\2\u0107\u00ec\3\2\2\2\u0107"+
+		"\u00f0\3\2\2\2\u0107\u00f9\3\2\2\2\u0107\u0100\3\2\2\2\u0108\'\3\2\2\2"+
+		"\u0109\u010a\7\24\2\2\u010a)\3\2\2\2\u010b\u010c\7\24\2\2\u010c+\3\2\2"+
+		"\2\u010d\u010e\7\26\2\2\u010e\u010f\7\20\2\2\u010f\u0114\7\27\2\2\u0110"+
+		"\u0114\7\37\2\2\u0111\u0114\7\35\2\2\u0112\u0114\7 \2\2\u0113\u010d\3"+
+		"\2\2\2\u0113\u0110\3\2\2\2\u0113\u0111\3\2\2\2\u0113\u0112\3\2\2\2\u0114"+
+		"-\3\2\2\2\u0115\u0116\7\61\2\2\u0116/\3\2\2\2\u0117\u0118\t\2\2\2\u0118"+
+		"\61\3\2\2\2\u0119\u011d\5\60\31\2\u011a\u011d\7\r\2\2\u011b\u011d\7\16"+
+		"\2\2\u011c\u0119\3\2\2\2\u011c\u011a\3\2\2\2\u011c\u011b\3\2\2\2\u011d"+
+		"\63\3\2\2\2\u011e\u011f\t\3\2\2\u011f\65\3\2\2\2\u0120\u0121\7\32\2\2"+
+		"\u0121\u0126\7\24\2\2\u0122\u0123\7\t\2\2\u0123\u0125\7\24\2\2\u0124\u0122"+
+		"\3\2\2\2\u0125\u0128\3\2\2\2\u0126\u0124\3\2\2\2\u0126\u0127\3\2\2\2\u0127"+
+		"\u0129\3\2\2\2\u0128\u0126\3\2\2\2\u0129\u012a\7\33\2\2\u012a\67\3\2\2"+
+		"\2\u012b\u012c\7\24\2\2\u012c9\3\2\2\2\u012d\u012e\7\24\2\2\u012e;\3\2"+
+		"\2\2\u012f\u0130\7\32\2\2\u0130\u0135\5> \2\u0131\u0132\7\t\2\2\u0132"+
+		"\u0134\5> \2\u0133\u0131\3\2\2\2\u0134\u0137\3\2\2\2\u0135\u0133\3\2\2"+
+		"\2\u0135\u0136\3\2\2\2\u0136\u0138\3\2\2\2\u0137\u0135\3\2\2\2\u0138\u0139"+
+		"\7\33\2\2\u0139=\3\2\2\2\u013a\u013b\t\4\2\2\u013b?\3\2\2\2\34DJQWbuz"+
+		"\u0089\u008e\u0092\u0096\u0099\u00a1\u00a7\u00aa\u00b2\u00b6\u00bd\u00c5"+
+		"\u00d1\u00ea\u0107\u0113\u011c\u0126\u0135";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

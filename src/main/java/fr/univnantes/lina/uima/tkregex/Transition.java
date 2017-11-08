@@ -74,7 +74,7 @@ public class Transition {
 		if(annotation == LastAnnotationToken.INSTANCE)
 			return false;
 		else
-			return matcher.match(annotation);
+			return matcher.matches(annotation);
 	};
 	
 	@Override

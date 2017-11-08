@@ -32,7 +32,7 @@ ruleList
 	;
 	
 headerBlock 
-	:  importDeclaration useDeclaration javaMatcherDeclaration* optionDeclaration* 
+	:  importDeclaration useDeclaration javaMatcherDeclaration* optionDeclaration*
 	;
 
 importDeclaration
@@ -91,12 +91,12 @@ featureMatcherDeclaration
 	|  '[' ( expression | andexpression | orexpression ) ']'
 	;
 
-//first, we try to match all first level && (e.g. && not included in some sub-expression)
+//first, we try to matches all first level && (e.g. && not included in some sub-expression)
 andexpression 
 	: expression (AND expression)*
 	;
 
-//second, we try to match all first level || (e.g. || not included in some sub-expression)
+//second, we try to matches all first level || (e.g. || not included in some sub-expression)
 orexpression 
 	: expression (OR expression )* 
 	;
@@ -112,11 +112,28 @@ atomicExpression
 	: Identifier
 	| featureName operator literal
 	| featureName arrayOperator literalArray
+	| featureName inListOperator externalListDefinition
 	| 'text' '==' coveredTextIgnoreCase
 	| 'text' '===' coveredTextExactly
-	| 'text' arrayOperator coveredTextArray
+	| 'text' inListOperator coveredTextArray
 	;
-	
+
+externalListDefinition
+	: 'list' '(' StringLiteral ')'
+	| 'csv' '(' StringLiteral ','  separator ',' IntegerLiteral  ')'
+	| 'json' '(' StringLiteral ',' keypath ')'
+	| 'yaml' '(' StringLiteral ',' keypath ')'
+	;
+
+separator
+	: StringLiteral
+	;
+
+keypath
+	: StringLiteral
+	;
+
+
 quantifierDeclaration
 	: '{' IntegerLiteral '}'
 	| '*'
@@ -131,6 +148,12 @@ featureName
 arrayOperator
 	: 'in'
 	| 'nin'
+	;
+
+inListOperator
+	: arrayOperator
+	| 'inIgnoreCase'
+	| 'ninIgnoreCase'
 	;
 
 operator
