@@ -502,7 +502,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 				quantifier = AutomatonQuantifier.getN(
 						Integer.parseInt(n_matcher.group(1))
 						);
-						);
 			else throw new AutomataParsingException("Unrecognized regex: " + ctx.getText());
 		}
 		return quantifier;
