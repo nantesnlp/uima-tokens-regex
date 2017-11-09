@@ -21,27 +21,30 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
-import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
-import fr.univnantes.lina.uima.tkregex.FeatureMatcher;
-import fr.univnantes.lina.uima.tkregex.Op;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.text.AnnotationFS;
+
+import java.util.Collection;
+import java.util.Set;
 
 public class StringArrayMatcher  extends FeatureMatcher {
 	private Set<String> values;
 	private Op operator;
 
-	public StringArrayMatcher(Feature feature, Op operator, String... values) {
+	public StringArrayMatcher(Feature feature, Op operator, Collection<String> values) {
 		super(feature);
 		this.operator = operator;
-		this.values = Sets.newHashSetWithExpectedSize(values.length);
+		this.values = Sets.newHashSetWithExpectedSize(values.size());
 		boolean ignoreCase = isIgnoreCase();
 		for(String v:values) {
 			this.values.add(ignoreCase ? v.toLowerCase() : v);
 		}
+
+	}
+
+	public StringArrayMatcher(Feature feature, Op operator, String... values) {
+		this(feature, operator, Sets.newHashSet(values));
 	}
 
 	private boolean isIgnoreCase() {
