@@ -188,11 +188,14 @@ public class TestUtils {
 			return new AutomatonQuantifier(AutomatonQuantifier.ZERO_N);
 		default:
 			StringTokenizer st = new StringTokenizer(quantifierStr, ",");
-			if(st.countTokens() == 2)
+			if(st.countTokens() == 2) {
+				int m = Integer.parseInt(st.nextToken());
+				int n = Integer.parseInt(st.nextToken());
 				return new AutomatonQuantifier(
-						AutomatonQuantifier.N, 
-						Integer.parseInt(st.nextToken()), 
-						Integer.parseInt(st.nextToken()));
+						AutomatonQuantifier.M_N,
+						m,
+						n);
+			}
 			else if(st.countTokens() == 1) {
 				int n = Integer.parseInt(st.nextToken());
 				return new AutomatonQuantifier(AutomatonQuantifier.N, n, n);

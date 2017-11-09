@@ -65,7 +65,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutomataParserListener.class);
 
-	private static final Pattern M_N_PATTERN = Pattern.compile("\\{(\\d+(,\\d+)?)\\}");
+	private static final Pattern M_N_PATTERN = Pattern.compile("\\{(\\d+),(\\d+)\\}");
+	private static final Pattern N_PATTERN = Pattern.compile("\\{(\\d+)\\}");
 
 	public static final String OPTION_INLINE = "inline";
 	
@@ -255,7 +256,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 					toOperator(ctx.arrayOperator()),
 					toLiteralArray(ctx.literalArray()));
 		} else if(ctx.resourceIdentifier() != null) {
-			matcher = new ArrayMatcher(
+			matcher = new StringArrayMatcher(
 					toFeature(ctx.featureName()),
 					toOperator(ctx.inListOperator()),
 					toStringArray(ctx.resourceIdentifier())
@@ -490,15 +491,17 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			quantifier = AutomatonQuantifier.getOneN();
 			break;
 		default:
-			Matcher m = M_N_PATTERN.matcher(ctx.getText());
-			if(m.matches() && m.groupCount() == 3) 
+			Matcher m_n_matcher = M_N_PATTERN.matcher(ctx.getText());
+			Matcher n_matcher = N_PATTERN.matcher(ctx.getText());
+			if(m_n_matcher.matches())
 				quantifier = AutomatonQuantifier.getMN(
-						Integer.parseInt(m.group(1)),
-						Integer.parseInt(m.group(2))
+						Integer.parseInt(m_n_matcher.group(1)),
+						Integer.parseInt(m_n_matcher.group(2))
 						);
-			else if(m.matches() && m.groupCount() == 2) 
+			else if(n_matcher.matches())
 				quantifier = AutomatonQuantifier.getN(
-						Integer.parseInt(m.group(1))
+						Integer.parseInt(n_matcher.group(1))
+						);
 						);
 			else throw new AutomataParsingException("Unrecognized regex: " + ctx.getText());
 		}

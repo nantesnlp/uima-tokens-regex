@@ -32,8 +32,10 @@ import com.google.common.collect.Lists;
 public class AutomatonFactory {
 	
 	public static Automaton createMNAutomaton(Automaton automaton, int m, int n) {
+
 		List<Automaton> toConcat = Lists.newLinkedList();
-		toConcat.add(createNAutomaton(automaton, m));
+		if(m > 0)
+			toConcat.add(createNAutomaton(automaton, m));
 		for(int i=0; i<(n-m); i++) 
 			toConcat.add(createZeroOneAutomaton(automaton));
 		return createConcatenation(toConcat);

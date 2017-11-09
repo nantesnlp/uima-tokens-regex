@@ -32,7 +32,7 @@ ruleList
 	;
 	
 headerBlock 
-	:  importDeclaration useDeclaration optionDeclaration* (javaMatcherDeclaration | externalListDeclaration)*
+	:  importDeclaration useDeclaration (externalListDeclaration | optionDeclaration)* javaMatcherDeclaration*
 	;
 
 importDeclaration
@@ -156,7 +156,7 @@ keypath
 
 
 quantifierDeclaration
-	: '{' IntegerLiteral '}'
+	: '{' IntegerLiteral (',' IntegerLiteral)? '}'
 	| '*'
 	| '?'
 	| '+'

@@ -272,6 +272,7 @@ public class AutomatonTestCase extends TestCase {
 		);
 	}
 
+
 	@Test
 	public void test_1_N() {
 		// Greedy +
@@ -372,7 +373,56 @@ public class AutomatonTestCase extends TestCase {
 				"a b b b c (8,13)"
 		);
 	}
-	
+
+	@Test
+	public void test_Mis0_N() {
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b0,2 c",
+				""
+		);
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b0,5 c",
+				"a b b b b c (0,6) | a b b b c (8,13)"
+		);
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b0,3 c",
+				"a b b b c (8,13)"
+		);
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b0,5 c",
+				"a b b b b c (0,6) | a b b b c (8,13)"
+		);
+	}
+
+
+	@Test
+	public void test_M_N() {
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b1,2 c",
+				""
+		);
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b2,5 c",
+				"a b b b b c (0,6) | a b b b c (8,13)"
+		);
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b1,3 c",
+				"a b b b c (8,13)"
+		);
+		automatonTest(
+				"a b b b b c d e a b b b c",
+				"a b3,5 c",
+				"a b b b b c (0,6) | a b b b c (8,13)"
+		);
+	}
+
 	@Test
 	public void test_1() {
 		// a
