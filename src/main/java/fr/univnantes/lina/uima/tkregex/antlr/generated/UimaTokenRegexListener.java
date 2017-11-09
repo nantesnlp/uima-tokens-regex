@@ -190,15 +190,95 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitAtomicExpression(UimaTokenRegexParser.AtomicExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link UimaTokenRegexParser#externalListDefinition}.
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#resourceIdentifier}.
 	 * @param ctx the parse tree
 	 */
-	void enterExternalListDefinition(UimaTokenRegexParser.ExternalListDefinitionContext ctx);
+	void enterResourceIdentifier(UimaTokenRegexParser.ResourceIdentifierContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link UimaTokenRegexParser#externalListDefinition}.
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#resourceIdentifier}.
 	 * @param ctx the parse tree
 	 */
-	void exitExternalListDefinition(UimaTokenRegexParser.ExternalListDefinitionContext ctx);
+	void exitResourceIdentifier(UimaTokenRegexParser.ResourceIdentifierContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#externalListDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternalListDeclaration(UimaTokenRegexParser.ExternalListDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#externalListDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternalListDeclaration(UimaTokenRegexParser.ExternalListDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#simpleListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterSimpleListDefinition(UimaTokenRegexParser.SimpleListDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#simpleListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitSimpleListDefinition(UimaTokenRegexParser.SimpleListDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#path}.
+	 * @param ctx the parse tree
+	 */
+	void enterPath(UimaTokenRegexParser.PathContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#path}.
+	 * @param ctx the parse tree
+	 */
+	void exitPath(UimaTokenRegexParser.PathContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#yamlListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterYamlListDefinition(UimaTokenRegexParser.YamlListDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#yamlListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitYamlListDefinition(UimaTokenRegexParser.YamlListDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#jsonListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterJsonListDefinition(UimaTokenRegexParser.JsonListDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#jsonListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitJsonListDefinition(UimaTokenRegexParser.JsonListDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#csvListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCsvListDefinition(UimaTokenRegexParser.CsvListDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#csvListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCsvListDefinition(UimaTokenRegexParser.CsvListDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#tsvListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterTsvListDefinition(UimaTokenRegexParser.TsvListDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#tsvListDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitTsvListDefinition(UimaTokenRegexParser.TsvListDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#quote}.
+	 * @param ctx the parse tree
+	 */
+	void enterQuote(UimaTokenRegexParser.QuoteContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#quote}.
+	 * @param ctx the parse tree
+	 */
+	void exitQuote(UimaTokenRegexParser.QuoteContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#separator}.
 	 * @param ctx the parse tree

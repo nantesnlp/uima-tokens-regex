@@ -14,7 +14,6 @@ public abstract class FeatureMatcher implements AnnotationMatcher {
 	private Feature feature;
 
 	protected FeatureMatcher(Feature feature) {
-		Preconditions.checkNotNull(feature);
 		this.feature = feature;
 	}
 

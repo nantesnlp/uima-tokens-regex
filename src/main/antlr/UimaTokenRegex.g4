@@ -32,7 +32,7 @@ ruleList
 	;
 	
 headerBlock 
-	:  importDeclaration useDeclaration javaMatcherDeclaration* optionDeclaration*
+	:  importDeclaration useDeclaration optionDeclaration* (javaMatcherDeclaration | externalListDeclaration)*
 	;
 
 importDeclaration
@@ -112,18 +112,39 @@ atomicExpression
 	: Identifier
 	| featureName operator literal
 	| featureName arrayOperator literalArray
-	| featureName inListOperator externalListDefinition
+	| featureName inListOperator resourceIdentifier
 	| 'text' '==' coveredTextIgnoreCase
 	| 'text' '===' coveredTextExactly
 	| 'text' inListOperator coveredTextArray
 	;
 
-externalListDefinition
-	: 'list' '(' StringLiteral ')'
-	| 'csv' '(' StringLiteral ','  separator ',' IntegerLiteral  ')'
-	| 'json' '(' StringLiteral ',' keypath ')'
-	| 'yaml' '(' StringLiteral ',' keypath ')'
+resourceIdentifier
+	: Identifier
 	;
+
+externalListDeclaration
+	: RESOURCE resourceIdentifier ':'
+	 (simpleListDefinition
+		| csvListDefinition
+		| tsvListDefinition
+		| jsonListDefinition
+		| yamlListDefinition)
+	';'
+	;
+
+simpleListDefinition : 'list' '(' path ')' ;
+
+path : StringLiteral ;
+
+yamlListDefinition : 'yaml' '(' path ',' keypath ')' ;
+
+jsonListDefinition : 'json' '(' path ',' keypath ')' ;
+
+csvListDefinition : 'csv' '(' path ','  separator ','  quote ',' IntegerLiteral  ')' ;
+
+tsvListDefinition : 'tsv' '(' path (',' IntegerLiteral) ? ')' ;
+
+quote : StringLiteral ;
 
 separator
 	: StringLiteral
@@ -270,6 +291,7 @@ IMPORT	: 'import';
 USE	: 'use';
 SET	: 'set';
 JAVA_MATCHER	: 'java-matcher';
+RESOURCE : 'resource';
 
 // Comments
 LINE_COMMENT

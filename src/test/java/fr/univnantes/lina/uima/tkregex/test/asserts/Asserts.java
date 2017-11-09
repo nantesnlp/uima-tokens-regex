@@ -4,7 +4,7 @@ import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
 import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
 import fr.univnantes.lina.uima.tkregex.FeatureMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.StringArrayMatcher;
 
 public class Asserts {
 

@@ -26,6 +26,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	AutomatonParserTestCase.class,
@@ -34,10 +37,12 @@ import org.junit.runners.Suite.SuiteClasses;
 	TermSuiteFrenchMWTParserTestCase.class,
 	OnCasFunctionalTestCase.class,
 	RegexCoveredTextMatcherTestCase.class,
-	ArrayMatcherTestCase.class
+	ArrayMatcherTestCase.class,
 	}
 )
 
 public class AutomatonTests {
+
+	public static final Path RESOURCES = Paths.get("src", "test", "resources");
 
 }

@@ -19,20 +19,23 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.matchers;
+package fr.univnantes.lina.uima.tkregex;
 
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.FeatureMatcher;
 import fr.univnantes.lina.uima.tkregex.Op;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.text.AnnotationFS;
 
-public class StringArrayMatcher  extends CoveredTextMatcher {
+public class StringArrayMatcher  extends FeatureMatcher {
 	private Set<String> values;
 	private Op operator;
 
-	public StringArrayMatcher(Op operator, String... values) {
-		super();
+	public StringArrayMatcher(Feature feature, Op operator, String... values) {
+		super(feature);
 		this.operator = operator;
 		this.values = Sets.newHashSetWithExpectedSize(values.length);
 		boolean ignoreCase = isIgnoreCase();
@@ -45,21 +48,6 @@ public class StringArrayMatcher  extends CoveredTextMatcher {
 		return operator == Op.IN_IGNORE_CASE || operator == Op.NIN_IGNORE_CASE;
 	}
 
-	@Override
-	protected boolean match(String text) {
-		switch(operator) {
-			case IN:
-				return isIn(text);
-			case NIN:
-				return !isIn(text);
-			case IN_IGNORE_CASE:
-				return isIn(text.toLowerCase());
-			case NIN_IGNORE_CASE:
-				return !isIn(text.toLowerCase());
-			default:
-				throw new UnsupportedOperationException("Unexpected operator: " + operator);
-		}
-	}
 
 	public Op getOperator() {
 		return operator;
@@ -71,5 +59,26 @@ public class StringArrayMatcher  extends CoveredTextMatcher {
 
 	public Set<String> getValues() {
 		return values;
+	}
+
+	@Override
+	public boolean matches(AnnotationFS annotation) {
+		String value = getStringValue(annotation);
+		switch(operator) {
+			case IN:
+				return isIn(value);
+			case NIN:
+				return !isIn(value);
+			case IN_IGNORE_CASE:
+				return isIn(value.toLowerCase());
+			case NIN_IGNORE_CASE:
+				return !isIn(value.toLowerCase());
+			default:
+				throw new UnsupportedOperationException("Unexpected operator: " + operator);
+		}
+	}
+
+	protected String getStringValue(AnnotationFS annotation) {
+		return (String) getValue(annotation);
 	}
 }

@@ -1,15 +1,12 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
 import fr.univnantes.lina.uima.tkregex.Op;
-import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
-import org.apache.uima.cas.text.AnnotationFS;
-import org.assertj.core.api.AbstractAssert;
+import fr.univnantes.lina.uima.tkregex.StringArrayMatcher;
 import org.assertj.core.api.IterableAssert;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StringArrayMatcherAssert extends CoveredTextMatcherAssert {
+public class StringArrayMatcherAssert extends FeatureMatcherAssert {
 	private StringArrayMatcher actual;
 
 	public StringArrayMatcherAssert(StringArrayMatcher stringArrayMatcher, Class<?> selfType) {

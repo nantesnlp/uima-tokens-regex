@@ -22,38 +22,38 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.ImmutableSet;
 import fr.univnantes.lina.uima.tkregex.*;
+import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
+import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
+import fr.univnantes.lina.uima.tkregex.matchers.TitleCased;
 import fr.univnantes.lina.uima.tkregex.test.asserts.Asserts;
+import junit.framework.TestCase;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableSet;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
 
-import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
-import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ImportDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.UseDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.TitleCased;
-import junit.framework.TestCase;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AutomatonParserTestCase extends TestCase {
 	
 	private List<Rule> rules;
-	
+	private AutomataParserListener listener;
 	public void initAutomata(String rules) {
 		initAutomata(rules, false);
 	}
@@ -65,16 +65,34 @@ public class AutomatonParserTestCase extends TestCase {
 		initAutomataWithCustomHeader(body, allowMatchingEmptySequences, defaultHeader);
 	}
 
+	private void initAutomataFromFileWithCustomResourceDirectory(String regexFilePath,Path customDirectory) throws IOException {
+		CharStream input = CharStreams.fromPath(AutomatonTests.RESOURCES.resolve(regexFilePath));
+		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		listener.setCustomResourceDir(customDirectory);
+		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
+		this.rules = listener.getRules();
+	}
+
+	private void initAutomataFromFile(String regexFilePath) throws IOException {
+		CharStream input = CharStreams.fromPath(AutomatonTests.RESOURCES.resolve(regexFilePath));
+		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
+		this.rules = listener.getRules();
+	}
+
+	private UimaTokenRegexParser initListenerAndGetParser(CharStream input) {
+		UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
+		listener = new AutomataParserListener( parser );
+		return parser;
+	}
 
 	private void initAutomataWithCustomHeader(String body, boolean allowMatchingEmptySequences, String header) {
 		body = header + body;
 		
 		CharStream input = CharStreams.fromString(body);
-		UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
-		
-		AutomataParserListener listener = new AutomataParserListener( parser );
+		UimaTokenRegexParser parser = initListenerAndGetParser(input);
 		listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
@@ -108,6 +126,68 @@ public class AutomatonParserTestCase extends TestCase {
 			fail("Should throw AutomataParsingException");
 		}
 	}
+
+	@Test
+	public void testLoadResourceFromCurrentDirectory() throws IOException {
+		initAutomataFromFile("regex-files/simple-list-from-current-directory.regex");
+		assertThat(listener.getResources())
+				.containsKeys("List1")
+				.hasSize(1);
+		assertThat(listener.getResources().get("List1"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+	}
+
+	@Test
+	public void testLoadTSVResource() throws IOException {
+		initAutomataFromFile("regex-files/all-resource-types-from-current-directory.regex");
+		assertThat(listener.getResources())
+				.containsKeys("ListJSON1", "ListJSON2", "ListTSV", "ListYAML1", "ListYAML2", "ListSimple")
+				.hasSize(6);
+		assertThat(listener.getResources().get("ListJSON1"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+		assertThat(listener.getResources().get("ListJSON2"))
+				.containsExactlyInAnyOrder("1", "word2", "word3");
+		assertThat(listener.getResources().get("ListYAML1"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+		assertThat(listener.getResources().get("ListYAML2"))
+				.containsExactlyInAnyOrder("1", "word2", "word3");
+		assertThat(listener.getResources().get("ListSimple"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+		assertThat(listener.getResources().get("ListTSV"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+
+	}
+
+
+		@Test
+	public void testLoadResourceFromCustomDir() throws IOException {
+		Path customDir = Paths.get("/tmp/sparklane-java-ner-tests");
+		Path simpleListFile = AutomatonTests.RESOURCES.resolve("fix-resources/simple-list.txt");
+		customDir.toFile().mkdirs();
+		Files.copy(simpleListFile, customDir.resolve("simple-list.txt"), StandardCopyOption.REPLACE_EXISTING);
+		initAutomataFromFileWithCustomResourceDirectory(
+				"regex-files/simple-list-from-custom-directory.regex",
+				customDir);
+		assertThat(listener.getResources())
+				.containsKeys("List1")
+				.hasSize(1);
+		assertThat(listener.getResources().get("List1"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+	}
+
+	@Test
+	public void testLoadResourceFromClasspath() throws IOException {
+		assertThat(this.getClass().getResource("/fix-resources/simple-list.txt"))
+				.isNotNull();
+		initAutomataFromFile("regex-files/simple-list-from-classpath.regex");
+		assertThat(listener.getResources())
+				.containsKeys("List1")
+				.hasSize(1);
+		assertThat(listener.getResources().get("List1"))
+				.containsExactlyInAnyOrder("word1", "word2", "word3");
+	}
+
+
 	@Test
 	public void testThrowExceptionIfMatchesEmptySequence2() {
 		try {
@@ -786,7 +866,9 @@ public class AutomatonParserTestCase extends TestCase {
 		Transition matcher = initState.getTransitions().iterator().next();
 		assertEquals(RegexCoveredTextMatcher.class, matcher.getMatcher().getClass());
 		assertEquals(Pattern.compile("Ftd?\"^\\\\a-Z").toString(), ((RegexCoveredTextMatcher)matcher.getMatcher()).getPattern().toString());
-		
+
 	}
+
+
 
 }

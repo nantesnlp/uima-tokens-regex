@@ -1,0 +1,13 @@
+import fr.univnantes.lina.test.uima.TestTypeSystem;
+use fr.univnantes.lina.test.uima.TestAnno;
+
+resource ListJSON1: json("src/test/resources/fix-resources/json-file.json", "a.aa");
+resource ListJSON2: json("src/test/resources/fix-resources/json-file.json", "a.ac");
+resource ListTSV: tsv("src/test/resources/fix-resources/tsv-file.tsv", 1);
+resource ListYAML1: yaml("src/test/resources/fix-resources/yaml-file.yml", "a.aa");
+resource ListYAML2: yaml("src/test/resources/fix-resources/yaml-file.yml", "a.ac");
+resource ListSimple: list("src/test/resources/fix-resources/simple-list.txt");
+
+matcher A: [lemma=="a"];
+
+rule "rule1" : A+ ;

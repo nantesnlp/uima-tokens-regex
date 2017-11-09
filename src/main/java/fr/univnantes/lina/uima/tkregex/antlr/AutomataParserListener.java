@@ -21,7 +21,6 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.antlr;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -30,9 +29,9 @@ import fr.univnantes.lina.uima.tkregex.*;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.*;
-import fr.univnantes.lina.uima.tkregex.matchers.StringArrayMatcher;
 import fr.univnantes.lina.uima.tkregex.matchers.StringExactlyMatcher;
 import fr.univnantes.lina.uima.tkregex.matchers.StringIgnoreCaseMatcher;
+import fr.univnantes.lina.uima.tkregex.util.Files;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -43,14 +42,17 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
-import org.apache.uima.resource.metadata.FeatureDescription;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,6 +62,9 @@ import static java.util.stream.Collectors.toList;
 
 
 public class AutomataParserListener implements UimaTokenRegexListener {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AutomataParserListener.class);
+
 	private static final Pattern M_N_PATTERN = Pattern.compile("\\{(\\d+(,\\d+)?)\\}");
 
 	public static final String OPTION_INLINE = "inline";
@@ -77,6 +82,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	
 	private boolean allowMatchingEmptySequences = false;
 
+
 	private boolean inlineAllowed = true;
 
 	private boolean inRule = false;
@@ -84,7 +90,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	private TypeSystemDescription typeSystemDescription = null;
 
 	private TypeDescription usedTypeDescription = null;
-	
+
 	public Map<String, CustomMatcher> getCustomJavaMatchers() {
 		return declaredJavaMatchers;
 	}
@@ -106,11 +112,19 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		this.parser = parser;
 	}
 
+	public void setCustomResourceDir(Path customResourceDir) {
+		this.customResourceDir = Optional.of(customResourceDir);
+	}
+
 	public void setAllowOnlineMatcherDeclaration(
 			boolean allowOnlineMatcherDeclaration) {
 		this.inlineAllowed = allowOnlineMatcherDeclaration;
 	}
-	
+
+	public Map<String, Set<String>> getResources() {
+		return resources;
+	}
+
 	public void setAllowMatchingEmptySequences(
 			boolean allowMatchingEmptySequences) {
 		this.allowMatchingEmptySequences = allowMatchingEmptySequences;
@@ -222,8 +236,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		AnnotationMatcher matcher = null;
 		if(ctx.Identifier() != null) {
 			String matcherName = ctx.Identifier().getText();
-			
-			
 			if(shortcutMatchers.containsKey(matcherName)) 
 				matcher = shortcutMatchers.get(matcherName);
 			else if(declaredJavaMatchers.containsKey(matcherName))
@@ -233,27 +245,44 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			else
 				throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
 		} else if(ctx.coveredTextArray() != null) {
-			matcher = new StringArrayMatcher(toOperator(ctx.inListOperator()), coveredTextArray.get());
-		} else if(ctx.externalListDefinition() != null) {
-
+			matcher = new CoveredTextStringArrayMatcher(
+					toOperator(
+							ctx.inListOperator()),
+							coveredTextArray.get());
 		} else if(ctx.literalArray() != null) {
 			matcher = new ArrayMatcher(
-					toFeatureDescription(ctx.featureName()),
+					toFeature(ctx.featureName()),
 					toOperator(ctx.arrayOperator()),
 					toLiteralArray(ctx.literalArray()));
+		} else if(ctx.resourceIdentifier() != null) {
+			matcher = new ArrayMatcher(
+					toFeature(ctx.featureName()),
+					toOperator(ctx.inListOperator()),
+					toStringArray(ctx.resourceIdentifier())
+			);
 		} else if(ctx.coveredTextExactly() != null) {
 			matcher = new StringExactlyMatcher(coveredTextExactly.get());
 		} else if(ctx.coveredTextIgnoreCase() != null) {
 			matcher = new StringIgnoreCaseMatcher(coveredTextIgnoredCase.get());
 		} else 
 			matcher = new ExpressionMatcher(
-					toFeatureDescription(ctx.featureName()),
+					toFeature(ctx.featureName()),
 					toOperator(ctx.operator()),
 					toLiteralValue(ctx.literal()), 
 					toLiteralType(ctx.literal())
 				);
 
 		return matcher;
+	}
+
+	private Map<String, Set<String>> resources = new HashMap<>();
+
+	private Set<String> toStringArray(ResourceIdentifierContext ctxt) {
+		String resourceId = ctxt.getText();
+		if(resources.containsKey(resourceId)) {
+			return resources.get(resourceId);
+		} else
+			throw new AutomataParsingException(String.format("No such external resource <%s>. Available resources: %s", resourceId, resources.keySet()));
 	}
 
 	private Op toOperator(InListOperatorContext ctxt) {
@@ -267,8 +296,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return Op.fromString(ctxt.getText());
 	}
 
-	private Feature toFeatureDescription(FeatureNameContext featName) {
-		java.util.Optional<Feature> featureDescription = findFeatureDescription(toType(this.usedTypeDescription), featName.getText());
+	private Feature toFeature(FeatureNameContext featName) {
+		Optional<Feature> featureDescription = findFeatureDescription(toType(this.usedTypeDescription), featName.getText());
 		if(featureDescription.isPresent())
 			return featureDescription.get();
 		else
@@ -291,8 +320,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-	private java.util.Optional<Feature> findFeatureDescription(Type type, String featName) {
-		return java.util.Optional.ofNullable(type.getFeatureByBaseName(featName));
+	private Optional<Feature> findFeatureDescription(Type type, String featName) {
+		return Optional.ofNullable(type.getFeatureByBaseName(featName));
 	}
 
 	private Object[] toLiteralArray(LiteralArrayContext literalArrayContext) {
@@ -356,6 +385,16 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		this.inRule = false;
 	}
 
+	@Override
+	public void enterAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+
+	}
+
 	private Automaton toAutomaton(AutomatonDeclarationContext ctx) {
 		List<Automaton> subAutomata = ctx.orBranchingDeclaration().stream().map(this::toOrBanchingAutomaton).collect(Collectors.toList());
 		return AutomatonFactory.createConcatenation(subAutomata);
@@ -391,12 +430,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 
-	protected String resolveFeature(String shortName) {
-		String feature = featureMap.get(shortName);
-		if(feature == null) 
-			throw new AutomataParsingException("No such feature found in type system: " + shortName);
-		return feature;
-	}
+//	protected String resolveFeature(String shortName) {
+//		String feature = featureMap.get(shortName);
+//		if(feature == null)
+//			throw new AutomataParsingException("No such feature found in type system: " + shortName);
+//		return feature;
+//	}
 
 	@Override
 	public void enterRuleName(RuleNameContext ctx) {
@@ -589,24 +628,24 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		usedTypeDescription = typeSystemDescription.getType(value);
 		if(usedTypeDescription == null)
 			throw new AutomataParsingException("No such type in type system: " + value);
-		inferFeatureMap(usedTypeDescription);
+//		inferFeatureMap(usedTypeDescription);
 	}
 	
-	protected Map<String, String> featureMap = Maps.newHashMap();
+//	private Map<String, String> featureMap = Maps.newHashMap();
 	
-	private void inferFeatureMap(TypeDescription type) {
-		// 1 - Recursively add features of the super type
-		TypeDescription superType = typeSystemDescription.getType(type.getSupertypeName());
-		if(superType != null)
-			inferFeatureMap(superType);
-		
-		// 2 - Add features of this type
-		for(FeatureDescription feature:type.getFeatures()) {
-			String featureFQN = type.getName() + ":" + feature.getName();
-			featureMap.put(feature.getName(), featureFQN);
-			featureMap.put(featureFQN, featureFQN);
-		}
-	}
+//	private void inferFeatureMap(TypeDescription type) {
+//		// 1 - Recursively add features of the super type
+//		TypeDescription superType = typeSystemDescription.getType(type.getSupertypeName());
+//		if(superType != null)
+//			inferFeatureMap(superType);
+//
+//		// 2 - Add features of this type
+//		for(FeatureDescription feature:type.getFeatures()) {
+//			String featureFQN = type.getName() + ":" + feature.getName();
+//			featureMap.put(feature.getName(), featureFQN);
+//			featureMap.put(featureFQN, featureFQN);
+//		}
+//	}
 
 	@Override
 	public void enterOptionDeclaration(OptionDeclarationContext ctx) {
@@ -658,11 +697,11 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 
-	private Optional<String> coveredTextIgnoredCase = Optional.absent();
+	private Optional<String> coveredTextIgnoredCase = Optional.empty();
 	
 	@Override
 	public void enterCoveredTextIgnoreCase(CoveredTextIgnoreCaseContext ctx) {
-		coveredTextIgnoredCase = Optional.absent();
+		coveredTextIgnoredCase = Optional.empty();
 	}
 
 	@Override
@@ -670,11 +709,11 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		coveredTextIgnoredCase = Optional.of(prepareStringLiteral(ctx.StringLiteral().toString()));
 	}
 
-	private Optional<String> coveredTextExactly = Optional.absent();
+	private Optional<String> coveredTextExactly = Optional.empty();
 
 	@Override
 	public void enterCoveredTextExactly(CoveredTextExactlyContext ctx) {
-		coveredTextExactly = Optional.absent();
+		coveredTextExactly = Optional.empty();
 	}
 
 	@Override
@@ -692,11 +731,11 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-	private Optional<String[]> coveredTextArray = Optional.absent();
+	private Optional<String[]> coveredTextArray = Optional.empty();
 
 	@Override
 	public void enterCoveredTextArray(CoveredTextArrayContext ctx) {
-		coveredTextArray = Optional.absent();		
+		coveredTextArray = Optional.empty();
 	}
 
 	@Override
@@ -725,12 +764,129 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 	@Override
-	public void enterExternalListDefinition(ExternalListDefinitionContext ctx) {
+	public void enterResourceIdentifier(ResourceIdentifierContext ctx) {
 
 	}
 
 	@Override
-	public void exitExternalListDefinition(ExternalListDefinitionContext ctx) {
+	public void exitResourceIdentifier(ResourceIdentifierContext ctx) {
+	}
+
+	@Override
+	public void enterExternalListDeclaration(ExternalListDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitExternalListDeclaration(ExternalListDeclarationContext ctx) {
+		String resourceId = ctx.resourceIdentifier().getText();
+		Set<String> values = new HashSet<>();
+		try {
+			if (ctx.csvListDefinition() != null) {
+				throw new UnsupportedOperationException("Not yet implemented");
+			} else if (ctx.tsvListDefinition() != null) {
+				URL url = toResourceUrl(ctx.tsvListDefinition().path(), resourceId);
+				TerminalNode colArg = ctx.tsvListDefinition().IntegerLiteral();
+				int column = colArg == null ? 0 : Integer.parseInt(colArg.getText());
+				LOGGER.debug(String.format("[TSV] Loading %s from column %d of resource %s",
+						resourceId,
+						column,
+						url));
+				values = Files.loadTsv(url, column);
+			} else if (ctx.jsonListDefinition() != null) {
+				URL url = toResourceUrl(ctx.jsonListDefinition().path(), resourceId);
+				String rawKeyPath = ctx.jsonListDefinition().keypath().getText();
+				values = Files.loadJson(url, withoutQuotes(rawKeyPath));
+			} else if (ctx.simpleListDefinition() != null) {
+				URL url = toResourceUrl(ctx.simpleListDefinition().path(), resourceId);
+				LOGGER.debug(String.format("[Simple string file] Loading %s from column 0 of resource %s",
+						resourceId,
+						url));
+				values = Files.loadTsv(url, 0);
+			} else if (ctx.yamlListDefinition() != null) {
+				URL url = toResourceUrl(ctx.yamlListDefinition().path(), resourceId);
+				String rawKeyPath = ctx.yamlListDefinition().keypath().getText();
+				values = Files.loadYaml(url, withoutQuotes(rawKeyPath));
+			}
+			resources.put(resourceId, values);
+		} catch(IOException e) {
+			LOGGER.error(String.format("Failed to parse resource %s", resourceId), e);
+			throw new AutomataParsingException(e);
+		}
+	}
+
+	private String withoutQuotes(String text) {
+		return text.substring(1, text.length()-1);
+	}
+
+
+	@Override
+	public void enterSimpleListDefinition(SimpleListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void exitSimpleListDefinition(SimpleListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void enterPath(PathContext ctx) {
+
+	}
+
+	@Override
+	public void exitPath(PathContext ctx) {
+
+	}
+
+	@Override
+	public void enterYamlListDefinition(YamlListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void exitYamlListDefinition(YamlListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void enterJsonListDefinition(JsonListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void exitJsonListDefinition(JsonListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void enterCsvListDefinition(CsvListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void exitCsvListDefinition(CsvListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void enterTsvListDefinition(TsvListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void exitTsvListDefinition(TsvListDefinitionContext ctx) {
+
+	}
+
+	@Override
+	public void enterQuote(QuoteContext ctx) {
+
+	}
+
+	@Override
+	public void exitQuote(QuoteContext ctx) {
 
 	}
 
@@ -754,11 +910,41 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-	@Override
-	public void enterAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+
+	private URL toResourceUrl(PathContext path, String resourceId) {
+		String text = path.StringLiteral().getText();
+		text = text.substring(1, text.length() - 1);
+		return resolveUrl(text, resourceId);
 	}
 
-	@Override
-	public void exitAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+	Optional<Path> customResourceDir = Optional.empty();
+	private URL resolveUrl(String text, String resourceId) {
+		try {
+			// try current dir
+			if(Paths.get(text).toFile().isFile()) {
+				LOGGER.debug("Loading resource {} from {} directory", resourceId, Paths.get(text).isAbsolute() ? "absolute" : "relative");
+				return Paths.get(text).toUri().toURL();
+			}
+			// try custom resource dir
+			if(customResourceDir.isPresent()) {
+				if(customResourceDir.get().resolve(text).toFile().isFile()) {
+					LOGGER.debug("Loading resource {} from custom resource directory {}", resourceId, customResourceDir.get().resolve(text));
+					return customResourceDir.get().resolve(text).toUri().toURL();
+				}
+			}
+			// finally try classpath
+			String classpathUrl = text.startsWith("/") ? text : ("/" + text);
+			if(this.getClass().getResource(classpathUrl) != null) {
+				LOGGER.debug("Loading resource {} from classpath", resourceId);
+				return this.getClass().getResource(classpathUrl);
+			}
+			else
+				throw new AutomataParsingException(String.format("Cannot find resource %s", text));
+		} catch (MalformedURLException e) {
+			throw new AutomataParsingException(e);
+		}
 	}
+
 }
+
+

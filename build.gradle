@@ -57,12 +57,17 @@ dependencies {
 	testCompile "org.mockito:mockito-all:1.10.19"
 	testCompile "org.apache.uima:uimaj-tools:2.8.1"
 	testCompile "fr.univ-nantes.julestar:uima-test:1.0.0"
+	testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
 	// UIMA
 	compile 'org.apache.uima:uimaj-core:2.10.0'
 	compile "org.apache.uima:uimafit-core:2.3.0"
-
 	compile 'com.google.guava:guava:21.0'
+
+	// Resource formats
+	compile 'com.fasterxml.jackson.core:jackson-core:2.9.2'
+	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.2'
+	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.9.2'
 
 	// Antlr
 	runtime "org.antlr:antlr4-runtime:4.7"
