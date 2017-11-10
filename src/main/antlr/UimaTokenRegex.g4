@@ -28,7 +28,7 @@ grammar UimaTokenRegex;
  * Define a grammar called Hello
  */
 ruleList
-	:	headerBlock shortcutMatcherDeclaration* ruleDeclaration+
+	:	headerBlock shortcutMatcherDeclaration* ruleDeclaration*
 	;
 	
 headerBlock 
