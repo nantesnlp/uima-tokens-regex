@@ -61,7 +61,7 @@ public class RegexListResource implements SharedResourceObject {
 		try {
 			UIMAFramework.getLogger().log(Level.FINE, "Loading resource " + KEY_TOKEN_REGEX_RULES + " at: " + aData.getUri());
 			
-			input = CharStreams.fromStream(aData.getInputStream());
+			input = getCharStream(aData);
 			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
@@ -72,8 +72,12 @@ public class RegexListResource implements SharedResourceObject {
 			throw new ResourceInitializationException(e);
 		}
 	}
-	
-	
+
+	protected CharStream getCharStream(DataResource aData) throws IOException {
+		return CharStreams.fromStream(aData.getInputStream());
+	}
+
+
 	public List<Rule> getRules() {
 		return Collections.unmodifiableList(this.listener.getRules());
 	}

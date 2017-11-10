@@ -41,6 +41,8 @@ import fr.univnantes.lina.uima.tkregex.RecognitionHandler;
 import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.Rule;
 
+import java.util.List;
+
 
 public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	private static final String ERR_NO_MATCHER_IMPLEMENTATION_FOUND = "No implementation found for custom matcher %s";
@@ -66,11 +68,14 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	protected abstract void ruleMatched(JCas jCas, RegexOccurrence occurrence);
 	protected void beforeRuleProcessing(JCas jCas) {}
 	protected void afterRuleProcessing(JCas jCas) {}
-	
+
+
 	protected synchronized void registerBuiltinMatcher(String matcherName, AnnotationMatcher matcher) {
 		Preconditions.checkArgument(resource.getCustomJavaMatchers().containsKey(matcherName), "No such matcher declared in regex file: %s", matcherName);
 		resource.getCustomJavaMatchers().remove(matcherName).setMatcher(matcher);
 	}
+
+	private RegexEngine regexEngine;
 	
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -78,6 +83,10 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 		
 		for(Rule rule:resource.getRules())
 			rule.getAutomaton().setUseMatcherCache(useMatcherCache);
+
+		this.regexEngine = new RegexEngine(resource.getRules(), this::ruleMatched);
+		this.regexEngine.setAllowOverlappingOccurrences(allowOverlappingOccurrences);
+		this.regexEngine.setIteratedTypeName(this.resource.getIteratedTypeDescription().getName());
 	}
 	
 	@Override
@@ -101,37 +110,7 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 			}
 		}
 		
-		RecognitionHandler recognitionHandler = new RecognitionHandler() {
-			@Override
-			public void recognizedEpisode(RegexOccurrence episode) {
-				ruleMatched(jCas, episode);
-			}
-		};
-		for (final Rule rule: this.resource.getRules()) {
-			rule.getAutomaton().setAllowOverlappingInstances(this.allowOverlappingOccurrences);
-			rule.getAutomaton().addRecognitionHandler(recognitionHandler);
-			rule.getAutomaton().reset();
-		}
-		
-		FSIterator<Annotation> it = jCas.getAnnotationIndex(getIteratedType(jCas)).iterator();
-		while (it.hasNext()) {
-			Annotation word = (Annotation) it.next();
-			boolean allRulesFailed = true;
-			for (Rule rule : this.resource.getRules()) {
-				rule.getAutomaton().nextAnnotation(word);
-				allRulesFailed &= rule.getAutomaton().currentInstancesNum() == 0;
-			}
-			if(allRulesFailed)
-				allRulesFailed(jCas);
-		}
-		
-		
-		
-		for (Rule rule : this.resource.getRules()) 
-			rule.getAutomaton().finish();
-		for (final Rule rule: this.resource.getRules()) 
-			rule.getAutomaton().removeRecognitionHandler(recognitionHandler);
-		
+		regexEngine.process(jCas);
 		
 		afterRuleProcessing(jCas);
 	}

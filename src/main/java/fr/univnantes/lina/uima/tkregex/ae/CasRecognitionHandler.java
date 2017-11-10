@@ -19,12 +19,13 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex;
+package fr.univnantes.lina.uima.tkregex.ae;
 
 
+import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
 import org.apache.uima.jcas.JCas;
 
-public interface RecognitionHandler {
+public interface CasRecognitionHandler {
 	
-	public void recognizedEpisode(RegexOccurrence episode);
+	public void recognizedEpisode(JCas cas, RegexOccurrence episode);
 }
