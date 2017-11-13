@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Wed Nov 08 11:31:04 CET 2017 */
+/* First created by JCasGen Mon Nov 13 18:24:11 CET 2017 */
 package fr.univnantes.lina.test.uima;
 
 import org.apache.uima.jcas.JCas;
@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Wed Nov 08 11:31:04 CET 2017
+ * Updated by JCasGen Mon Nov 13 18:24:11 CET 2017
  * @generated */
 public class TypeA_Type extends Annotation_Type {
   /** @generated 

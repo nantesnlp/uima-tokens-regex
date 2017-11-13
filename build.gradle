@@ -151,7 +151,9 @@ task jcasgen(type: JavaExec) {
 	ext.outputDir = file("$projectDir/src/test/java")
 	inputs.file srcFile
 	outputs.dir outputDir
-	println configurations
+	println "src: $srcFile"
+	println "output: $outputDir"
+
 	classpath configurations.testCompile
 	// This ensures availability of type system imports
 	// however, assumes that files are in desc subfolder

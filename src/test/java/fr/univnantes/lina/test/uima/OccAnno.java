@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Wed Nov 08 11:31:04 CET 2017 */
+/* First created by JCasGen Mon Nov 13 18:24:11 CET 2017 */
 package fr.univnantes.lina.test.uima;
 
 import org.apache.uima.jcas.JCas; 
@@ -11,7 +11,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Wed Nov 08 11:31:04 CET 2017
+ * Updated by JCasGen Mon Nov 13 18:24:11 CET 2017
  * XML source: /home/damien/git/uima-tokens-regex/src/test/resources/TestTypeSystem.xml
  * @generated */
 public class OccAnno extends Annotation {
@@ -90,7 +90,7 @@ public class OccAnno extends Annotation {
     
   /** setter for rule - sets  
    * @generated
-   * @param v value to testDifferentTypes into the feature
+   * @param v value to set into the feature 
    */
   public void setRule(String v) {
     if (OccAnno_Type.featOkTst && ((OccAnno_Type)jcasType).casFeat_rule == null)
@@ -112,7 +112,7 @@ public class OccAnno extends Annotation {
     
   /** setter for pattern - sets  
    * @generated
-   * @param v value to testDifferentTypes into the feature
+   * @param v value to set into the feature 
    */
   public void setPattern(String v) {
     if (OccAnno_Type.featOkTst && ((OccAnno_Type)jcasType).casFeat_pattern == null)

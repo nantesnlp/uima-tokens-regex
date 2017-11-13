@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Wed Nov 08 11:31:04 CET 2017 */
+/* First created by JCasGen Mon Nov 13 18:24:11 CET 2017 */
 package fr.univnantes.lina.test.uima;
 
 import org.apache.uima.jcas.JCas; 
@@ -11,7 +11,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Wed Nov 08 11:31:04 CET 2017
+ * Updated by JCasGen Mon Nov 13 18:24:11 CET 2017
  * XML source: /home/damien/git/uima-tokens-regex/src/test/resources/TestTypeSystem.xml
  * @generated */
 public class TypeA extends Annotation {
@@ -90,7 +90,7 @@ public class TypeA extends Annotation {
     
   /** setter for fInt - sets  
    * @generated
-   * @param v value to testDifferentTypes into the feature
+   * @param v value to set into the feature 
    */
   public void setFInt(int v) {
     if (TypeA_Type.featOkTst && ((TypeA_Type)jcasType).casFeat_fInt == null)
@@ -112,7 +112,7 @@ public class TypeA extends Annotation {
     
   /** setter for fString - sets  
    * @generated
-   * @param v value to testDifferentTypes into the feature
+   * @param v value to set into the feature 
    */
   public void setFString(String v) {
     if (TypeA_Type.featOkTst && ((TypeA_Type)jcasType).casFeat_fString == null)
@@ -134,7 +134,7 @@ public class TypeA extends Annotation {
     
   /** setter for fFloat - sets  
    * @generated
-   * @param v value to testDifferentTypes into the feature
+   * @param v value to set into the feature 
    */
   public void setFFloat(float v) {
     if (TypeA_Type.featOkTst && ((TypeA_Type)jcasType).casFeat_fFloat == null)
@@ -156,7 +156,7 @@ public class TypeA extends Annotation {
     
   /** setter for fBoolean - sets  
    * @generated
-   * @param v value to testDifferentTypes into the feature
+   * @param v value to set into the feature 
    */
   public void setFBoolean(boolean v) {
     if (TypeA_Type.featOkTst && ((TypeA_Type)jcasType).casFeat_fBoolean == null)

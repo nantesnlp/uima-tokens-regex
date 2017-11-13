@@ -28,4 +28,8 @@ artifacts/
 #IDEA
 .idea
 out
-*.iml
+*.
+
+# type system classes
+src/test/java/fr/univnantes/lina/test/uima
+uima-tokens-regex.iml

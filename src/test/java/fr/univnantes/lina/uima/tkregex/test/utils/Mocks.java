@@ -40,11 +40,13 @@ public class Mocks {
 	}
 
 	public static <T extends Annotation> T anno(JCas cas, Class<T> cls, int begin, int end) throws CASException {
-		return (T) cas
+		AnnotationFS annotation = cas
 				.getCas().createAnnotation(
 						cas.getRequiredType(cls.getName()),
 						begin,
 						end);
+		cas.addFsToIndexes(annotation);
+		return (T) annotation;
 	}
 
 	public static <T extends Annotation> T anno(JCas cas, Class<T> cls) throws CASException {

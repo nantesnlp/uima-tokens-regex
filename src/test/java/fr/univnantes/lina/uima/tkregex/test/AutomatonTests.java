@@ -38,7 +38,8 @@ import java.nio.file.Paths;
 	OnCasFunctionalTestCase.class,
 	RegexCoveredTextMatcherTestCase.class,
 	ArrayMatcherTestCase.class,
-	}
+	MultiTypeIteratorTestCase.class,
+}
 )
 
 public class AutomatonTests {
