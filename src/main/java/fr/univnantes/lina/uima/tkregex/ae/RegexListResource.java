@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -82,8 +83,12 @@ public class RegexListResource implements SharedResourceObject {
 		return Collections.unmodifiableList(this.listener.getRules());
 	}
 	
-	public Map<String, CustomMatcher> getCustomJavaMatchers() {
-		return listener.getCustomJavaMatchers();
+	public Map<String, AnnotationMatcher> getShortcutMatchers() {
+		return listener.getShortcutMatchers();
+	}
+
+	public Map<String, CustomMatcher> getJavaMatchers() {
+		return listener.getJavaMatchers();
 	}
 
 

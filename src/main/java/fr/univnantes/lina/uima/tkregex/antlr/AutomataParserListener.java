@@ -54,8 +54,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -90,7 +88,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	private TypeDescription usedTypeDescription = null;
 
-	public Map<String, CustomMatcher> getCustomJavaMatchers() {
+	public Map<String, CustomMatcher> getJavaMatchers() {
 		return declaredJavaMatchers;
 	}
 	
