@@ -25,6 +25,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import fr.univnantes.lina.test.uima.OccAnno;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -41,7 +42,6 @@ import org.junit.rules.TemporaryFolder;
 import com.google.common.base.Charsets;
 
 import fr.univnantes.julestar.uima.testing.CasAssert;
-import fr.univnantes.lina.test.uima.OccAnno;
 import fr.univnantes.lina.uima.tkregex.ae.RegexListResource;
 import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
 import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;

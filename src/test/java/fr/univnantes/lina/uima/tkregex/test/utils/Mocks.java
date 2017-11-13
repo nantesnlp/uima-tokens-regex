@@ -21,9 +21,7 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
-import fr.univnantes.lina.test.uima.TypeA;
 import org.apache.uima.UIMAException;
-import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;

@@ -7,7 +7,6 @@ import fr.univnantes.lina.uima.tkregex.Op;
 import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
 import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.apache.uima.UIMAException;
-import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;

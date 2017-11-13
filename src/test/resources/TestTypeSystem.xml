@@ -19,7 +19,20 @@
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
       </features>
-    </typeDescription>   
+    </typeDescription>
+    <typeDescription>
+      <name>fr.univnantes.lina.test.uima.TestAnno</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>lemma</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
     <typeDescription>
       <name>fr.univnantes.lina.test.uima.OccAnno</name>
       <description/>
