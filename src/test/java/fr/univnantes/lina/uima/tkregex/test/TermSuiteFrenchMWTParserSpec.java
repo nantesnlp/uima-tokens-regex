@@ -43,7 +43,7 @@ import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 
-public class TermSuiteFrenchMWTParserTestCase {
+public class TermSuiteFrenchMWTParserSpec {
 	
 	private static final Path FRENCH_MWT_RULES = Paths.get("src", "test", "resources", "french-multi-word-rule-system.regex");
 	private List<Rule> rules;

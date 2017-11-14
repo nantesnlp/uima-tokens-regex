@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import static org.assertj.core.groups.Tuple.tuple;
 
-public class MultiTypeIteratorTestCase {
+public class MultiTypeIteratorSpec {
 
 	JCas cas;
 

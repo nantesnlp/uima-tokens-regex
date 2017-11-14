@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
 import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
 
-public class AutomatonFactoryTestCase {
+public class AutomatonFactorySpec {
 	
 	private Automaton a;
 	private Automaton b;

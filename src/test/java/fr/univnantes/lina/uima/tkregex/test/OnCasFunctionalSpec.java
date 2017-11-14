@@ -48,7 +48,7 @@ import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
 import fr.univnantes.lina.uima.tkregex.test.utils.RecogEngine;
 import fr.univnantes.lina.uima.tkregex.test.utils.TestUtils;
 
-public class OnCasFunctionalTestCase {
+public class OnCasFunctionalSpec {
 
 	private JCas  cas;
 	

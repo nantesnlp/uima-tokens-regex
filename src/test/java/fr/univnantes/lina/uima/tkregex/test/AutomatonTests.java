@@ -31,14 +31,14 @@ import java.nio.file.Paths;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	AutomatonParserTestCase.class,
-	AutomatonTestCase.class,
-	AutomatonFactoryTestCase.class,
-	TermSuiteFrenchMWTParserTestCase.class,
-	OnCasFunctionalTestCase.class,
-	RegexCoveredTextMatcherTestCase.class,
-	ArrayMatcherTestCase.class,
-	MultiTypeIteratorTestCase.class,
+	AutomatonParserSpec.class,
+	AutomatonSpec.class,
+	AutomatonFactorySpec.class,
+	TermSuiteFrenchMWTParserSpec.class,
+	OnCasFunctionalSpec.class,
+	RegexCoveredTextMatcherSpec.class,
+	ArrayMatcherSpec.class,
+	MultiTypeIteratorSpec.class,
 }
 )
 

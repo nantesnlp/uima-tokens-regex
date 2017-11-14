@@ -32,8 +32,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import fr.univnantes.lina.uima.tkregex.model.matchers.RegexCoveredTextMatcher;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(MockitoJUnitRunner.class)
-public class RegexCoveredTextMatcherTestCase extends TestCase {
+public class RegexCoveredTextMatcherSpec {
 	public Annotation getAnnotation(String coveredText) {
 		Annotation anno = Mockito.mock(Annotation.class);
 		Mockito.when(anno.getCoveredText()).thenReturn(coveredText);

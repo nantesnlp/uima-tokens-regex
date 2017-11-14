@@ -50,8 +50,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.*;
 
-public class AutomatonParserTestCase extends TestCase {
+public class AutomatonParserSpec {
 	
 	private List<Rule> rules;
 	private AutomataParserListener listener;

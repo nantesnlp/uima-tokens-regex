@@ -22,22 +22,18 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
-import junit.framework.TestCase;
-
-import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automaton;
-import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automatonTest;
-import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.javaTest;
-
+import com.google.common.collect.ImmutableMap;
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.collect.ImmutableMap;
-
-import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AutomatonTestCase extends TestCase {
+public class AutomatonSpec {
 	
 	@Test
 	public void testMatchLastAnnotation() {
