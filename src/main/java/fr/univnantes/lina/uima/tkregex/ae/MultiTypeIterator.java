@@ -28,6 +28,7 @@ public class MultiTypeIterator extends AbstractIterator<Annotation> {
 		this.iteratedTypes = Optional.of(new HashSet<>(iteratedTypes));
 	}
 
+
 	@Override
 	protected Annotation computeNext() {
 		if(!getIt().hasNext())

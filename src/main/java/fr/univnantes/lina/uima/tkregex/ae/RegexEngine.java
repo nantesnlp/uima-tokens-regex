@@ -1,5 +1,6 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
 import fr.univnantes.lina.uima.tkregex.model.automata.RecognitionHandler;
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
@@ -43,43 +44,29 @@ public class RegexEngine {
 
 	public void process(JCas jCas) {
 
-		RecognitionHandler episodeHandler = new RecognitionHandler() {
-			@Override
-			public void recognizedEpisode(RegexOccurrence episode) {
-				casRecognitionHandler.recognizedEpisode(jCas, episode);
-			}
-		};
+		RecognitionHandler episodeHandler = episode -> casRecognitionHandler.recognizedEpisode(jCas, episode);
 
 		for (final Rule rule: rules) {
-			rule.getAutomaton().setAllowOverlappingInstances(this.allowOverlappingOccurrences);
-			rule.getAutomaton().addRecognitionHandler(episodeHandler);
-			rule.getAutomaton().reset();
-		}
+			Automaton automaton = rule.getAutomaton();
+			automaton.setAllowOverlappingInstances(this.allowOverlappingOccurrences);
+			automaton.addRecognitionHandler(episodeHandler);
+			automaton.reset();
 
-		Iterator<Annotation> it = getIterator(jCas);
-		while (it.hasNext()) {
-			Annotation word = it.next();
-			boolean allRulesFailed = true;
-			for (Rule rule : rules) {
-				rule.getAutomaton().nextAnnotation(word);
-				allRulesFailed &= rule.getAutomaton().currentInstancesNum() == 0;
+			MultiTypeIterator it = getIterator(jCas);
+			while (it.hasNext()) {
+				Annotation annotation = it.next();
+				automaton.nextAnnotation(annotation);
 			}
-			if(allRulesFailed)
-				allRulesFailed(jCas);
-		}
 
-		for (Rule rule : rules)
-			rule.getAutomaton().finish();
-		for (final Rule rule: rules)
-			rule.getAutomaton().removeRecognitionHandler(episodeHandler);
+			automaton.finish();
+			automaton.removeRecognitionHandler(episodeHandler);
+		}
 
 	}
 
-	private Iterator<Annotation> getIterator(JCas jCas) {
+	private MultiTypeIterator getIterator(JCas jCas) {
 		return new MultiTypeIterator(jCas, this.iteratedTypes);
 	}
 
 
-	protected void allRulesFailed(JCas jCas) {
-	}
 }
