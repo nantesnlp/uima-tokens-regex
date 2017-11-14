@@ -21,16 +21,14 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test;
 
-import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automatonTest;
-import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.getSimpleLetterAutomaton;
-
+import com.google.common.collect.ImmutableList;
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-
-import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
-import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.automatonTest;
+import static fr.univnantes.lina.uima.tkregex.test.utils.TestUtils.getSimpleLetterAutomaton;
 
 public class AutomatonFactorySpec {
 	

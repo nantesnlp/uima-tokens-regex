@@ -21,9 +21,9 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import java.util.regex.Pattern;
-
 import org.apache.uima.cas.text.AnnotationFS;
+
+import java.util.regex.Pattern;
 
 public class RegexCoveredTextMatcher implements
 		AnnotationMatcher {

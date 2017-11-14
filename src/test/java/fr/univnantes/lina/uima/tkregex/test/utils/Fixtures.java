@@ -21,11 +21,6 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import fr.univnantes.lina.test.uima.TestAnno;
 import org.apache.uima.UIMAException;
 import org.apache.uima.cas.Feature;
@@ -34,6 +29,11 @@ import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
+
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Fixtures {
 

@@ -21,11 +21,7 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.automata;
 
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASRuntimeException;
-import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.FeatureStructure;
-import org.apache.uima.cas.Type;
+import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
 
 public class LastAnnotationToken implements AnnotationFS {

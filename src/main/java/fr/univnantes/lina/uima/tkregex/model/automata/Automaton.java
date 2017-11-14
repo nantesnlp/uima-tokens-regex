@@ -21,28 +21,20 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.automata;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
-import org.apache.uima.cas.text.AnnotationFS;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
+import org.apache.uima.cas.text.AnnotationFS;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 public class Automaton implements Cloneable {
 	

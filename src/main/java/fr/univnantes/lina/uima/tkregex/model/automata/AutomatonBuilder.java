@@ -21,12 +21,12 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.automata;
 
+import com.google.common.collect.Lists;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.google.common.collect.Lists;
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 
 public class AutomatonBuilder {
 

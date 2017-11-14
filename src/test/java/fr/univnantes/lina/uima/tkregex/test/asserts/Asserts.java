@@ -1,10 +1,6 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.model.matchers.ArrayMatcher;
-import fr.univnantes.lina.uima.tkregex.model.matchers.ExpressionMatcher;
-import fr.univnantes.lina.uima.tkregex.model.matchers.FeatureMatcher;
-import fr.univnantes.lina.uima.tkregex.model.matchers.StringArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.*;
 
 public class Asserts {
 

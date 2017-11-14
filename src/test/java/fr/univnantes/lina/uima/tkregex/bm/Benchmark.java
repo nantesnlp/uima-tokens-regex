@@ -21,11 +21,10 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.bm;
 
-import java.io.FileInputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Stopwatch;
+import com.google.common.primitives.Booleans;
+import fr.univnantes.lina.uima.tkregex.ae.RegexListResource;
+import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -40,11 +39,10 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.primitives.Booleans;
-
-import fr.univnantes.lina.uima.tkregex.ae.RegexListResource;
-import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 public class Benchmark {
 	private static final Path TERMSUITE_TYPE_SYSTEM = Paths.get("src", "test", "resources", "TermSuite_TS.xml");

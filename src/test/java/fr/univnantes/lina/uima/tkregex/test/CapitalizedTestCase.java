@@ -21,15 +21,14 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
-import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CapitalizedTestCase {
 	

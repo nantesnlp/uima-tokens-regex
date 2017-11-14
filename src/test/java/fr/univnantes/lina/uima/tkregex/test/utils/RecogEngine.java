@@ -21,14 +21,13 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
-import java.util.stream.Collectors;
-
 import fr.univnantes.lina.test.uima.OccAnno;
+import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.jcas.JCas;
 
-import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
-import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
+import java.util.stream.Collectors;
 
 public class RecogEngine extends TokenRegexAE {
 	@Override

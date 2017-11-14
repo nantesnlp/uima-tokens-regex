@@ -23,17 +23,16 @@ package fr.univnantes.lina.uima.tkregex.test;
 
 
 import com.google.common.collect.ImmutableSet;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.StringExactlyMatcher;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.StringIgnoreCaseMatcher;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.TitleCased;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.StringExactlyMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.StringIgnoreCaseMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.TitleCased;
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
 import fr.univnantes.lina.uima.tkregex.model.matchers.*;
 import fr.univnantes.lina.uima.tkregex.test.asserts.Asserts;
-import junit.framework.TestCase;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;

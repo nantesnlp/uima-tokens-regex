@@ -21,9 +21,8 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import org.apache.uima.cas.text.AnnotationFS;
-
 import com.google.common.base.MoreObjects;
+import org.apache.uima.cas.text.AnnotationFS;
 
 public class LabelledAnnotation {
 	private AnnotationFS annotation;

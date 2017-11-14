@@ -22,15 +22,12 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
-import junit.framework.TestCase;
-
+import fr.univnantes.lina.uima.tkregex.model.matchers.RegexCoveredTextMatcher;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.RegexCoveredTextMatcher;
 
 import static org.junit.Assert.assertEquals;
 

@@ -21,15 +21,13 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.ae;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Joiner;
+import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -42,13 +40,8 @@ import org.apache.uima.resource.SharedResourceObject;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.util.Level;
 
-import com.google.common.base.Joiner;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
-import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
-import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
+import java.io.IOException;
+import java.util.*;
 
 
 public class RegexListResource implements SharedResourceObject {

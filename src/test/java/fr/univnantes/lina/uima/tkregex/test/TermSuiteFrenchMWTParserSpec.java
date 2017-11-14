@@ -22,13 +22,11 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
+import com.google.common.base.Charsets;
+import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -36,12 +34,12 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Charsets;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
-import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
-import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TermSuiteFrenchMWTParserSpec {
 	

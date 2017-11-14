@@ -21,9 +21,8 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.ae.builtin;
 
-import org.apache.uima.cas.text.AnnotationFS;
-
 import fr.univnantes.lina.uima.tkregex.model.matchers.AbstractAnnotationMatcher;
+import org.apache.uima.cas.text.AnnotationFS;
 
 public abstract class CoveredTextMatcher extends AbstractAnnotationMatcher {
 

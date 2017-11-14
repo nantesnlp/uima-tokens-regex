@@ -21,13 +21,12 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.uima.cas.text.AnnotationFS;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import org.apache.uima.cas.text.AnnotationFS;
+
+import java.util.Collection;
+import java.util.List;
 
 public class OrMatcher implements AnnotationMatcher {
 	

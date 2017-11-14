@@ -21,9 +21,6 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.automata;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -31,6 +28,9 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class RegexOccurrence {
 	public static final char WHITESPACE = ' ';

@@ -4,8 +4,6 @@ import fr.univnantes.lina.uima.tkregex.ae.builtin.CoveredTextMatcher;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.mockito.Mockito;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class CoveredTextMatcherAssert extends AnnotationMatcherAssert {
 	private CoveredTextMatcher actual;
 

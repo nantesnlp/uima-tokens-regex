@@ -21,14 +21,13 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.bm;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.JCas;
 
-import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CountingEngine extends TokenRegexAE {
 

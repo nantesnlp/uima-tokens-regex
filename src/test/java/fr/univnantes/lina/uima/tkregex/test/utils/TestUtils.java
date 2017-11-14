@@ -22,42 +22,25 @@
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import fr.univnantes.lina.uima.tkregex.model.automata.*;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Ignorer;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Labeller;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.mockito.Mockito;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
-import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonBuilder;
-import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
-import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonQuantifier;
-import fr.univnantes.lina.uima.tkregex.model.matchers.Ignorer;
-import fr.univnantes.lina.uima.tkregex.model.matchers.Labeller;
-import fr.univnantes.lina.uima.tkregex.model.automata.RecognitionHandler;
-import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.model.automata.State;
+import static org.junit.Assert.assertEquals;
 
 public class TestUtils {
 	

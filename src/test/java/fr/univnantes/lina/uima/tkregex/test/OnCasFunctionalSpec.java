@@ -21,11 +21,14 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import com.google.common.base.Charsets;
+import fr.univnantes.julestar.uima.testing.CasAssert;
 import fr.univnantes.lina.test.uima.OccAnno;
+import fr.univnantes.lina.uima.tkregex.ae.RegexListResource;
+import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
+import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
+import fr.univnantes.lina.uima.tkregex.test.utils.RecogEngine;
+import fr.univnantes.lina.uima.tkregex.test.utils.TestUtils;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -39,14 +42,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.base.Charsets;
-
-import fr.univnantes.julestar.uima.testing.CasAssert;
-import fr.univnantes.lina.uima.tkregex.ae.RegexListResource;
-import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
-import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
-import fr.univnantes.lina.uima.tkregex.test.utils.RecogEngine;
-import fr.univnantes.lina.uima.tkregex.test.utils.TestUtils;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class OnCasFunctionalSpec {
 
