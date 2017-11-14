@@ -33,6 +33,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.uima.UIMAFramework;
+import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.DataResource;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -85,8 +86,12 @@ public class RegexListResource implements SharedResourceObject {
 	}
 
 
-	public TypeDescription getIteratedTypeDescription() {
-		return this.listener.getMainIteraredType();
+//	public TypeDescription getIteratedTypeDescription() {
+//		return this.listener.getMainIteraredType();
+//	}
+
+	public List<Type> getIteratedTypes() {
+		return this.listener.getIteratedTypes();
 	}
 
 	public String getMatchingLabelString(Annotation word) {

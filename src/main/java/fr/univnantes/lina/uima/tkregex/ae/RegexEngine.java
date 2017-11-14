@@ -8,27 +8,29 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class RegexEngine {
+	private List<Type> iteratedTypes;
 	private List<Rule> rules;
-	private String iteratedTypeName;
 	private boolean allowOverlappingOccurrences;
 	private CasRecognitionHandler casRecognitionHandler;
 
 
-	public RegexEngine(List<Rule> rules, CasRecognitionHandler recognitionHandler) {
+	public RegexEngine(List<Rule> rules, List<Type> iteratedTypes, CasRecognitionHandler recognitionHandler) {
 		this.casRecognitionHandler = recognitionHandler;
+		this.iteratedTypes = iteratedTypes;
 		this.rules = rules;
 	}
 
-	public String getIteratedTypeName() {
-		return iteratedTypeName;
-	}
+//	public String getIteratedTypeName() {
+//		return iteratedTypeName;
+//	}
 
-	public void setIteratedTypeName(String iteratedTypeName) {
-		this.iteratedTypeName = iteratedTypeName;
-	}
+//	public void setIteratedTypeName(String iteratedTypeName) {
+//		this.iteratedTypeName = iteratedTypeName;
+//	}
 
 	public boolean isAllowOverlappingOccurrences() {
 		return allowOverlappingOccurrences;
@@ -54,7 +56,7 @@ public class RegexEngine {
 			rule.getAutomaton().reset();
 		}
 
-		FSIterator<Annotation> it = jCas.getAnnotationIndex(getIteratedType(jCas)).iterator();
+		Iterator<Annotation> it = getIterator(jCas);
 		while (it.hasNext()) {
 			Annotation word = it.next();
 			boolean allRulesFailed = true;
@@ -73,8 +75,8 @@ public class RegexEngine {
 
 	}
 
-	private Type getIteratedType(JCas cas) {
-		return cas.getTypeSystem().getType(iteratedTypeName);
+	private Iterator<Annotation> getIterator(JCas jCas) {
+		return new MultiTypeIterator(jCas, this.iteratedTypes);
 	}
 
 

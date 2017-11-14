@@ -45,11 +45,6 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	public static final String TOKEN_REGEX_RULES = "TokenRegexRules";
 	@ExternalResource(key = TOKEN_REGEX_RULES, mandatory = true)
 	protected RegexListResource resource = null;
-	
-	private static final String NO_SET_LABEL = "_no_set_label";
-	public static final String PARAM_SET_LABELS = "SetLabels";
-	@ConfigurationParameter(name = PARAM_SET_LABELS, mandatory = false, defaultValue = NO_SET_LABEL)
-	private String labelFeature = null;
 
 	public static final String PARAM_USE_MATCHER_CACHES = "UseMatcherCaches";
 	@ConfigurationParameter(name = PARAM_USE_MATCHER_CACHES, mandatory = false, defaultValue = "false")
@@ -79,9 +74,8 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 		for(Rule rule:resource.getRules())
 			rule.getAutomaton().setUseMatcherCache(useMatcherCache);
 
-		this.regexEngine = new RegexEngine(resource.getRules(), this::ruleMatched);
+		this.regexEngine = new RegexEngine(resource.getRules(), resource.getIteratedTypes(), this::ruleMatched);
 		this.regexEngine.setAllowOverlappingOccurrences(allowOverlappingOccurrences);
-		this.regexEngine.setIteratedTypeName(this.resource.getIteratedTypeDescription().getName());
 	}
 	
 	@Override
@@ -92,19 +86,7 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 		}
 		
 		beforeRuleProcessing(jCas);
-		
-		if(!this.labelFeature.equals(NO_SET_LABEL)) {
-			// Must set labels
-			FSIterator<Annotation> it = jCas.getAnnotationIndex(getIteratedType(jCas)).iterator();
-			Feature feat = this.getIteratedType(jCas).getFeatureByBaseName(this.labelFeature);
-			while (it.hasNext()) {
-				Annotation word = (Annotation) it.next();
-				word.setStringValue(
-						feat, 
-						this.resource.getMatchingLabelString(word));
-			}
-		}
-		
+
 		regexEngine.process(jCas);
 		
 		afterRuleProcessing(jCas);
@@ -112,7 +94,4 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 
 	protected void allRulesFailed(JCas jCas) {}
 	
-	private Type getIteratedType(JCas cas) {
-		return cas.getTypeSystem().getType(this.resource.getIteratedTypeDescription().getName());
-	}
 }
