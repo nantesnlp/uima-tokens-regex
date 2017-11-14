@@ -1,9 +1,9 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 import fr.univnantes.lina.test.uima.TypeA;
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
-import fr.univnantes.lina.uima.tkregex.Op;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.ArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Op;
 import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
 import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.apache.uima.UIMAException;

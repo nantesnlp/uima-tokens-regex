@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import fr.univnantes.lina.uima.tkregex.RegexCoveredTextMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.RegexCoveredTextMatcher;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegexCoveredTextMatcherTestCase extends TestCase {

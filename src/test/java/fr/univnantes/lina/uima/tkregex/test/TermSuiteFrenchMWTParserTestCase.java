@@ -38,12 +38,10 @@ import org.junit.Test;
 
 import com.google.common.base.Charsets;
 
-import fr.univnantes.lina.uima.tkregex.Rule;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.ImportDeclarationContext;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser.UseDeclarationContext;
 
 public class TermSuiteFrenchMWTParserTestCase {
 	

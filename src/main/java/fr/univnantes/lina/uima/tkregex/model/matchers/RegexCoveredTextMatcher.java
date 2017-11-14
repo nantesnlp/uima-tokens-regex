@@ -19,34 +19,51 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.bm;
+package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
-import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.JCas;
 
-import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
-
-public class CountingEngine extends TokenRegexAE {
-
-	AtomicInteger cnt = new AtomicInteger(0);
+public class RegexCoveredTextMatcher implements
+		AnnotationMatcher {
 	
-	Type termType;
-	
-	@Override
-	protected void beforeRuleProcessing(JCas jCas) {
-		super.beforeRuleProcessing(jCas);
-		termType = jCas.getTypeSystem().getType("fr.univnantes.termsuite.types.TermOccAnnotation");
+	/* Ignorer aspect */
+	private Ignorer ignorer = new Ignorer();
+	public boolean isIgnoreMatcher() {
+		return ignorer.isIgnoreMatcher();
 	}
-	
-	@Override
-	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence) {
-		cnt.incrementAndGet();
-		AnnotationFS annotation = jCas.getCas().createAnnotation(termType, occurrence.getBegin(), occurrence.getEnd());
-		jCas.addFsToIndexes(annotation);
+	public void setIgnoreMatcher(boolean ignoreMatcher) {
+		ignorer.setIgnoreMatcher(ignoreMatcher);
 	}
+	/* End of Ignorer aspect */
 	
+	/* Label aspect */
+	private Labeller labeller = new Labeller();
+	public String getLabel() {
+		return labeller.getLabel();
+	}
+	public void setLabel(String label) {
+		labeller.setLabel(label);
+	}
+	/* End of Label aspect */
+
+	private Pattern pattern;
+	
+	public RegexCoveredTextMatcher(String regex) {
+		super();
+		this.pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+	}
+
+	@Override
+	public boolean matches(AnnotationFS annotation) {
+		return pattern.matcher(annotation.getCoveredText()).find();
+	}
+	@Override
+	public String toString() {
+		return "/" + pattern.toString() + "/";
+	}
+	public Pattern getPattern() {
+		return pattern;
+	}
 }

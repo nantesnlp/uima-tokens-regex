@@ -1,7 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
-import fr.univnantes.lina.uima.tkregex.Op;
-import fr.univnantes.lina.uima.tkregex.StringArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Op;
+import fr.univnantes.lina.uima.tkregex.model.matchers.StringArrayMatcher;
 import org.assertj.core.api.IterableAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;

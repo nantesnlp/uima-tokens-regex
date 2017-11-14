@@ -3,7 +3,7 @@ package fr.univnantes.lina.uima.tkregex.test;
 import com.google.common.collect.Lists;
 import fr.univnantes.lina.test.uima.A;
 import fr.univnantes.lina.test.uima.B;
-import fr.univnantes.lina.uima.tkregex.iteration.MultiTypeIterator;
+import fr.univnantes.lina.uima.tkregex.ae.MultiTypeIterator;
 import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.apache.uima.UIMAException;
 import org.apache.uima.fit.factory.JCasFactory;

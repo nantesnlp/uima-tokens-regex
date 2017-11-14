@@ -1,8 +1,6 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
-import fr.univnantes.lina.uima.tkregex.FeatureMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import org.assertj.core.api.AbstractAssert;
 
 public class AnnotationMatcherAssert extends AbstractAssert<AnnotationMatcherAssert, AnnotationMatcher> {

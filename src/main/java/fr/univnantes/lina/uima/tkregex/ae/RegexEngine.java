@@ -1,8 +1,8 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
-import fr.univnantes.lina.uima.tkregex.RecognitionHandler;
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.Rule;
+import fr.univnantes.lina.uima.tkregex.model.automata.RecognitionHandler;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;

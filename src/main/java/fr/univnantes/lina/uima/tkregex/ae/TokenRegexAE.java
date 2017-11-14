@@ -35,10 +35,10 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import com.google.common.base.Preconditions;
 
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.CustomMatcher;
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.Rule;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 
 
 public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {

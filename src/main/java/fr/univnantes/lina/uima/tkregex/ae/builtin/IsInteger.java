@@ -19,35 +19,14 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.ae.builtin;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
-import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
-
-public class CapitalizedTestCase {
-	
-	AnnotationMatcher matcher;
-	
-	@Before
-	public void setup() {
-		matcher = new Capitalized();
-	}
-	
-	@Test
-	public void set() {
-		// FALSE
-		assertFalse(matcher.matches(Mocks.anno("tata")));
-
-		// TRUE
-		assertTrue(matcher.matches(Mocks.anno("Tata")));
-		assertTrue(matcher.matches(Mocks.anno("TATA")));
-		assertTrue(matcher.matches(Mocks.anno("ÀATA")));
+public class IsInteger extends CoveredTextMatcher {
+	@Override
+	protected boolean match(String text) {
+		for(char c:text.toCharArray())
+			if(!Character.isDigit(c))
+				return false;
+		return true;
 	}
 }

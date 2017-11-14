@@ -19,35 +19,15 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
-import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
-
-public class CapitalizedTestCase {
-	
-	AnnotationMatcher matcher;
-	
-	@Before
-	public void setup() {
-		matcher = new Capitalized();
+public class MatcherConstants {
+	private MatcherConstants() {
+		super();
 	}
-	
-	@Test
-	public void set() {
-		// FALSE
-		assertFalse(matcher.matches(Mocks.anno("tata")));
-
-		// TRUE
-		assertTrue(matcher.matches(Mocks.anno("Tata")));
-		assertTrue(matcher.matches(Mocks.anno("TATA")));
-		assertTrue(matcher.matches(Mocks.anno("ÀATA")));
-	}
+	public static final String CAT_ADJECTIVE = "adjective";
+	public static final String CAT_NOUN = "noun";
+	public static final String CAT_NAME = "name";
+	public static final String CAT_NOUN_NOUN = "noun-noun";
+	public static final String CAT_NOUN_ADJ_CORD_ADJ = "noun-adjective-coordination-adjective";
 }

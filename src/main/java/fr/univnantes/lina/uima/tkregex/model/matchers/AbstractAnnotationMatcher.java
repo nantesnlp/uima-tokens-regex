@@ -19,35 +19,28 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+public abstract class AbstractAnnotationMatcher implements AnnotationMatcher {
 
-import org.junit.Before;
-import org.junit.Test;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
-import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
-
-public class CapitalizedTestCase {
-	
-	AnnotationMatcher matcher;
-	
-	@Before
-	public void setup() {
-		matcher = new Capitalized();
+	/* Ignorer aspect */
+	private Ignorer ignorer = new Ignorer();
+	public boolean isIgnoreMatcher() {
+		return ignorer.isIgnoreMatcher();
 	}
-	
-	@Test
-	public void set() {
-		// FALSE
-		assertFalse(matcher.matches(Mocks.anno("tata")));
-
-		// TRUE
-		assertTrue(matcher.matches(Mocks.anno("Tata")));
-		assertTrue(matcher.matches(Mocks.anno("TATA")));
-		assertTrue(matcher.matches(Mocks.anno("ÀATA")));
+	public void setIgnoreMatcher(boolean ignoreMatcher) {
+		ignorer.setIgnoreMatcher(ignoreMatcher);
 	}
+	/* End of Ignorer aspect */
+	
+	/* Label aspect */
+	private Labeller labeller = new Labeller();
+	public String getLabel() {
+		return labeller.getLabel();
+	}
+	public void setLabel(String label) {
+		labeller.setLabel(label);
+	}
+	/* End of Label aspect */
+	
 }

@@ -1,11 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
-import fr.univnantes.lina.uima.tkregex.ArrayMatcher;
-import fr.univnantes.lina.uima.tkregex.FeatureMatcher;
-import fr.univnantes.lina.uima.tkregex.Op;
-import org.apache.uima.resource.metadata.FeatureDescription;
-import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
+import fr.univnantes.lina.uima.tkregex.model.matchers.ArrayMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Op;
 import org.assertj.core.api.IterableAssert;
 
 import static org.assertj.core.api.Assertions.*;

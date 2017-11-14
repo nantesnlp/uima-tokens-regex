@@ -29,8 +29,8 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
-import fr.univnantes.lina.uima.tkregex.Automaton;
-import fr.univnantes.lina.uima.tkregex.AutomatonFactory;
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
 
 public class AutomatonFactoryTestCase {
 	

@@ -1,6 +1,7 @@
 package fr.univnantes.lina.uima.tkregex;
 
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonQuantifier;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

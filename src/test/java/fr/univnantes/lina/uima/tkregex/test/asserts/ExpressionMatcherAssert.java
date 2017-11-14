@@ -1,10 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ExpressionMatcher;
-import fr.univnantes.lina.uima.tkregex.Op;
-import org.apache.uima.resource.metadata.FeatureDescription;
-import org.assertj.core.api.AbstractAssert;
+import fr.univnantes.lina.uima.tkregex.model.matchers.ExpressionMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Op;
 
 public class ExpressionMatcherAssert extends FeatureMatcherAssert {
 	private final ExpressionMatcher actual;

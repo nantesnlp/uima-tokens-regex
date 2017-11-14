@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import fr.univnantes.lina.test.uima.OccAnno;
 import org.apache.uima.jcas.JCas;
 
-import fr.univnantes.lina.uima.tkregex.LabelledAnnotation;
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
 
 public class RecogEngine extends TokenRegexAE {

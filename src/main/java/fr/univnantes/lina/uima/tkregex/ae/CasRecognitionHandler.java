@@ -22,7 +22,7 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
 
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
 import org.apache.uima.jcas.JCas;
 
 public interface CasRecognitionHandler {

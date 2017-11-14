@@ -19,35 +19,23 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.ae.builtin;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
-import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
-
-public class CapitalizedTestCase {
+public class StringIgnoreCaseMatcher  extends CoveredTextMatcher {
+	private String ref;
 	
-	AnnotationMatcher matcher;
-	
-	@Before
-	public void setup() {
-		matcher = new Capitalized();
+	public StringIgnoreCaseMatcher(String ref) {
+		super();
+		this.ref = ref;
+	}
+
+	@Override
+	protected boolean match(String text) {
+		return this.ref.equalsIgnoreCase(text);
 	}
 	
-	@Test
-	public void set() {
-		// FALSE
-		assertFalse(matcher.matches(Mocks.anno("tata")));
-
-		// TRUE
-		assertTrue(matcher.matches(Mocks.anno("Tata")));
-		assertTrue(matcher.matches(Mocks.anno("TATA")));
-		assertTrue(matcher.matches(Mocks.anno("ÀATA")));
+	public String getRef() {
+		return ref;
 	}
+
 }

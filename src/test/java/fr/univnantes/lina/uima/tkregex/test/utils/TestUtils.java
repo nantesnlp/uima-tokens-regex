@@ -48,16 +48,16 @@ import org.mockito.Mockito;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.Automaton;
-import fr.univnantes.lina.uima.tkregex.AutomatonBuilder;
-import fr.univnantes.lina.uima.tkregex.AutomatonFactory;
-import fr.univnantes.lina.uima.tkregex.AutomatonQuantifier;
-import fr.univnantes.lina.uima.tkregex.Ignorer;
-import fr.univnantes.lina.uima.tkregex.Labeller;
-import fr.univnantes.lina.uima.tkregex.RecognitionHandler;
-import fr.univnantes.lina.uima.tkregex.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.State;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonBuilder;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonQuantifier;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Ignorer;
+import fr.univnantes.lina.uima.tkregex.model.matchers.Labeller;
+import fr.univnantes.lina.uima.tkregex.model.automata.RecognitionHandler;
+import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.State;
 
 public class TestUtils {
 	

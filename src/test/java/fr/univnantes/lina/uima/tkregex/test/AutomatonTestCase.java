@@ -34,7 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableMap;
 
-import fr.univnantes.lina.uima.tkregex.Automaton;
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AutomatonTestCase extends TestCase {

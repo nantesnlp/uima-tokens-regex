@@ -19,35 +19,39 @@
  * under the License.
  *
  *******************************************************************************/
-package fr.univnantes.lina.uima.tkregex.test;
+package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.apache.uima.cas.text.AnnotationFS;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.google.common.base.MoreObjects;
 
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
-import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
-
-public class CapitalizedTestCase {
-	
-	AnnotationMatcher matcher;
-	
-	@Before
-	public void setup() {
-		matcher = new Capitalized();
+public class LabelledAnnotation {
+	private AnnotationFS annotation;
+	private String label;
+	private boolean ignored;
+	public LabelledAnnotation(AnnotationFS annotation, String label, boolean ignored) {
+		super();
+		this.annotation = annotation;
+		this.label = label;
+		this.ignored = ignored;
 	}
-	
-	@Test
-	public void set() {
-		// FALSE
-		assertFalse(matcher.matches(Mocks.anno("tata")));
-
-		// TRUE
-		assertTrue(matcher.matches(Mocks.anno("Tata")));
-		assertTrue(matcher.matches(Mocks.anno("TATA")));
-		assertTrue(matcher.matches(Mocks.anno("ÀATA")));
+	public AnnotationFS getAnnotation() {
+		return annotation;
+	}
+	public String getLabel() {
+		return label;
+	}
+	public boolean isIgnored() {
+		return ignored;
+	}
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("label", label)
+				.add("ignored", ignored)
+				.add("begin", annotation.getBegin())
+				.add("end", annotation.getEnd())
+				.add("text", annotation.getCoveredText())
+				.toString();
 	}
 }

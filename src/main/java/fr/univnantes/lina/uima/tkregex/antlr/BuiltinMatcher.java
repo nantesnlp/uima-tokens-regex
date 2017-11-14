@@ -26,12 +26,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.base.Preconditions;
 
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
-import fr.univnantes.lina.uima.tkregex.matchers.Capitalized;
-import fr.univnantes.lina.uima.tkregex.matchers.IsAbbreviation;
-import fr.univnantes.lina.uima.tkregex.matchers.IsDigit;
-import fr.univnantes.lina.uima.tkregex.matchers.IsInteger;
-import fr.univnantes.lina.uima.tkregex.matchers.TitleCased;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.Capitalized;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.IsAbbreviation;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.IsDigit;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.IsInteger;
+import fr.univnantes.lina.uima.tkregex.ae.builtin.TitleCased;
 
 public class BuiltinMatcher {
 	public static final String ERR_NO_SUCH_BUILTIN_MATCHER = "No such built-in matcher: %s";

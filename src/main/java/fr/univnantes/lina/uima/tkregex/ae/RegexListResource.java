@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.univnantes.lina.uima.tkregex.AnnotationMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -44,8 +44,8 @@ import org.apache.uima.util.Level;
 
 import com.google.common.base.Joiner;
 
-import fr.univnantes.lina.uima.tkregex.CustomMatcher;
-import fr.univnantes.lina.uima.tkregex.Rule;
+import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;

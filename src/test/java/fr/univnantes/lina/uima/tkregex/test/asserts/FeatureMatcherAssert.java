@@ -1,6 +1,6 @@
 package fr.univnantes.lina.uima.tkregex.test.asserts;
 
-import fr.univnantes.lina.uima.tkregex.FeatureMatcher;
+import fr.univnantes.lina.uima.tkregex.model.matchers.FeatureMatcher;
 import org.apache.uima.cas.Feature;
 
 public class FeatureMatcherAssert extends AnnotationMatcherAssert {
