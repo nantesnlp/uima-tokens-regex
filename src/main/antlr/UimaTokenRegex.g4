@@ -24,9 +24,6 @@ grammar UimaTokenRegex;
     package fr.univnantes.lina.uima.tkregex.antlr.generated;
 }
 
-/**
- * Define a grammar called Hello
- */
 ruleList
 	:	headerBlock shortcutMatcherDeclaration* ruleDeclaration*
 	;
@@ -40,8 +37,20 @@ importDeclaration
 	;
 
 useDeclaration
-	:  USE Identifier ('as' IdentifierPart )? ';'
+	:  mainUseDeclaration
+	  ( ',' secondaryUseDeclaration )*
+	  ';'
+
 	;
+
+mainUseDeclaration : USE typeFullName ('as' typeShortName )? ;
+
+
+
+secondaryUseDeclaration : typeFullName 'as' typeShortName ;
+typeFullName : Identifier ;
+
+typeShortName : DowncasedIdentifierPart ;
 
 javaMatcherDeclaration
 	: JAVA_MATCHER ':' Identifier ';'
@@ -91,12 +100,12 @@ featureMatcherDeclaration
 	|  '[' ( expression | andexpression | orexpression ) ']'
 	;
 
-//first, we try to matches all first level && (e.g. && not included in some sub-expression)
+//first, we try to match all first level && (e.g. && not included in some sub-expression)
 andexpression 
 	: expression (AND expression)*
 	;
 
-//second, we try to matches all first level || (e.g. || not included in some sub-expression)
+//second, we try to match all first level || (e.g. || not included in some sub-expression)
 orexpression 
 	: expression (OR expression )* 
 	;
@@ -109,7 +118,7 @@ expression
 	
 	
 atomicExpression
-	: Identifier
+	: matcherIdentifier
 	| featureName operator literal
 	| featureName arrayOperator literalArray
 	| featureName inListOperator resourceIdentifier
@@ -117,6 +126,8 @@ atomicExpression
 	| 'text' '===' coveredTextExactly
 	| 'text' inListOperator coveredTextArray
 	;
+
+matcherIdentifier : Identifier ;
 
 resourceIdentifier
 	: Identifier
@@ -163,9 +174,11 @@ quantifierDeclaration
 	;
 	
 featureName
-	: Identifier
+	: (typeShortName '.' )? featureBaseName
 	;
-	
+
+featureBaseName : Identifier ;
+
 arrayOperator
 	: 'in'
 	| 'nin'
@@ -308,9 +321,19 @@ Identifier
     :   IdentifierPart ('.' IdentifierPart)*
     ;
 
+DowncasedIdentifierPart
+    :   FirstLetterDowncased JavaLetterOrDigit*
+    ;
+
 IdentifierPart
     :   FirstLetter JavaLetterOrDigit*
     ;
+
+fragment
+FirstLetterDowncased
+	:   [a-z_] // these are the "java letters" below 0xFF
+	;
+
 
 fragment
 FirstLetter

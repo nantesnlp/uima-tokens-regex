@@ -66,6 +66,54 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMainUseDeclaration(UimaTokenRegexParser.MainUseDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMainUseDeclaration(UimaTokenRegexParser.MainUseDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSecondaryUseDeclaration(UimaTokenRegexParser.SecondaryUseDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSecondaryUseDeclaration(UimaTokenRegexParser.SecondaryUseDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTypeFullName(UimaTokenRegexParser.TypeFullNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTypeFullName(UimaTokenRegexParser.TypeFullNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTypeShortName(UimaTokenRegexParser.TypeShortNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTypeShortName(UimaTokenRegexParser.TypeShortNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterJavaMatcherDeclaration(UimaTokenRegexParser.JavaMatcherDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -234,6 +282,18 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMatcherIdentifier(UimaTokenRegexParser.MatcherIdentifierContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMatcherIdentifier(UimaTokenRegexParser.MatcherIdentifierContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterResourceIdentifier(UimaTokenRegexParser.ResourceIdentifierContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -385,6 +445,18 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFeatureName(UimaTokenRegexParser.FeatureNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFeatureBaseName(UimaTokenRegexParser.FeatureBaseNameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFeatureBaseName(UimaTokenRegexParser.FeatureBaseNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

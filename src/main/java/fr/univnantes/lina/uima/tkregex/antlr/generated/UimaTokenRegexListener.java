@@ -50,6 +50,46 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitUseDeclaration(UimaTokenRegexParser.UseDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#mainUseDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterMainUseDeclaration(UimaTokenRegexParser.MainUseDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#mainUseDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitMainUseDeclaration(UimaTokenRegexParser.MainUseDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#secondaryUseDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterSecondaryUseDeclaration(UimaTokenRegexParser.SecondaryUseDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#secondaryUseDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitSecondaryUseDeclaration(UimaTokenRegexParser.SecondaryUseDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#typeFullName}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypeFullName(UimaTokenRegexParser.TypeFullNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#typeFullName}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypeFullName(UimaTokenRegexParser.TypeFullNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#typeShortName}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypeShortName(UimaTokenRegexParser.TypeShortNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#typeShortName}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypeShortName(UimaTokenRegexParser.TypeShortNameContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#javaMatcherDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -190,6 +230,16 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitAtomicExpression(UimaTokenRegexParser.AtomicExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#matcherIdentifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterMatcherIdentifier(UimaTokenRegexParser.MatcherIdentifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#matcherIdentifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitMatcherIdentifier(UimaTokenRegexParser.MatcherIdentifierContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#resourceIdentifier}.
 	 * @param ctx the parse tree
 	 */
@@ -319,6 +369,16 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFeatureName(UimaTokenRegexParser.FeatureNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#featureBaseName}.
+	 * @param ctx the parse tree
+	 */
+	void enterFeatureBaseName(UimaTokenRegexParser.FeatureBaseNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#featureBaseName}.
+	 * @param ctx the parse tree
+	 */
+	void exitFeatureBaseName(UimaTokenRegexParser.FeatureBaseNameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#arrayOperator}.
 	 * @param ctx the parse tree

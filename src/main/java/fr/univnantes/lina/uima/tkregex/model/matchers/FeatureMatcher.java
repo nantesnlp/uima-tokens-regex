@@ -1,6 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
 import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.resource.metadata.FeatureDescription;
 
@@ -20,11 +21,6 @@ public abstract class FeatureMatcher implements AnnotationMatcher {
 	public String toString() {
 		return feature.getName();
 	}
-
-//	protected FeatureMatcher(FeatureDescription featureDescription) {
-//		Preconditions.checkNotNull(featureDescription);
-//		this.featureDescription = featureDescription;
-//	}
 
 	/* Ignorer aspect */
 	private Ignorer ignorer = new Ignorer();
@@ -54,6 +50,7 @@ public abstract class FeatureMatcher implements AnnotationMatcher {
 		}
 		return feature;
 	}
+
 
 	protected Object getValue(AnnotationFS annotation) {
 //		Feature feature = getFeature(annotation, featureDescription);

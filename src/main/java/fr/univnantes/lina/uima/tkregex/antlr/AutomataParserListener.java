@@ -91,7 +91,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	
 	private TypeSystemDescription typeSystemDescription = null;
 
-	private TypeDescription usedTypeDescription = null;
+	private TypeDescription mainIteratedType = null;
 
 	public Map<String, CustomMatcher> getJavaMatchers() {
 		return declaredJavaMatchers;
@@ -106,7 +106,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 	
 	public TypeDescription getIteraredType() {
-		return usedTypeDescription;
+		return mainIteratedType;
 	}
 	
 	public AutomataParserListener(Parser parser) {
@@ -236,8 +236,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	private AnnotationMatcher toAnnotationMatcher(AtomicExpressionContext ctx) {
 		AnnotationMatcher matcher = null;
-		if(ctx.Identifier() != null) {
-			String matcherName = ctx.Identifier().getText();
+		if(ctx.matcherIdentifier() != null) {
+			String matcherName = ctx.matcherIdentifier().getText();
 			if(shortcutMatchers.containsKey(matcherName)) 
 				matcher = shortcutMatchers.get(matcherName);
 			else if(declaredJavaMatchers.containsKey(matcherName))
@@ -299,11 +299,19 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 	private Feature toFeature(FeatureNameContext featName) {
-		Optional<Feature> featureDescription = findFeatureDescription(toType(this.usedTypeDescription), featName.getText());
+		TypeDescription baseType = mainIteratedType;
+		if(featName.typeShortName() != null) {
+			TypeDescription typeDescription = typesByShortcut.get(featName.typeShortName().getText());
+			if(typeDescription != null)
+				baseType = typeDescription;
+			else
+				throw new AutomataParsingException(String.format("Unknown type <%s> for feature <%s>", featName.typeShortName().getText(), featName.getText()));
+		}
+		Optional<Feature> featureDescription = findFeatureDescription(toType(baseType), featName.getText());
 		if(featureDescription.isPresent())
 			return featureDescription.get();
 		else
-			throw new AutomataParsingException(String.format("No feature named <%s> for type <%s>", featName.getText(), this.usedTypeDescription.getName()));
+			throw new AutomataParsingException(String.format("No feature named <%s> for type <%s>", featName.getText(), baseType.getName()));
 	}
 
 	private Type toType(TypeDescription typeDescription) {
@@ -412,6 +420,16 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 	@Override
+	public void enterFeatureBaseName(FeatureBaseNameContext ctx) {
+
+	}
+
+	@Override
+	public void exitFeatureBaseName(FeatureBaseNameContext ctx) {
+
+	}
+
+	@Override
 	public void enterArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
 
 	}
@@ -431,13 +449,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-
-//	protected String resolveFeature(String shortName) {
-//		String feature = featureMap.get(shortName);
-//		if(feature == null)
-//			throw new AutomataParsingException("No such feature found in type system: " + shortName);
-//		return feature;
-//	}
 
 	@Override
 	public void enterRuleName(RuleNameContext ctx) {
@@ -601,31 +612,80 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	private Map<String, TypeDescription> typesByShortcut = new HashMap<>();
+
+
 	@Override
 	public void exitUseDeclaration(UseDeclarationContext ctx) {
-		String value = ctx.Identifier().getText();
-		usedTypeDescription = typeSystemDescription.getType(value);
-		if(usedTypeDescription == null)
-			throw new AutomataParsingException("No such type in type system: " + value);
-//		inferFeatureMap(usedTypeDescription);
+		String value = ctx.mainUseDeclaration().typeFullName().getText();
+		mainIteratedType = toType(value);
+		if(ctx.mainUseDeclaration().typeShortName() != null)
+			typesByShortcut.put(ctx.mainUseDeclaration().typeShortName().getText(), mainIteratedType);
+		for(SecondaryUseDeclarationContext sctx:ctx.secondaryUseDeclaration()) {
+			String typeFullName = sctx.typeFullName().getText();
+			String typeShortName = sctx.typeShortName().getText();
+			if(mainIteratedType.getName().equals(typeFullName))
+				throw new AutomataParsingException(String.format("A used type can be declared at most once: <%s>",
+						typeFullName));
+			if(typesByShortcut.values().contains(typeFullName))
+				throw new AutomataParsingException(String.format("A used type can be declared at most once: <%s>",
+						typeFullName));
+			if(typesByShortcut.containsKey(typeShortName))
+				throw new AutomataParsingException(String.format("There is already one declared type with shortcut <%s>: %s",
+						typeShortName,
+						typesByShortcut.get(typeShortName)));
+			typesByShortcut.put(typeShortName, toType(typeFullName));
+		}
 	}
-	
-//	private Map<String, String> featureMap = Maps.newHashMap();
-	
-//	private void inferFeatureMap(TypeDescription type) {
-//		// 1 - Recursively add features of the super type
-//		TypeDescription superType = typeSystemDescription.getType(type.getSupertypeName());
-//		if(superType != null)
-//			inferFeatureMap(superType);
-//
-//		// 2 - Add features of this type
-//		for(FeatureDescription feature:type.getFeatures()) {
-//			String featureFQN = type.getName() + ":" + feature.getName();
-//			featureMap.put(feature.getName(), featureFQN);
-//			featureMap.put(featureFQN, featureFQN);
-//		}
-//	}
+
+	@Override
+	public void enterMainUseDeclaration(MainUseDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitMainUseDeclaration(MainUseDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void enterSecondaryUseDeclaration(SecondaryUseDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitSecondaryUseDeclaration(SecondaryUseDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void enterTypeFullName(TypeFullNameContext ctx) {
+
+	}
+
+	@Override
+	public void exitTypeFullName(TypeFullNameContext ctx) {
+
+	}
+
+	@Override
+	public void enterTypeShortName(TypeShortNameContext ctx) {
+
+	}
+
+	@Override
+	public void exitTypeShortName(TypeShortNameContext ctx) {
+
+	}
+
+	private TypeDescription toType(String value) {
+		TypeDescription typeDesc = typeSystemDescription.getType(value);
+		if(typeDesc == null)
+			throw new AutomataParsingException("No such type in type system: " + value);
+		return typeDesc;
+	}
+
 
 	@Override
 	public void enterOptionDeclaration(OptionDeclarationContext ctx) {
@@ -741,6 +801,16 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	@Override
 	public void exitAtomicExpression(AtomicExpressionContext ctx) {
+	}
+
+	@Override
+	public void enterMatcherIdentifier(MatcherIdentifierContext ctx) {
+
+	}
+
+	@Override
+	public void exitMatcherIdentifier(MatcherIdentifierContext ctx) {
+
 	}
 
 	@Override
