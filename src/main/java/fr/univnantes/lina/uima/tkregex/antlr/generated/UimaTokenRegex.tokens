@@ -48,10 +48,9 @@ LINE_COMMENT=47
 MATCHER=48
 RULE=49
 Identifier=50
-DowncasedIdentifierPart=51
-IdentifierPart=52
-WS=53
-Regex=54
+IdentifierPart=51
+WS=52
+Regex=53
 ','=1
 'as'=2
 '='=3

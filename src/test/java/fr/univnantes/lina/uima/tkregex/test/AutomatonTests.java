@@ -38,6 +38,7 @@ import java.nio.file.Paths;
 	OnCasFunctionalSpec.class,
 	RegexCoveredTextMatcherSpec.class,
 	ArrayMatcherSpec.class,
+	TypeMatcherSpec.class,
 	MultiTypeIteratorSpec.class,
 }
 )

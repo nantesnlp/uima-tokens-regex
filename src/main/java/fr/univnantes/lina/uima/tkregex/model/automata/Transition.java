@@ -21,6 +21,7 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.automata;
 
+import com.google.common.base.Preconditions;
 import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.model.matchers.RegexCoveredTextMatcher;
 import org.apache.uima.cas.text.AnnotationFS;
@@ -57,6 +58,7 @@ public class Transition {
 	}
 
 	void setMatcher(AnnotationMatcher matcher) {
+		Preconditions.checkNotNull(matcher);
 		this.matcher = matcher;
 	}
 

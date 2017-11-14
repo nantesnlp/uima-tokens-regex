@@ -110,6 +110,4 @@ public class OnCasFunctionalSpec {
 		AnalysisEngine engine = UIMAFramework.produceAnalysisEngine(ae);
 		return engine;
 	}
-
-	
 }

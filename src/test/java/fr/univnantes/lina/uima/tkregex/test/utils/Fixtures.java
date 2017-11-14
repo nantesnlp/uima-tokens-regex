@@ -24,6 +24,8 @@ package fr.univnantes.lina.uima.tkregex.test.utils;
 import fr.univnantes.lina.test.uima.TestAnno;
 import org.apache.uima.UIMAException;
 import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.jcas.JCas;
@@ -99,5 +101,17 @@ public class Fixtures {
 		a.setEnd(end);
 		a.setLemma(lemma);
 		a.addToIndexes();
+	}
+
+	public static TypeSystem getTypeSystem() {
+		try {
+			return JCasFactory.createJCas().getTypeSystem();
+		} catch (UIMAException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static Type getType(String s) {
+		return getTypeSystem().getType(s);
 	}
 }

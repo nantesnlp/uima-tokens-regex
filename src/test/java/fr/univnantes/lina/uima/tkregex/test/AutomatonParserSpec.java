@@ -37,6 +37,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.uima.cas.Type;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -126,6 +127,64 @@ public class AutomatonParserSpec {
 		} catch(Exception e) {
 			fail("Should throw AutomataParsingException");
 		}
+	}
+
+	@Test
+	public void testMultipleIteratedType() throws IOException {
+		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
+		assertThat(listener.getIteratedTypes())
+				.extracting("name")
+				.containsExactly(
+						"fr.univnantes.lina.test.uima.A",
+						"fr.univnantes.lina.test.uima.B"
+						);
+		assertThat(listener.getIteratedTypeShortcuts())
+				.hasSize(2)
+				.containsEntry("TA", listener.getIteratedTypeDescriptions().get(0))
+				.containsEntry("TB", listener.getIteratedTypeDescriptions().get(1))
+		;
+		assertThat(listener.getTypeMatchers())
+				.hasSize(6)
+				.containsOnlyKeys("TA", "TB", "A", "B", "fr.univnantes.lina.test.uima.A", "fr.univnantes.lina.test.uima.B")
+		;
+	}
+
+	@Test
+	public void testTypeMatcher() throws IOException {
+		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
+		Type typeA = listener.getIteratedTypes().get(0);
+		Type typeB = listener.getIteratedTypes().get(1);
+		assertThat(listener.getRules()).hasSize(1);
+		Automaton automaton = listener.getRules().get(0).getAutomaton();
+
+		// matcher TA
+		List<Transition> t1list = automaton.getInitState().getTransitions();
+		assertThat(t1list).hasSize(1);
+		AnnotationMatcher matcher1 = t1list.get(0).getMatcher();
+		assertThat(matcher1).isInstanceOf(TypeMatcher.class);
+		assertThat(((TypeMatcher)matcher1).getType()).isEqualTo(typeA);
+
+		// matcher TB
+		List<Transition> t2list = t1list.get(0).getToState().getTransitions().get(0).getToState().getTransitions();
+		assertThat(t2list).hasSize(1);
+		AnnotationMatcher matcher2 = t2list.get(0).getMatcher();
+		assertThat(matcher2).isInstanceOf(TypeMatcher.class);
+		assertThat(((TypeMatcher)matcher2).getType()).isEqualTo(typeB);
+
+		// matcher A
+		List<Transition> t3list = t2list.get(0).getToState().getTransitions().get(0).getToState().getTransitions();
+		assertThat(t3list).hasSize(1);
+		AnnotationMatcher matcher3 = t3list.get(0).getMatcher();
+		assertThat(matcher3).isInstanceOf(TypeMatcher.class);
+		assertThat(((TypeMatcher)matcher3).getType()).isEqualTo(typeA);
+
+		// matcher B
+		List<Transition> t4list = t3list.get(0).getToState().getTransitions().get(0).getToState().getTransitions();
+		assertThat(t4list).hasSize(1);
+		AnnotationMatcher matcher4 = t4list.get(0).getMatcher();
+		assertThat(matcher4).isInstanceOf(TypeMatcher.class);
+		assertThat(((TypeMatcher)matcher4).getType()).isEqualTo(typeB);
+
 	}
 
 	@Test
@@ -263,6 +322,7 @@ public class AutomatonParserSpec {
 			fail("Should have raised IllegalArgumentException, got: " + e.getClass());
 		}
 	}
+
 
 
 	@Test

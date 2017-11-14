@@ -1,0 +1,8 @@
+import fr.univnantes.lina.test.uima.TestTypeSystem;
+use fr.univnantes.lina.test.uima.A as TA ,
+fr.univnantes.lina.test.uima.B as TB
+;
+
+set inline = false;
+
+rule "rule1" : TA TB A B;

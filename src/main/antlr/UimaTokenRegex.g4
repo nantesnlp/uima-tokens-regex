@@ -50,7 +50,7 @@ mainUseDeclaration : USE typeFullName ('as' typeShortName )? ;
 secondaryUseDeclaration : typeFullName 'as' typeShortName ;
 typeFullName : Identifier ;
 
-typeShortName : DowncasedIdentifierPart ;
+typeShortName : IdentifierPart ;
 
 javaMatcherDeclaration
 	: JAVA_MATCHER ':' Identifier ';'
@@ -321,18 +321,9 @@ Identifier
     :   IdentifierPart ('.' IdentifierPart)*
     ;
 
-DowncasedIdentifierPart
-    :   FirstLetterDowncased JavaLetterOrDigit*
-    ;
-
 IdentifierPart
     :   FirstLetter JavaLetterOrDigit*
     ;
-
-fragment
-FirstLetterDowncased
-	:   [a-z_] // these are the "java letters" below 0xFF
-	;
 
 
 fragment

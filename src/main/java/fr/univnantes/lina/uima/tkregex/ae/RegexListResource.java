@@ -86,7 +86,7 @@ public class RegexListResource implements SharedResourceObject {
 
 
 	public TypeDescription getIteratedTypeDescription() {
-		return this.listener.getIteraredType();
+		return this.listener.getMainIteraredType();
 	}
 
 	public String getMatchingLabelString(Annotation word) {

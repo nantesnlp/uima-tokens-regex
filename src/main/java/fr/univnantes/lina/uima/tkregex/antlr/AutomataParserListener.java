@@ -69,8 +69,19 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutomataParserListener.class);
 
 
+	private Map<String, AnnotationMatcher> shortcutMatchers;
+	private Map<String, CustomMatcher> declaredJavaMatchers = new ConcurrentHashMap<>();
+	private Map<String, TypeMatcher> typeMatchers = new ConcurrentHashMap<>();
+
+
+	private Map<String, TypeDescription> typesByShortcut = new LinkedHashMap<>();
+
+	private Optional<String[]> coveredTextArray = Optional.empty();
+	private Optional<Path> customResourceDir = Optional.empty();
+
 	public static final String OPTION_INLINE = "inline";
-	
+	private TypeSystem typeSystem = null;
+
 	private List<String> OPTION_NAMES = ImmutableList.of(
 			OPTION_INLINE
 			);
@@ -80,8 +91,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	private Parser parser;
 	
-	private Map<String, AnnotationMatcher> shortcutMatchers;
-	
+
 	private boolean allowMatchingEmptySequences = false;
 
 
@@ -105,10 +115,31 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return shortcutMatchers;
 	}
 	
-	public TypeDescription getIteraredType() {
+	public TypeDescription getMainIteraredType() {
 		return mainIteratedType;
 	}
-	
+
+	public List<TypeDescription> getIteratedTypeDescriptions() {
+		List<TypeDescription> list = new ArrayList<>();
+		list.add(mainIteratedType);
+		for(TypeDescription td: typesByShortcut.values()) {
+			if(td.getName().equals(mainIteratedType.getName()))
+				continue;
+			list.add(td);
+		}
+		return list;
+	}
+
+	public List<Type> getIteratedTypes() {
+		return getIteratedTypeDescriptions().stream().map(this::toType).collect(toList());
+	}
+
+
+
+	public Map<String, TypeDescription> getIteratedTypeShortcuts() {
+		return typesByShortcut;
+	}
+
 	public AutomataParserListener(Parser parser) {
 		super();
 		this.parser = parser;
@@ -132,24 +163,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		this.allowMatchingEmptySequences = allowMatchingEmptySequences;
 	}
 
-	@Override
-	public void enterEveryRule(ParserRuleContext arg0) {}
-
-	@Override
-	public void exitEveryRule(ParserRuleContext arg0) {}
-
-	@Override
-	public void visitErrorNode(ErrorNode arg0) {}
-
-	@Override
-	public void visitTerminal(TerminalNode arg0) {}
-
-	@Override
-	public void enterExpression(ExpressionContext ctx) {}
-
-	@Override
-	public void exitExpression(ExpressionContext ctx) {
-	}
 
 	@Override
 	public void enterRuleDeclaration(RuleDeclarationContext ctx) {
@@ -194,7 +207,10 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			String matcherName = ctx.Identifier().getText();
 			annotationMatcher = this.shortcutMatchers.get(matcherName);
 			if(annotationMatcher == null)
-				throw new AutomataParsingException("There is no shortcut for matcher name " + matcherName);
+				annotationMatcher = typeMatchers.get(matcherName);
+
+			if(annotationMatcher == null)
+				throw new AutomataParsingException("There is no matcher declared for short matcher name " + matcherName);
 		} else if(ctx.featureMatcherDeclaration() != null) {
 			annotationMatcher = toAnnotationMatcher(ctx.featureMatcherDeclaration());
 		} else 
@@ -238,14 +254,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		AnnotationMatcher matcher = null;
 		if(ctx.matcherIdentifier() != null) {
 			String matcherName = ctx.matcherIdentifier().getText();
-			if(shortcutMatchers.containsKey(matcherName)) 
-				matcher = shortcutMatchers.get(matcherName);
-			else if(declaredJavaMatchers.containsKey(matcherName))
-				matcher = declaredJavaMatchers.get(matcherName);
-			else if(BuiltinMatcher.isRegistered(matcherName))
-				matcher = BuiltinMatcher.get(matcherName);
-			else
-				throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
+			matcher = findAnnotationMatcherByName(matcherName);
 		} else if(ctx.coveredTextArray() != null) {
 			matcher = new CoveredTextStringArrayMatcher(
 					toOperator(
@@ -274,6 +283,21 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 					toLiteralType(ctx.literal())
 				);
 
+		return matcher;
+	}
+
+	private AnnotationMatcher findAnnotationMatcherByName(String matcherName) {
+		AnnotationMatcher matcher;
+		if(shortcutMatchers.containsKey(matcherName))
+			matcher = shortcutMatchers.get(matcherName);
+		else if(declaredJavaMatchers.containsKey(matcherName))
+			matcher = declaredJavaMatchers.get(matcherName);
+		else if(typeMatchers.containsKey(matcherName))
+			matcher = typeMatchers.get(matcherName);
+		else if(BuiltinMatcher.isRegistered(matcherName))
+			matcher = BuiltinMatcher.get(matcherName);
+		else
+			throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
 		return matcher;
 	}
 
@@ -318,7 +342,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return getTypeSystem().getType(typeDescription.getName());
 	}
 
-	private TypeSystem typeSystem = null;
 	private TypeSystem getTypeSystem() {
 		if(typeSystem == null)
 			try {
@@ -395,100 +418,13 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		this.inRule = false;
 	}
 
-	@Override
-	public void enterAutomatonDeclaration(AutomatonDeclarationContext ctx) {
-
-	}
-
-	@Override
-	public void exitAutomatonDeclaration(AutomatonDeclarationContext ctx) {
-
-	}
 
 	private Automaton toAutomaton(AutomatonDeclarationContext ctx) {
 		List<Automaton> subAutomata = ctx.orBranchingDeclaration().stream().map(this::toOrBanchingAutomaton).collect(Collectors.toList());
 		return AutomatonFactory.createConcatenation(subAutomata);
 	}
 
-	@Override
-	public void enterFeatureName(FeatureNameContext ctx) {
-		// do nothing
-	}
 
-	@Override
-	public void exitFeatureName(FeatureNameContext ctx) {
-	}
-
-	@Override
-	public void enterFeatureBaseName(FeatureBaseNameContext ctx) {
-
-	}
-
-	@Override
-	public void exitFeatureBaseName(FeatureBaseNameContext ctx) {
-
-	}
-
-	@Override
-	public void enterArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
-
-	}
-
-	@Override
-	public void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
-
-	}
-
-	@Override
-	public void enterInListOperator(InListOperatorContext ctx) {
-
-	}
-
-	@Override
-	public void exitInListOperator(InListOperatorContext ctx) {
-
-	}
-
-
-	@Override
-	public void enterRuleName(RuleNameContext ctx) {
-		// do nothing
-	}
-
-	@Override
-	public void exitRuleName(RuleNameContext ctx) {
-	}
-
-	
-	@Override
-	public void enterMatcherDeclaration(MatcherDeclarationContext ctx) {
-	}
-	
-	
-	@Override
-	public void exitMatcherDeclaration(MatcherDeclarationContext ctx) {
-	}
-
-	
-	@Override
-	public void enterOrBranchingDeclaration(OrBranchingDeclarationContext ctx) {
-	}
-
-	@Override
-	public void exitOrBranchingDeclaration(OrBranchingDeclarationContext ctx) {
-	}
-	
-
-	
-	@Override
-	public void enterQuantifierDeclaration(QuantifierDeclarationContext ctx) {
-		// do nothing
-	}
-
-	@Override
-	public void exitQuantifierDeclaration(QuantifierDeclarationContext ctx) {
-		
-	}
 
 	private AutomatonQuantifier parseQuantifier(QuantifierDeclarationContext ctx) {
 		String quantifierString = ctx.getText();
@@ -502,59 +438,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		this.shortcutMatchers = Maps.newHashMap();
 	}
 
-	@Override
-	public void exitRuleList(RuleListContext ctx) {
-	}
 
-	@Override
-	public void enterOperator(OperatorContext ctx) {
-	}
-
-	@Override
-	public void exitOperator(OperatorContext ctx) {
-	}
-
-	@Override
-	public void enterFeatureMatcherDeclaration(FeatureMatcherDeclarationContext ctx) {
-	}
-
-	
-	@Override
-	public void exitFeatureMatcherDeclaration(FeatureMatcherDeclarationContext ctx) {
-	}
-
-	@Override
-	public void enterLiteral(LiteralContext ctx) {
-		// do nothing
-	}
-
-	@Override
-	public void exitLiteral(LiteralContext ctx) {
-	}
-
-	@Override
-	public void enterOrexpression(OrexpressionContext ctx) {
-	}
-
-	@Override
-	public void exitOrexpression(OrexpressionContext ctx) {
-	}
-
-	
-	@Override
-	public void enterAndexpression(AndexpressionContext ctx) {
-	}
-
-	@Override
-	public void exitAndexpression(AndexpressionContext ctx) {
-	}
-
-	
-	
-	@Override
-	public void enterShortcutMatcherDeclaration(
-			ShortcutMatcherDeclarationContext ctx) {
-	}
 
 	
 	@Override
@@ -581,15 +465,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 	@Override
-	public void enterLabelIdentifier(LabelIdentifierContext ctx) {
-	}
-
-	@Override
-	public void exitLabelIdentifier(LabelIdentifierContext ctx) {
-	}
-
-
-	@Override
 	public void enterHeaderBlock(HeaderBlockContext ctx) {
 		options = Maps.newHashMap();
 	}
@@ -607,35 +482,47 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		}
 	}
 
-	@Override
-	public void enterUseDeclaration(UseDeclarationContext ctx) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private Map<String, TypeDescription> typesByShortcut = new HashMap<>();
 
 
 	@Override
 	public void exitUseDeclaration(UseDeclarationContext ctx) {
 		String value = ctx.mainUseDeclaration().typeFullName().getText();
-		mainIteratedType = toType(value);
+		mainIteratedType = toTypeDescription(value);
 		if(ctx.mainUseDeclaration().typeShortName() != null)
 			typesByShortcut.put(ctx.mainUseDeclaration().typeShortName().getText(), mainIteratedType);
 		for(SecondaryUseDeclarationContext sctx:ctx.secondaryUseDeclaration()) {
 			String typeFullName = sctx.typeFullName().getText();
-			String typeShortName = sctx.typeShortName().getText();
+			TypeDescription typeDescription = toTypeDescription(typeFullName);
+			Type type = toType(typeDescription);
+			String typeCustomShortName = sctx.typeShortName().getText();
 			if(mainIteratedType.getName().equals(typeFullName))
 				throw new AutomataParsingException(String.format("A used type can be declared at most once: <%s>",
 						typeFullName));
 			if(typesByShortcut.values().contains(typeFullName))
 				throw new AutomataParsingException(String.format("A used type can be declared at most once: <%s>",
 						typeFullName));
-			if(typesByShortcut.containsKey(typeShortName))
+			if(typesByShortcut.containsKey(type.getShortName()))
 				throw new AutomataParsingException(String.format("There is already one declared type with shortcut <%s>: %s",
-						typeShortName,
-						typesByShortcut.get(typeShortName)));
-			typesByShortcut.put(typeShortName, toType(typeFullName));
+						typeCustomShortName,
+						typesByShortcut.get(type.getShortName())));
+			if(typesByShortcut.containsKey(typeCustomShortName))
+				throw new AutomataParsingException(String.format("There is already one declared type with shortcut <%s>: %s",
+						typeCustomShortName,
+						typesByShortcut.get(typeCustomShortName)));
+			typesByShortcut.put(typeCustomShortName, typeDescription);
+		}
+		populateTypeMatchers();
+	}
+
+	private void populateTypeMatchers() {
+		Type mainType = toType(mainIteratedType);
+		typeMatchers.put(mainType.getName(), new TypeMatcher(getTypeSystem(), mainType));
+		typeMatchers.put(mainType.getShortName(), new TypeMatcher(getTypeSystem(), mainType));
+		for(Map.Entry<String, TypeDescription> e:typesByShortcut.entrySet()) {
+			Type type = toType(e.getValue());
+			typeMatchers.put(e.getKey(), new TypeMatcher(getTypeSystem(), type));
+			typeMatchers.put(type.getName(), new TypeMatcher(getTypeSystem(), type));
+			typeMatchers.put(type.getShortName(), new TypeMatcher(getTypeSystem(), type));
 		}
 	}
 
@@ -679,7 +566,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-	private TypeDescription toType(String value) {
+	private TypeDescription toTypeDescription(String value) {
 		TypeDescription typeDesc = typeSystemDescription.getType(value);
 		if(typeDesc == null)
 			throw new AutomataParsingException("No such type in type system: " + value);
@@ -721,7 +608,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		}
 	}
 
-	private Map<String, CustomMatcher> declaredJavaMatchers = new ConcurrentHashMap<>();
 
 	@Override
 	public void enterJavaMatcherDeclaration(JavaMatcherDeclarationContext ctx) {
@@ -771,7 +657,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-	private Optional<String[]> coveredTextArray = Optional.empty();
 
 	@Override
 	public void enterCoveredTextArray(CoveredTextArrayContext ctx) {
@@ -870,6 +755,225 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 
+
+	private URL toResourceUrl(PathContext path, String resourceId) {
+		String text = path.StringLiteral().getText();
+		text = text.substring(1, text.length() - 1);
+		return resolveUrl(text, resourceId);
+	}
+
+	private URL resolveUrl(String text, String resourceId) {
+		try {
+			// try current dir
+			if(Paths.get(text).toFile().isFile()) {
+				LOGGER.debug("Loading resource {} from {} directory", resourceId, Paths.get(text).isAbsolute() ? "absolute" : "relative");
+				return Paths.get(text).toUri().toURL();
+			}
+			// try custom resource dir
+			if(customResourceDir.isPresent()) {
+				if(customResourceDir.get().resolve(text).toFile().isFile()) {
+					LOGGER.debug("Loading resource {} from custom resource directory {}", resourceId, customResourceDir.get().resolve(text));
+					return customResourceDir.get().resolve(text).toUri().toURL();
+				}
+			}
+			// finally try classpath
+			String classpathUrl = text.startsWith("/") ? text : ("/" + text);
+			if(this.getClass().getResource(classpathUrl) != null) {
+				LOGGER.debug("Loading resource {} from classpath", resourceId);
+				return this.getClass().getResource(classpathUrl);
+			}
+			else
+				throw new AutomataParsingException(String.format("Cannot find resource %s", text));
+		} catch (MalformedURLException e) {
+			throw new AutomataParsingException(e);
+		}
+	}
+
+
+
+	@Override
+	public void exitRuleList(RuleListContext ctx) {
+	}
+
+	@Override
+	public void enterOperator(OperatorContext ctx) {
+	}
+
+	@Override
+	public void exitOperator(OperatorContext ctx) {
+	}
+
+	@Override
+	public void enterFeatureMatcherDeclaration(FeatureMatcherDeclarationContext ctx) {
+	}
+
+
+	@Override
+	public void exitFeatureMatcherDeclaration(FeatureMatcherDeclarationContext ctx) {
+	}
+
+	@Override
+	public void enterLiteral(LiteralContext ctx) {
+		// do nothing
+	}
+
+	@Override
+	public void exitLiteral(LiteralContext ctx) {
+	}
+
+	@Override
+	public void enterOrexpression(OrexpressionContext ctx) {
+	}
+
+	@Override
+	public void exitOrexpression(OrexpressionContext ctx) {
+	}
+
+
+	@Override
+	public void enterAndexpression(AndexpressionContext ctx) {
+	}
+
+	@Override
+	public void exitAndexpression(AndexpressionContext ctx) {
+	}
+
+
+
+	@Override
+	public void enterShortcutMatcherDeclaration(
+			ShortcutMatcherDeclarationContext ctx) {
+	}
+
+
+
+	@Override
+	public void enterEveryRule(ParserRuleContext arg0) {}
+
+	@Override
+	public void exitEveryRule(ParserRuleContext arg0) {}
+
+	@Override
+	public void visitErrorNode(ErrorNode arg0) {}
+
+	@Override
+	public void visitTerminal(TerminalNode arg0) {}
+
+	@Override
+	public void enterExpression(ExpressionContext ctx) {}
+
+	@Override
+	public void exitExpression(ExpressionContext ctx) {
+	}
+
+	@Override
+	public void enterAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitAutomatonDeclaration(AutomatonDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void enterFeatureName(FeatureNameContext ctx) {
+		// do nothing
+	}
+
+	@Override
+	public void exitFeatureName(FeatureNameContext ctx) {
+	}
+
+	@Override
+	public void enterFeatureBaseName(FeatureBaseNameContext ctx) {
+
+	}
+
+	@Override
+	public void exitFeatureBaseName(FeatureBaseNameContext ctx) {
+
+	}
+
+	@Override
+	public void enterArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
+
+	}
+
+	@Override
+	public void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx) {
+
+	}
+
+	@Override
+	public void enterInListOperator(InListOperatorContext ctx) {
+
+	}
+
+	@Override
+	public void exitInListOperator(InListOperatorContext ctx) {
+
+	}
+
+
+	@Override
+	public void enterRuleName(RuleNameContext ctx) {
+		// do nothing
+	}
+
+	@Override
+	public void exitRuleName(RuleNameContext ctx) {
+	}
+
+
+	@Override
+	public void enterMatcherDeclaration(MatcherDeclarationContext ctx) {
+	}
+
+
+	@Override
+	public void exitMatcherDeclaration(MatcherDeclarationContext ctx) {
+	}
+
+
+	@Override
+	public void enterOrBranchingDeclaration(OrBranchingDeclarationContext ctx) {
+	}
+
+	@Override
+	public void exitOrBranchingDeclaration(OrBranchingDeclarationContext ctx) {
+	}
+
+
+
+	@Override
+	public void enterQuantifierDeclaration(QuantifierDeclarationContext ctx) {
+		// do nothing
+	}
+
+	@Override
+	public void exitQuantifierDeclaration(QuantifierDeclarationContext ctx) {
+
+	}
+
+
+	@Override
+	public void enterLabelIdentifier(LabelIdentifierContext ctx) {
+	}
+
+	@Override
+	public void exitLabelIdentifier(LabelIdentifierContext ctx) {
+	}
+
+
+	@Override
+	public void enterUseDeclaration(UseDeclarationContext ctx) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+
 	@Override
 	public void enterSimpleListDefinition(SimpleListDefinitionContext ctx) {
 
@@ -960,41 +1064,9 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-
-	private URL toResourceUrl(PathContext path, String resourceId) {
-		String text = path.StringLiteral().getText();
-		text = text.substring(1, text.length() - 1);
-		return resolveUrl(text, resourceId);
+	public Map<String, TypeMatcher> getTypeMatchers() {
+		return typeMatchers;
 	}
-
-	Optional<Path> customResourceDir = Optional.empty();
-	private URL resolveUrl(String text, String resourceId) {
-		try {
-			// try current dir
-			if(Paths.get(text).toFile().isFile()) {
-				LOGGER.debug("Loading resource {} from {} directory", resourceId, Paths.get(text).isAbsolute() ? "absolute" : "relative");
-				return Paths.get(text).toUri().toURL();
-			}
-			// try custom resource dir
-			if(customResourceDir.isPresent()) {
-				if(customResourceDir.get().resolve(text).toFile().isFile()) {
-					LOGGER.debug("Loading resource {} from custom resource directory {}", resourceId, customResourceDir.get().resolve(text));
-					return customResourceDir.get().resolve(text).toUri().toURL();
-				}
-			}
-			// finally try classpath
-			String classpathUrl = text.startsWith("/") ? text : ("/" + text);
-			if(this.getClass().getResource(classpathUrl) != null) {
-				LOGGER.debug("Loading resource {} from classpath", resourceId);
-				return this.getClass().getResource(classpathUrl);
-			}
-			else
-				throw new AutomataParsingException(String.format("Cannot find resource %s", text));
-		} catch (MalformedURLException e) {
-			throw new AutomataParsingException(e);
-		}
-	}
-
 }
 
 
