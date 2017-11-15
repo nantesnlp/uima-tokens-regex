@@ -296,6 +296,9 @@ public class Automaton implements Cloneable {
 		return isAccepting(this.initState);
 	}
 
-	
+
+	public boolean isCurrentlyFailed() {
+		return currentInstancesNum() == 0;
+	}
 }
 

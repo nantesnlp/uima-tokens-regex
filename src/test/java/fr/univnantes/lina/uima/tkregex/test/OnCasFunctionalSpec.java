@@ -57,10 +57,10 @@ public class OnCasFunctionalSpec {
 	public void testCas1() throws Exception {
 		runAutomaton("a b c c d e f a c", "A ~[]? C");
 		new CasAssert(cas)
-				.hasNAnnotationOfType(OccAnno.class, 2)
 				.containsAnnotation(OccAnno.class, 0, 5)
 				.containsAnnotation(OccAnno.class, 14, 17)
-				;
+				.hasNAnnotationOfType(OccAnno.class, 2)
+		;
 	}
 
 	@Test

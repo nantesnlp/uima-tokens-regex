@@ -41,7 +41,8 @@ import java.nio.file.Paths;
 	ArrayMatcherSpec.class,
 	TypeMatcherSpec.class,
 	MultiTypeIteratorSpec.class,
-	NoOverlapMultiTypeIteratorSpec.class
+	NoOverlapMultiTypeIteratorSpec.class,
+	RegexEngineSpec.class
 }
 )
 

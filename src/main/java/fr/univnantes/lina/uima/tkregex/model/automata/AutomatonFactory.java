@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -117,6 +118,14 @@ public class AutomatonFactory {
 					states);
 			return or;
 		}
+	}
+
+	public static Automaton createConcatenation(Automaton automaton, Automaton... automata) {
+		List<Automaton> l = new ArrayList<>();
+		l.add(automaton);
+		for(Automaton a:automata)
+			l.add(a);
+		return createConcatenation(l);
 	}
 
 	public static Automaton createConcatenation(List<Automaton> automata) {

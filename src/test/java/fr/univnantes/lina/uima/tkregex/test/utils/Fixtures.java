@@ -21,14 +21,21 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.test.utils;
 
+import fr.univnantes.lina.test.uima.A;
+import fr.univnantes.lina.test.uima.B;
 import fr.univnantes.lina.test.uima.TestAnno;
+import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
+import fr.univnantes.lina.uima.tkregex.model.matchers.TypeMatcher;
 import org.apache.uima.UIMAException;
+import org.apache.uima.cas.AnnotationBaseFS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 
@@ -113,5 +120,17 @@ public class Fixtures {
 
 	public static Type getType(String s) {
 		return getTypeSystem().getType(s);
+	}
+
+	public static Type getType(Class<? extends AnnotationBaseFS> cls) {
+		return getType(cls.getName());
+	}
+
+	public static Automaton createTypeMatcherAutomaton(Class<? extends Annotation> aClass) {
+		return AutomatonFactory.createSimpleAutomaton(createTypeMatcher(aClass));
+	}
+
+	public static TypeMatcher createTypeMatcher(Class<? extends Annotation> aClass) {
+		return new TypeMatcher(getTypeSystem(), getType(aClass));
 	}
 }

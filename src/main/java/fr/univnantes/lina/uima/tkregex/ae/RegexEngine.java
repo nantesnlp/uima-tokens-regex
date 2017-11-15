@@ -9,8 +9,7 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class RegexEngine {
 	private List<Type> iteratedTypes;
@@ -47,25 +46,38 @@ public class RegexEngine {
 		RecognitionHandler episodeHandler = episode -> casRecognitionHandler.recognizedEpisode(jCas, episode);
 
 		for (final Rule rule: rules) {
+			Deque<NoOverlapMultiTypeIterator> currentAlternativeStack = new LinkedList<>();
 			Automaton automaton = rule.getAutomaton();
 			automaton.setAllowOverlappingInstances(this.allowOverlappingOccurrences);
 			automaton.addRecognitionHandler(episodeHandler);
 			automaton.reset();
 
-			MultiTypeIterator it = getIterator(jCas);
-			while (it.hasNext()) {
-				Annotation annotation = it.next();
-				automaton.nextAnnotation(annotation);
-			}
-
+			NoOverlapMultiTypeIterator it = getIterator(jCas);
+			it.addAlternativeListener(currentAlternativeStack::addFirst);
+			iterate(automaton, it, currentAlternativeStack);
 			automaton.finish();
 			automaton.removeRecognitionHandler(episodeHandler);
 		}
 
 	}
 
-	private MultiTypeIterator getIterator(JCas jCas) {
-		return new MultiTypeIterator(jCas, this.iteratedTypes);
+	private void iterate(Automaton automaton, NoOverlapMultiTypeIterator it, Deque<NoOverlapMultiTypeIterator> alternativeStack) {
+		while (it.hasNext()) {
+			Annotation annotation = it.next();
+			automaton.nextAnnotation(annotation);
+			if(automaton.isCurrentlyFailed()) {
+				if(alternativeStack.isEmpty()) {
+					// end iteration on fail when "it" is not the root iterator
+					if (!it.isRoot())
+						return;
+				} else
+					iterate(automaton, alternativeStack.pop(), alternativeStack);
+			}
+		}
+	}
+
+	private NoOverlapMultiTypeIterator getIterator(JCas jCas) {
+		return new NoOverlapMultiTypeIterator(jCas, this.iteratedTypes);
 	}
 
 

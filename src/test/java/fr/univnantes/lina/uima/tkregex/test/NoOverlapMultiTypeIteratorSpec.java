@@ -3,22 +3,28 @@ package fr.univnantes.lina.uima.tkregex.test;
 import com.google.common.collect.Lists;
 import fr.univnantes.lina.test.uima.A;
 import fr.univnantes.lina.test.uima.B;
+import fr.univnantes.lina.test.uima.C;
 import fr.univnantes.lina.uima.tkregex.ae.MultiTypeIterator;
 import fr.univnantes.lina.uima.tkregex.ae.NoOverlapMultiTypeIterator;
+import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
 import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.apache.uima.UIMAException;
+import org.apache.uima.cas.Type;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.groups.Tuple.tuple;
 
 public class NoOverlapMultiTypeIteratorSpec {
 
 	JCas cas;
-
+	Type typeA,typeB,typeC;
 	/*
 	B:   ---   -----
 	A: - - - - - - -
@@ -26,6 +32,9 @@ public class NoOverlapMultiTypeIteratorSpec {
 	@Before
 	public void setup() throws UIMAException {
 		cas = JCasFactory.createJCas();
+		typeA = Fixtures.getType(A.class);
+		typeB = Fixtures.getType(B.class);
+		typeC = Fixtures.getType(C.class);
 		Mocks.anno(cas, A.class, 0,1);
 		Mocks.anno(cas, A.class, 2,3);
 		Mocks.anno(cas, A.class, 4,5);
@@ -39,8 +48,10 @@ public class NoOverlapMultiTypeIteratorSpec {
 
 	@Test
 	public void testOneType() {
-		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, A.class)))
+		ArrayList<Annotation> actual = Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, Lists.newArrayList(typeA)));
+		Assertions.assertThat(actual)
 				.hasSize(7)
+				.doesNotContainNull()
 				.extracting("class.simpleName", "begin", "end")
 				.containsExactly(
 						tuple("A", 0, 1),
@@ -52,7 +63,7 @@ public class NoOverlapMultiTypeIteratorSpec {
 						tuple("A", 12, 13)
 				);
 
-		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, B.class)))
+		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, Lists.newArrayList(typeB))))
 				.hasSize(2)
 				.extracting("class.simpleName", "begin", "end")
 				.containsExactly(
@@ -63,7 +74,7 @@ public class NoOverlapMultiTypeIteratorSpec {
 
 	@Test
 	public void testZeroType() {
-		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas)))
+		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, Lists.newArrayList())))
 				.hasSize(4)
 				.extracting("class.simpleName", "begin", "end")
 				.containsExactly(
@@ -77,7 +88,7 @@ public class NoOverlapMultiTypeIteratorSpec {
 
 	@Test
 	public void testTwoTypes() {
-		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, A.class, B.class)))
+		Assertions.assertThat(Lists.newArrayList(new NoOverlapMultiTypeIterator(cas, Lists.newArrayList(typeA, typeB))))
 				.hasSize(4)
 				.extracting("class.simpleName", "begin", "end")
 				.containsExactly(
