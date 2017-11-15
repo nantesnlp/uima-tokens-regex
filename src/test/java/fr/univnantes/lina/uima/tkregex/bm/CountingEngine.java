@@ -23,6 +23,7 @@ package fr.univnantes.lina.uima.tkregex.bm;
 
 import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.JCas;
@@ -42,7 +43,7 @@ public class CountingEngine extends TokenRegexAE {
 	}
 	
 	@Override
-	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence) {
+	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence, Rule rule) {
 		cnt.incrementAndGet();
 		AnnotationFS annotation = jCas.getCas().createAnnotation(termType, occurrence.getBegin(), occurrence.getEnd());
 		jCas.addFsToIndexes(annotation);

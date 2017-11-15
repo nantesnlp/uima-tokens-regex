@@ -1,9 +1,6 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
-import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
-import fr.univnantes.lina.uima.tkregex.model.automata.RecognitionHandler;
-import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
+import fr.univnantes.lina.uima.tkregex.model.automata.*;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;
@@ -43,29 +40,30 @@ public class RegexEngine {
 
 	public void process(JCas jCas) {
 
-		RecognitionHandler episodeHandler = episode -> casRecognitionHandler.recognizedEpisode(jCas, episode);
 
 		for (final Rule rule: rules) {
-			Deque<NoOverlapMultiTypeIterator> currentAlternativeStack = new LinkedList<>();
+			RecognitionHandler episodeHandler = episode -> {
+				casRecognitionHandler.recognizedEpisode(jCas, episode, rule);
+			};
 			Automaton automaton = rule.getAutomaton();
-			automaton.setAllowOverlappingInstances(this.allowOverlappingOccurrences);
-			automaton.addRecognitionHandler(episodeHandler);
-			automaton.reset();
+			AutomatonEngine automatonEngine = new AutomatonEngine(automaton);
+			automatonEngine.setAllowOverlappingInstances(this.allowOverlappingOccurrences);
+			automatonEngine.addRecognitionHandler(episodeHandler);
+			automatonEngine.reset();
 
 			NoOverlapMultiTypeIterator it = getIterator(jCas);
-//			it.addAlternativeListener(currentAlternativeStack::addFirst);
-			iterate(automaton, it, true);
-			automaton.finish();
-			automaton.removeRecognitionHandler(episodeHandler);
+			iterate(automatonEngine, it, true);
+			automatonEngine.finish();
+			automatonEngine.removeRecognitionHandler(episodeHandler);
 		}
 
 	}
 
-	private void iterate(Automaton automaton, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
+	private void iterate(AutomatonEngine automaton, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
 		while (it.hasNext()) {
 			Optional<NoOverlapMultiTypeIterator> alternative = it.getIterationAlternative();
 			if(alternative.isPresent())
-				iterate(automaton.instanceClone(), alternative.get(), false);
+				iterate(automaton.doClone(), alternative.get(), false);
 			Annotation annotation = it.next();
 			automaton.nextAnnotation(annotation);
 			if(automaton.isCurrentlyFailed() && !isRootIterator)

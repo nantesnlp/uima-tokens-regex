@@ -24,6 +24,7 @@ package fr.univnantes.lina.uima.tkregex.test;
 
 import com.google.common.collect.ImmutableMap;
 import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
+import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -59,7 +60,7 @@ public class AutomatonSpec {
 
 	@Test
 	public void testIgnorePattern() {
-		Automaton a = automaton("~c b d");
+		AutomatonEngine a = automaton("~c b d");
 		automatonTest(
 				"a c b d", 
 				a, 
@@ -339,16 +340,16 @@ public class AutomatonSpec {
 	
 	@Test
 	public void testMatchesEmptySequence() {
-		assertFalse(automaton("a").matchesEmptySequence());
-		assertTrue(automaton("a?").matchesEmptySequence());
-		assertTrue(automaton("a*").matchesEmptySequence());
-		assertFalse(automaton("a+").matchesEmptySequence());
-		assertFalse(automaton("a1").matchesEmptySequence());
-		assertFalse(automaton("a2").matchesEmptySequence());
-		assertFalse(automaton("a3").matchesEmptySequence());
-		assertTrue(automaton("a? b* c? d*").matchesEmptySequence());
-		assertFalse(automaton("a? b c? d*").matchesEmptySequence());
-		assertFalse(automaton("a? b* c d*").matchesEmptySequence());
+		assertFalse(automaton("a").getAutomaton().matchesEmptySequence());
+		assertTrue(automaton("a?").getAutomaton().matchesEmptySequence());
+		assertTrue(automaton("a*").getAutomaton().matchesEmptySequence());
+		assertFalse(automaton("a+").getAutomaton().matchesEmptySequence());
+		assertFalse(automaton("a1").getAutomaton().matchesEmptySequence());
+		assertFalse(automaton("a2").getAutomaton().matchesEmptySequence());
+		assertFalse(automaton("a3").getAutomaton().matchesEmptySequence());
+		assertTrue(automaton("a? b* c? d*").getAutomaton().matchesEmptySequence());
+		assertFalse(automaton("a? b c? d*").getAutomaton().matchesEmptySequence());
+		assertFalse(automaton("a? b* c d*").getAutomaton().matchesEmptySequence());
 	}
 
 	@Test

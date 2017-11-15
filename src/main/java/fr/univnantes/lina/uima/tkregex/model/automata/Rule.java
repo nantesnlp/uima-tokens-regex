@@ -29,7 +29,6 @@ public class Rule {
 	public Rule(Automaton automaton, String name) {
 		super();
 		this.automaton = automaton;
-		this.automaton.setRule(this);
 		this.name = name;
 	}
 

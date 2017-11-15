@@ -106,17 +106,24 @@ public class TestUtils {
 		return automaton;
 	}
 
-	public static Automaton automaton(String regexp) {
-		return automaton(regexp, new HashMap<String, String>(), false);
+	public static AutomatonEngine automaton(String regexp) {
+		return automaton(regexp, new HashMap<>(), false);
 	}
 
-	public static Automaton automaton(String regexp, Map<String, String> labels, boolean allowOverlap) {
+	public static AutomatonEngine automaton(String regexp, Map<String, String> labels, boolean allowOverlap) {
+		Automaton automaton = createAutomaton(regexp, labels);
+		AutomatonEngine automatonEngine = new AutomatonEngine(automaton);
+		automatonEngine.setAllowOverlappingInstances(allowOverlap);
+		return automatonEngine;
+	}
+
+	private static Automaton createAutomaton(String regexp, Map<String, String> labels) {
 		StringTokenizer st = new StringTokenizer(regexp);
 		List<Automaton> list = new LinkedList<Automaton>();
 		while(st.hasMoreTokens()) {
 			String token = st.nextToken();
 			String firstChar = token.substring(0, 1);
-			
+
 			String transitionLetter = firstChar;
 			boolean ignore = false;
 			if(firstChar.equals("~")) {
@@ -130,19 +137,17 @@ public class TestUtils {
 				matcher.setLabel(labels.get(transitionLetter));
 			else
 				matcher.setLabel(transitionLetter);
-			
+
 			String quant = token.substring(firstChar.equals("~") ? 2 : 1, token.length());
 			list.add(
 					AutomatonFactory.createQuantifiedAutomaton(
-						AutomatonFactory.createSimpleAutomaton(matcher), 
+						AutomatonFactory.createSimpleAutomaton(matcher),
 						getQuantifier(quant))
 				);
 		}
-		Automaton automaton = AutomatonFactory.createConcatenation(list);
-		automaton.setAllowOverlappingInstances(allowOverlap);
-		return automaton;
+		return AutomatonFactory.createConcatenation(list);
 	}
-	
+
 	public static String readFile(Path path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(path);
 		return new String(encoded, encoding);
@@ -187,7 +192,7 @@ public class TestUtils {
 		}
 	}
 	
-	public static String matchSequence(Automaton a, String str) {
+	public static String matchSequence(AutomatonEngine a, String str) {
 		final List<RegexOccurrence> episodes = Lists.newLinkedList();
 		RecognitionHandler rh = new  RecognitionHandler() {
 			@Override
@@ -249,6 +254,11 @@ public class TestUtils {
 	}
 
 	public static void automatonTest(String sequence, Automaton a, String result) {
+		automatonTest(sequence, new AutomatonEngine(a), result);
+	}
+
+
+	public static void automatonTest(String sequence, AutomatonEngine a, String result) {
 		assertEquals(
 				result, 
 				matchSequence(a, sequence));

@@ -37,36 +37,11 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 
 public class Automaton implements Cloneable {
-	
 
-//	private String name;
-	private Rule rule;
 	private State initState;
 	private TreeSet<State> acceptingStates;
 	private TreeSet<State> states;
-	private boolean allowOverlappingInstances = false;
-	
-	private LinkedList<AutomatonInstance> instances;
-	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
-	
-	boolean useMatcherCache = false;
-	
-	LoadingCache<AnnotationFS, ConcurrentMap<AnnotationMatcher, Boolean>> matcherCache = CacheBuilder.newBuilder()
-			.initialCapacity(10)
-			.maximumSize(50)
-			
-			.build(new CacheLoader<AnnotationFS, ConcurrentMap<AnnotationMatcher, Boolean>>() {
-				@Override
-				public ConcurrentMap<AnnotationMatcher, Boolean> load(AnnotationFS key) throws Exception {
-					return new ConcurrentHashMap<>();
-				}
-			})
-			;
 
-	public void setUseMatcherCache(boolean useMatcherCache) {
-		this.useMatcherCache = useMatcherCache;
-	}
-	
 	Automaton(State initState,
 			Set<State> acceptingStates, Set<State> states) {
 		this();
@@ -83,25 +58,10 @@ public class Automaton implements Cloneable {
 		super();
 		this.acceptingStates = new TreeSet<State>();
 		this.states = new TreeSet<State>();
-		reset();
 	}
 	
 	
-	public void setAllowOverlappingInstances(boolean allowOverlappingInstances) {
-		this.allowOverlappingInstances = allowOverlappingInstances;
-	}
-	
-	public boolean isAllowOverlappingInstances() {
-		return allowOverlappingInstances;
-	}
-	
-	void setRule(Rule rule) {
-		this.rule = rule;
-	}
 
-	public Rule getRule() {
-		return rule;
-	}
 	boolean addAllState(Collection<? extends State> arg0) {
 		return acceptingStates.addAll(arg0);
 	}
@@ -115,81 +75,7 @@ public class Automaton implements Cloneable {
 	}
 
 
-	public void addRecognitionHandler(RecognitionHandler handler) {
-			this.handlers.add(handler);
-	}
-	
-	public void removeRecognitionHandler(RecognitionHandler handler) {
-		this.handlers.remove(handler);		
-	}
-	public void finish() {
-		nextAnnotation(LastAnnotationToken.INSTANCE);
-	}
-	
-	public void nextAnnotation(AnnotationFS annotation) {
-		AutomatonInstance automatonInstance = new AutomatonInstance(this, initState);
-		this.instances.add(automatonInstance);
-		
-		ListIterator<AutomatonInstance> instanceIt = this.instances.listIterator();
-		RegexOccurrence matchingEpisode = null;
-		while (instanceIt.hasNext()) {
-			AutomatonInstance inst = instanceIt.next();
-			
-			/*
-			 *  remove the instance if there is already a 
-			 *  found instance covering it.
-			 */
-			if(!this.allowOverlappingInstances) {
-				if(matchingEpisode != null) {
-					AnnotationFS firstAnno = inst.firstAnno();
-					if(firstAnno != null) {
-						List<LabelledAnnotation> matchingAnnoList = matchingEpisode.getAllMatchingAnnotations();
-						AnnotationFS lastAnno = matchingAnnoList.get(matchingAnnoList.size()-1).getAnnotation();
-						int begin1 = lastAnno.getBegin();
-						int begin2 = firstAnno.getBegin();
-						int end1 = lastAnno.getEnd();
-						int end2 = firstAnno.getEnd();
-						if (!(begin1 < begin2 || (begin1 == begin2 && end1 < end2))) {
-							instanceIt.remove();
-							continue;
-						}
-					} else {
-						
-					}
-				}
-			}
-			
-			inst.propagateAnnotation(annotation);
-			
-			if(inst.hasFailed()) {
-				instanceIt.remove();
-				if(this.isAccepting(inst.getCurrentState())) {
-					// The instance succeeds
-					RegexOccurrence e = inst.getEpisode();
-					matchingEpisode = e;
-					notifyHandlers(e);
-				}
-			}
-		}
-	}
-	
-	public int currentInstancesNum() {
-		return this.instances.size();
-	}
-		
-	
-	public void reset() {
-		this.instances = Lists.newLinkedList();
-		this.matcherCache.invalidateAll();
-	}
-	
-	void notifyHandlers(RegexOccurrence episode) {
-//		episode.setRuleName(this.name);
-		for(RecognitionHandler h:this.handlers) {
-			h.recognizedEpisode(episode);
-		}
-	}
-	
+
 	void setInitState(State initState) {
 		this.initState = initState;
 	}
@@ -231,22 +117,6 @@ public class Automaton implements Cloneable {
 		this.acceptingStates.add(s);
 	}
 
-	public Automaton instanceClone() {
-		Automaton automataClone = new Automaton();
-		automataClone.rule = this.rule;
-		automataClone.initState = this.initState;
-		automataClone.acceptingStates = this.acceptingStates;
-		automataClone.states = this.states;
-		automataClone.allowOverlappingInstances = this.allowOverlappingInstances;
-		automataClone.handlers = this.handlers;
-		automataClone.useMatcherCache = this.useMatcherCache;
-
-		automataClone.instances = new LinkedList<>();
-		for(AutomatonInstance instance:this.instances) {
-			automataClone.instances.add(instance.stateClone(this));
-		}
-		return automataClone;
-	}
 
 	public Automaton deepClone() {
 		Automaton automataClone = new Automaton();
@@ -313,9 +183,5 @@ public class Automaton implements Cloneable {
 		return isAccepting(this.initState);
 	}
 
-
-	public boolean isCurrentlyFailed() {
-		return currentInstancesNum() == 0;
-	}
 }
 

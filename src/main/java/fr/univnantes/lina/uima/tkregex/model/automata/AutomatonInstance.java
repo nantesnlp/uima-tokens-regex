@@ -1,24 +1,20 @@
 package fr.univnantes.lina.uima.tkregex.model.automata;
 
 import com.google.common.collect.Lists;
-import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.cas.text.AnnotationFS;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 
 public class AutomatonInstance implements Cloneable {
 	private State current;
 	private LinkedList<StateExploration> trace = Lists.newLinkedList();
 	private boolean failed;
-	private Automaton automaton;
+	private AutomatonEngine automatonEng;
 
-	AutomatonInstance(Automaton automaton, State current) {
-		this.automaton = automaton;
+	AutomatonInstance(AutomatonEngine automatonEngine, State current) {
+		this.automatonEng = automatonEngine;
 		this.current = current;
 		this.failed = false;
 	}
@@ -46,16 +42,16 @@ public class AutomatonInstance implements Cloneable {
 					)
 				);
 		}
-		return new RegexOccurrence(automaton, retVal);
+		return new RegexOccurrence(automatonEng, retVal);
 	}
 
 	/**
-	 * Creates a clone of the current automaton instance for
+	 * Creates a clone of the current automatonEng instance for
 	 * iteration alternative purposes.
 	 * @return
 	 */
-	public AutomatonInstance stateClone(Automaton parent) {
-		AutomatonInstance clone = new AutomatonInstance(parent, this.current);
+	public AutomatonInstance doClone() {
+		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current);
 		clone.failed = this.failed;
 		clone.trace = new LinkedList<>();
 		for(StateExploration se:this.trace) {
@@ -105,7 +101,7 @@ public class AutomatonInstance implements Cloneable {
 			if(t==null) {// no matching transition
 
 				// do not backtrack if at accepting state
-				if(this.automaton.isAccepting(this.current))
+				if(this.automatonEng.getAutomaton().isAccepting(this.current))
 					this.failed = true;
 				else
 					backtrack(annotations);
@@ -118,18 +114,7 @@ public class AutomatonInstance implements Cloneable {
 
 
 	private boolean doesAnnotationMatchTransition(AnnotationFS a, Transition transition) {
-		if(automaton.useMatcherCache) {
-			ConcurrentMap<AnnotationMatcher, Boolean> annotationCache;
-			try {
-				annotationCache = automaton.matcherCache.get(a);
-			} catch (ExecutionException e) {
-				throw new RuntimeException("Using automaton cache failed", e);
-			}
-			return annotationCache.computeIfAbsent(
-					transition.getMatcher(),
-					matcher -> matcher.matches(a));
-		} else
-			return transition.match(a);
+		return transition.match(a);
 	}
 
 	private void backtrack(LinkedList<AnnotationFS> annotations) {

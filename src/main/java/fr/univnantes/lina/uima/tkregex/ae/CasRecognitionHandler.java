@@ -23,9 +23,10 @@ package fr.univnantes.lina.uima.tkregex.ae;
 
 
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import org.apache.uima.jcas.JCas;
 
 public interface CasRecognitionHandler {
 	
-	public void recognizedEpisode(JCas cas, RegexOccurrence episode);
+	public void recognizedEpisode(JCas cas, RegexOccurrence episode, Rule rule);
 }

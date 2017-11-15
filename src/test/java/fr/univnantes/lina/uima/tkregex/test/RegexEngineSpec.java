@@ -4,13 +4,10 @@ import com.google.common.collect.Lists;
 import fr.univnantes.lina.test.uima.A;
 import fr.univnantes.lina.test.uima.B;
 import fr.univnantes.lina.test.uima.C;
-import fr.univnantes.lina.uima.tkregex.ae.CasRecognitionHandler;
 import fr.univnantes.lina.uima.tkregex.ae.RegexEngine;
-import fr.univnantes.lina.uima.tkregex.model.automata.Automaton;
 import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
-import fr.univnantes.lina.uima.tkregex.model.matchers.TypeMatcher;
 import fr.univnantes.lina.uima.tkregex.test.utils.Fixtures;
 import fr.univnantes.lina.uima.tkregex.test.utils.Mocks;
 import org.apache.uima.UIMAException;
@@ -20,7 +17,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,8 +25,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RegexEngineSpec {
+
+	private static class Result {
+		Rule rule;
+		RegexOccurrence episode;
+
+		Result(Rule rule, RegexOccurrence episode) {
+			this.rule = rule;
+			this.episode = episode;
+		}
+	}
 	private JCas cas;
-	private Rule ruleAB, ruleAC, ruleBC, ruleCA, ruleAA, ruleA, ruleB, ruleC;
+	private Rule ruleAB, ruleAC, ruleBC, ruleCA, ruleAA, ruleA, ruleB, ruleC, ruleBA;
 	private Type typeA, typeB, typeC;
 
 	/*
@@ -60,15 +66,16 @@ public class RegexEngineSpec {
 		ruleBC = toRule("ruleBC", B.class, C.class);
 		ruleCA = toRule("ruleCA", C.class, A.class);
 		ruleAA = toRule("ruleAA", A.class, A.class);
+		ruleBA = toRule("ruleAA", B.class, A.class);
 	}
 
-	private List<RegexOccurrence> processRules(Rule... rules) {
-		List<RegexOccurrence> recognizedOccurrences = Lists.newArrayList();
+	private List<Result> processRules(Rule... rules) {
+		List<Result> recognizedOccurrences = Lists.newArrayList();
 
 		RegexEngine regexEngine = new RegexEngine(
 				Lists.newArrayList(rules),
 				Lists.newArrayList(typeA, typeB, typeC),
-				(cas, episode) -> recognizedOccurrences.add(episode)
+				(cas, episode, rule) -> recognizedOccurrences.add(new Result(rule, episode))
 		);
 		regexEngine.process(cas);
 
@@ -90,25 +97,64 @@ public class RegexEngineSpec {
 
 	@Test
 	public void testAC() {
-		List<RegexOccurrence> occurrences = processRules(ruleAC);
+		List<Result> occurrences = processRules(ruleAC);
 		Assertions.assertThat(occurrences)
 				.hasSize(1)
-				.extracting("begin", "end", "rule.name")
+				.extracting("episode.begin", "episode.end", "rule.name")
 				.containsExactly(Tuple.tuple(4, 7, "ruleAC"));
 	}
 
 	@Test
+	public void testAB() {
+		List<Result> occurrences = processRules(ruleAB);
+		Assertions.assertThat(occurrences)
+				.hasSize(2)
+				.extracting("episode.begin", "episode.end", "rule.name")
+				.containsExactly(
+						Tuple.tuple(0, 5, "ruleAB"),
+						Tuple.tuple(0, 7, "ruleAB")
+						);
+	}
+
+	@Test
+	public void testAA() {
+		List<Result> occurrences = processRules(ruleAA);
+		Assertions.assertThat(occurrences)
+				.hasSize(4)
+				.extracting("episode.begin", "episode.end", "rule.name")
+				.containsExactly(
+						Tuple.tuple(0, 3, "ruleAA"),
+						Tuple.tuple(2, 5, "ruleAA"),
+						Tuple.tuple(4, 7, "ruleAA"),
+						Tuple.tuple(6, 9, "ruleAA")
+				);
+	}
+
+
+	@Test
+	public void testBA() {
+		List<Result> occurrences = processRules(ruleBA);
+		Assertions.assertThat(occurrences)
+				.hasSize(2)
+				.extracting("episode.begin", "episode.end", "rule.name")
+				.containsExactly(
+						Tuple.tuple(2, 7, "ruleBA"),
+						Tuple.tuple(2, 9, "ruleBA")
+				);
+	}
+
+	@Test
 	public void testBC() {
-		List<RegexOccurrence> occurrences = processRules(ruleBC);
+		List<Result> occurrences = processRules(ruleBC);
 		Assertions.assertThat(occurrences)
 				.hasSize(1)
-				.extracting("begin", "end", "rule.name")
+				.extracting("episode.begin", "episode.end", "rule.name")
 				.containsExactly(Tuple.tuple(2, 7, "ruleBC"));
 	}
 
 	@Test
 	public void testB() {
-		List<RegexOccurrence> occurrences = processRules(ruleB);
+		List<Result> occurrences = processRules(ruleB);
 		Assertions.assertThat(occurrences)
 				.hasSize(2)
 				.extracting("begin", "end", "rule.name")
@@ -121,7 +167,7 @@ public class RegexEngineSpec {
 
 	@Test
 	public void testC() {
-		List<RegexOccurrence> occurrences = processRules(ruleC);
+		List<Result> occurrences = processRules(ruleC);
 		Assertions.assertThat(occurrences)
 				.hasSize(1)
 				.extracting("begin", "end", "rule.name")
@@ -132,7 +178,7 @@ public class RegexEngineSpec {
 
 	@Test
 	public void testA() {
-		List<RegexOccurrence> occurrences = processRules(ruleA);
+		List<Result> occurrences = processRules(ruleA);
 		Assertions.assertThat(occurrences)
 				.hasSize(5)
 				.extracting("begin", "end", "rule.name")

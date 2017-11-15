@@ -98,9 +98,8 @@ public class Benchmark {
 	private static AnalysisEngineDescription createAE(boolean allowOverlappingOccurrence, boolean useCache) throws Exception {
 			AnalysisEngineDescription ae = AnalysisEngineFactory.createEngineDescription(
 					CountingEngine.class,
-					TokenRegexAE.PARAM_ALLOW_OVERLAPPING_OCCURRENCES, allowOverlappingOccurrence,
-					TokenRegexAE.PARAM_USE_MATCHER_CACHES, useCache
-				);
+					TokenRegexAE.PARAM_ALLOW_OVERLAPPING_OCCURRENCES, allowOverlappingOccurrence
+			);
 			
 			ExternalResourceDescription rules = ExternalResourceFactory.createExternalResourceDescription(
 					RegexListResource.class, 

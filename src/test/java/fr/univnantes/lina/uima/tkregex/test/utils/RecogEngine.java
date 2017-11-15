@@ -24,6 +24,7 @@ package fr.univnantes.lina.uima.tkregex.test.utils;
 import fr.univnantes.lina.test.uima.OccAnno;
 import fr.univnantes.lina.uima.tkregex.ae.TokenRegexAE;
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
+import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.jcas.JCas;
 
@@ -31,11 +32,11 @@ import java.util.stream.Collectors;
 
 public class RecogEngine extends TokenRegexAE {
 	@Override
-	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence) {
+	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence, Rule rule) {
 		OccAnno a = new OccAnno(jCas);
 		a.setBegin(occurrence.getBegin());
 		a.setEnd(occurrence.getEnd());
-		a.setRule(occurrence.getRule().getName());
+		a.setRule(rule.getName());
 		a.setPattern(occurrence.getLabelledAnnotations().stream().map(LabelledAnnotation::getLabel).collect(Collectors.joining(" ")));
 		a.addToIndexes();
 	}

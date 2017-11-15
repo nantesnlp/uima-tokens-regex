@@ -28,14 +28,10 @@ import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.Type;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.descriptor.ExternalResource;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 
@@ -46,16 +42,12 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	@ExternalResource(key = TOKEN_REGEX_RULES, mandatory = true)
 	protected RegexListResource resource = null;
 
-	public static final String PARAM_USE_MATCHER_CACHES = "UseMatcherCaches";
-	@ConfigurationParameter(name = PARAM_USE_MATCHER_CACHES, mandatory = false, defaultValue = "false")
-	private boolean useMatcherCache;
 
-	
 	public static final String PARAM_ALLOW_OVERLAPPING_OCCURRENCES = "AllowOverlappingOccurrences";
 	@ConfigurationParameter(name = PARAM_ALLOW_OVERLAPPING_OCCURRENCES, mandatory = false, defaultValue="false")
 	private boolean allowOverlappingOccurrences;
 
-	protected abstract void ruleMatched(JCas jCas, RegexOccurrence occurrence);
+	protected abstract void ruleMatched(JCas jCas, RegexOccurrence occurrence, Rule rule);
 	protected void beforeRuleProcessing(JCas jCas) {}
 	protected void afterRuleProcessing(JCas jCas) {}
 
@@ -70,11 +62,7 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
-		
-		for(Rule rule:resource.getRules())
-			rule.getAutomaton().setUseMatcherCache(useMatcherCache);
-
-		this.regexEngine = new RegexEngine(resource.getRules(), resource.getIteratedTypes(), this::ruleMatched);
+		this.regexEngine = new RegexEngine(resource.getRules(), resource.getIteratedTypes(), (jCas, occurrence, rule) -> ruleMatched(jCas, occurrence, rule));
 		this.regexEngine.setAllowOverlappingOccurrences(allowOverlappingOccurrences);
 	}
 	

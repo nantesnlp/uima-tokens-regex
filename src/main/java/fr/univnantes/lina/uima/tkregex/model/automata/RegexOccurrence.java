@@ -35,7 +35,7 @@ import java.util.List;
 public class RegexOccurrence {
 	public static final char WHITESPACE = ' ';
 
-	private Automaton automaton;
+	private AutomatonEngine automaton;
 	private String category;
 	private List<LabelledAnnotation> allMatchingAnnotations;
 	private List<LabelledAnnotation> labelledAnnotations;
@@ -45,9 +45,9 @@ public class RegexOccurrence {
 	private int begin = -1;
 	private int end = -1;
 
-	RegexOccurrence(Automaton automaton, Iterable<LabelledAnnotation> list) {
+	RegexOccurrence(AutomatonEngine automatonEngine, Iterable<LabelledAnnotation> list) {
 		super();
-		this.automaton = automaton;
+		this.automaton = automatonEngine;
 		this.allMatchingAnnotations = ImmutableList.copyOf(list);
 		this.labelledAnnotations = ImmutableList.copyOf(labelledAnnotationIterator());
 		this.size = this.labelledAnnotations.size();
@@ -76,10 +76,6 @@ public class RegexOccurrence {
 	
 	public LabelledAnnotation getLast() {
 		return last;
-	}
-	
-	public Rule getRule() {
-		return this.automaton.getRule();
 	}
 
 	public String getCategory() {
@@ -121,13 +117,11 @@ public class RegexOccurrence {
 			return MoreObjects.toStringHelper(this)
 					.add("begin", this.getLabelledAnnotations().get(0).getAnnotation().getBegin())
 					.add("end", this.getLabelledAnnotations().get(size()-1).getAnnotation().getEnd())
-					.add("rule", this.getRule().getName())
 //					.add("pattern", Joiner.on(" ").join(this.getLabels()))
 					.toString();
 		} else {
 			return MoreObjects.toStringHelper(this)
 					.add("size", 0)
-					.add("rule", this.getRule().getName())
 					.toString();
 		}
 	}
@@ -161,4 +155,5 @@ public class RegexOccurrence {
 		} else
 			return false;
 	}
+
 }
