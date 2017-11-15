@@ -230,7 +230,24 @@ public class Automaton implements Cloneable {
 	void addAcceptingState(State s) {
 		this.acceptingStates.add(s);
 	}
-	
+
+	public Automaton instanceClone() {
+		Automaton automataClone = new Automaton();
+		automataClone.rule = this.rule;
+		automataClone.initState = this.initState;
+		automataClone.acceptingStates = this.acceptingStates;
+		automataClone.states = this.states;
+		automataClone.allowOverlappingInstances = this.allowOverlappingInstances;
+		automataClone.handlers = this.handlers;
+		automataClone.useMatcherCache = this.useMatcherCache;
+
+		automataClone.instances = new LinkedList<>();
+		for(AutomatonInstance instance:this.instances) {
+			automataClone.instances.add(instance.stateClone(this));
+		}
+		return automataClone;
+	}
+
 	public Automaton deepClone() {
 		Automaton automataClone = new Automaton();
 		Map<State, State> clones = Maps.newHashMap();

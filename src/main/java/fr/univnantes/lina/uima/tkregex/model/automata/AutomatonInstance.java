@@ -38,33 +38,36 @@ public class AutomatonInstance implements Cloneable {
 	RegexOccurrence getEpisode() {
 		List<LabelledAnnotation> retVal = new LinkedList<LabelledAnnotation>();
 		for(StateExploration se:trace) {
-			if(se.annotation != null)
+			if(se.getAnnotation() != null)
 				retVal.add( new LabelledAnnotation(
-							se.annotation,
-							se.transition.getMatcher().getLabel(),
-							se.transition.getMatcher().isIgnoreMatcher()
+							se.getAnnotation(),
+							se.getTransition().getMatcher().getLabel(),
+							se.getTransition().getMatcher().isIgnoreMatcher()
 					)
 				);
 		}
 		return new RegexOccurrence(automaton, retVal);
 	}
 
-	private class StateExploration {
-		private Iterator<Transition> iterator;
-		private AnnotationFS annotation;
-		private Transition transition;
-		StateExploration(Iterator<Transition> iterator,
-				AnnotationFS annotation, Transition transition) {
-			super();
-			this.iterator = iterator;
-			this.annotation = annotation;
-			this.transition = transition;
+	/**
+	 * Creates a clone of the current automaton instance for
+	 * iteration alternative purposes.
+	 * @return
+	 */
+	public AutomatonInstance stateClone(Automaton parent) {
+		AutomatonInstance clone = new AutomatonInstance(parent, this.current);
+		clone.failed = this.failed;
+		clone.trace = new LinkedList<>();
+		for(StateExploration se:this.trace) {
+			clone.trace.add(se.doClone());
 		}
+		return clone;
 	}
+
 
 	public AnnotationFS firstAnno() {
 		for(StateExploration se:trace) {
-			return se.annotation;
+			return se.getAnnotation();
 		}
 		return null;
 	}
@@ -76,12 +79,12 @@ public class AutomatonInstance implements Cloneable {
 	}
 
 	private void propagateAnnotations(LinkedList<AnnotationFS> annotations) {
-		Iterator<Transition> transitionIt = this.current.transitionIterator();
+		TransitionIterator transitionIt = this.current.transitionIterator();
 		iterate(annotations, transitionIt);
 	}
 
 	public void iterate(LinkedList<AnnotationFS> annotations,
-			Iterator<Transition> transitionIt) {
+						TransitionIterator transitionIt) {
 		if(annotations.isEmpty()) {
 		} else {
 			AnnotationFS a = annotations.getFirst();
@@ -134,9 +137,9 @@ public class AutomatonInstance implements Cloneable {
 			this.failed = true;
 		} else {
 			StateExploration at = trace.removeLast();
-			this.current = at.transition.getFromState();
-			annotations.addFirst(at.annotation);
-			iterate(annotations, at.iterator);
+			this.current = at.getTransition().getFromState();
+			annotations.addFirst(at.getAnnotation());
+			iterate(annotations, at.getIterator());
 		}
 
 	}

@@ -41,13 +41,13 @@ public class State implements Comparable<State> {
 		this.id = idCounter++;
 	}
 	
-	public Iterator<Transition> transitionIterator() {
-		return getEpsilonClosedTransitions().iterator();
+	public TransitionIterator transitionIterator() {
+		return new TransitionIterator(getEpsilonClosedTransitions());
 	}
 
 	private List<Transition> getEpsilonClosedTransitions() {
 		if (this.closedTransition == null) {
-			this.closedTransition = new LinkedList<Transition>();
+			this.closedTransition = new LinkedList<>();
 			for(State s:getEpsilonClosure()) {
 				for(Transition t:s.transitions) {
 					if(!t.isEpsilon())

@@ -53,26 +53,23 @@ public class RegexEngine {
 			automaton.reset();
 
 			NoOverlapMultiTypeIterator it = getIterator(jCas);
-			it.addAlternativeListener(currentAlternativeStack::addFirst);
-			iterate(automaton, it, currentAlternativeStack);
+//			it.addAlternativeListener(currentAlternativeStack::addFirst);
+			iterate(automaton, it, true);
 			automaton.finish();
 			automaton.removeRecognitionHandler(episodeHandler);
 		}
 
 	}
 
-	private void iterate(Automaton automaton, NoOverlapMultiTypeIterator it, Deque<NoOverlapMultiTypeIterator> alternativeStack) {
+	private void iterate(Automaton automaton, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
 		while (it.hasNext()) {
+			Optional<NoOverlapMultiTypeIterator> alternative = it.getIterationAlternative();
+			if(alternative.isPresent())
+				iterate(automaton.instanceClone(), alternative.get(), false);
 			Annotation annotation = it.next();
 			automaton.nextAnnotation(annotation);
-			if(automaton.isCurrentlyFailed()) {
-				if(alternativeStack.isEmpty()) {
-					// end iteration on fail when "it" is not the root iterator
-					if (!it.isRoot())
-						return;
-				} else
-					iterate(automaton, alternativeStack.pop(), alternativeStack);
-			}
+			if(automaton.isCurrentlyFailed() && !isRootIterator)
+				break;
 		}
 	}
 

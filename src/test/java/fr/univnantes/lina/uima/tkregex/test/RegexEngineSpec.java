@@ -98,6 +98,15 @@ public class RegexEngineSpec {
 	}
 
 	@Test
+	public void testBC() {
+		List<RegexOccurrence> occurrences = processRules(ruleBC);
+		Assertions.assertThat(occurrences)
+				.hasSize(1)
+				.extracting("begin", "end", "rule.name")
+				.containsExactly(Tuple.tuple(2, 7, "ruleBC"));
+	}
+
+	@Test
 	public void testB() {
 		List<RegexOccurrence> occurrences = processRules(ruleB);
 		Assertions.assertThat(occurrences)
