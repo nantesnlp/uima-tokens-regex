@@ -141,27 +141,27 @@ public class AutomatonFactorySpec {
 		automatonTest(
 				"",
 				a01,
-				" (none)"
+				""
 				);
 		automatonTest(
 				"a",
 				a01,
-				"a (0,1) |  (none)"
+				"a (0,1)"
 				);
 		automatonTest(
 				"a b a",
 				a01,
-				"a (0,1) |  (none) | a (2,3) |  (none)"
+				"a (0,1) | a (2,3)"
 				);
 		automatonTest(
 				"a a",
 				a01,
-				"a (0,1) | a (1,2) |  (none)"
+				"a (0,1) | a (1,2)"
 				);
 		automatonTest(
 				"b c d",
 				a01,
-				" (none) |  (none) |  (none) |  (none)"
+				""
 				);
 	}
 
@@ -191,17 +191,17 @@ public class AutomatonFactorySpec {
 		automatonTest(
 				"a",
 				aStar,
-				"a (0,1) |  (none)"
+				"a (0,1)"
 				);
 		automatonTest(
 				"a a a a",
 				aStar,
-				"a a a a (0,4) |  (none)"
+				"a a a a (0,4)"
 				);
 		automatonTest(
 				"",
 				aStar,
-				" (none)"
+				""
 				);
 
 	}

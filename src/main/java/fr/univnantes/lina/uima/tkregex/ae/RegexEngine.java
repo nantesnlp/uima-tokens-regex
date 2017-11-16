@@ -63,39 +63,39 @@ public class RegexEngine {
 				for(RegexOccurrence o:recognizedEpisodes)
 					casRecognitionHandler.recognizedEpisode(jCas, o);
 			else
-				for(RegexOccurrence o:keepLongestByInstanceId(recognizedEpisodes))
+				for(RegexOccurrence o:removeDoublons(recognizedEpisodes))
 					casRecognitionHandler.recognizedEpisode(jCas, o);
 		}
 
 	}
 
-	private List<RegexOccurrence> keepLongestByInstanceId(List<RegexOccurrence> recognizedEpisodes) {
+	private List<RegexOccurrence> removeDoublons(List<RegexOccurrence> recognizedEpisodes) {
+		Collections.sort(recognizedEpisodes, (e1,e2) -> {
+			int comp = e1.getBegin() - e2.getBegin();
+			return comp == 0 ? e1.getEnd() - e2.getEnd() : comp;
+		});
+
 		List<RegexOccurrence> keptOccurrences = new ArrayList<>(recognizedEpisodes.size());
-		Multimap<Integer, RegexOccurrence> map = HashMultimap.create();
-		for(RegexOccurrence o:recognizedEpisodes)
-			map.put(o.getAutomatonInstanceId(), o);
-		Collection<RegexOccurrence> currentGroup;
-		for(Integer instanceId:map.keySet()) {
-			currentGroup = map.get(instanceId);
-			if(currentGroup.size() == 1)
-				keptOccurrences.add(currentGroup.iterator().next());
-			else {
-				// removes doublons for that instance id
-				List<RegexOccurrence> keptInGroup = Lists.newArrayListWithCapacity(currentGroup.size());
-				for(RegexOccurrence o1:currentGroup)
-					if(keptInGroup.stream().allMatch(o2 -> !sameEpisode(o1.getLabelledAnnotations(),o2.getLabelledAnnotations())))
-						keptInGroup.add(o1);
-				keptOccurrences.addAll(keptInGroup);
+		Iterator<RegexOccurrence> it = recognizedEpisodes.iterator();
+		RegexOccurrence last = it.next();
+		RegexOccurrence current;
+		keptOccurrences.add(last);
+		while(it.hasNext()) {
+			current = it.next();
+			if(!sameEpisode(current.getLabelledAnnotations(), last.getLabelledAnnotations())) {
+				keptOccurrences.add(current);
+				last = current;
 			}
 		}
+
 		return keptOccurrences;
 	}
 
 	private boolean sameEpisode(List<LabelledAnnotation> o1, List<LabelledAnnotation> o2) {
-		if(o1.isEmpty() || o2.isEmpty())
+		if(o1.isEmpty() && o2.isEmpty())
 			return true;
-		else if(!o1.isEmpty() && o2.isEmpty())
-			return o1.get(0) == o2.get(0) && sameEpisode(o1.subList(1, o1.size()), o2.subList(1, o2.size()));
+		else if(!o1.isEmpty() && !o2.isEmpty())
+			return o1.get(0).getAnnotation() == o2.get(0).getAnnotation() && sameEpisode(o1.subList(1, o1.size()), o2.subList(1, o2.size()));
 		else
 			return false;
 	}

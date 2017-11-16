@@ -92,7 +92,9 @@ public class AutomatonEngine {
 					RegexOccurrence e = inst.getEpisode();
 					matchingEpisode = e;
 					e.setAutomatonInstanceId(inst.getInstanceId());
-					notifyHandlers(e);
+					if(e.size() != 0)
+						// refrain empty sequence matching like "a*" to notify episode detection
+						notifyHandlers(e);
 				}
 			}
 		}

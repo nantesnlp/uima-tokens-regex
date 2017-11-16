@@ -34,6 +34,13 @@
       <features>
       </features>
     </typeDescription>
+    <typeDescription>
+      <name>fr.univnantes.lina.test.uima.E</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+      </features>
+    </typeDescription>
 
     <typeDescription>
       <name>fr.univnantes.lina.test.uima.TestAnno</name>

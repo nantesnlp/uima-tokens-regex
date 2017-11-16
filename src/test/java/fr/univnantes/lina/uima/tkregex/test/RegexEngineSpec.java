@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import fr.univnantes.lina.test.uima.A;
 import fr.univnantes.lina.test.uima.B;
 import fr.univnantes.lina.test.uima.D;
+import fr.univnantes.lina.test.uima.E;
 import fr.univnantes.lina.uima.tkregex.ae.RegexEngine;
 import fr.univnantes.lina.uima.tkregex.model.automata.AutomatonFactory;
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
@@ -28,18 +29,19 @@ import java.util.stream.Collectors;
 public class RegexEngineSpec {
 
 	private JCas cas;
-	private Rule ruleAB, ruleAD, ruleBD, ruleDA, ruleAA, ruleA, ruleB, ruleD, ruleBA;
-	private Type typeA, typeB, typeD;
+	private Rule ruleAB, ruleAD, ruleBD, ruleEB, ruleEA, ruleAA, ruleA, ruleB, ruleD, ruleE, ruleBA;
+	private Type typeA, typeB, typeD, typeE;
 
 	/*
 	    B----
-	    B-- D
+	  E B-- D E
 	  A A A A A
 	  */
 	@Before
 	public void setup() throws UIMAException {
 		cas = JCasFactory.createJCas();
 		Mocks.anno(cas, A.class, 0,1);
+		Mocks.anno(cas, E.class, 0,1);
 		Mocks.anno(cas, A.class, 2,3);
 		Mocks.anno(cas, A.class, 4,5);
 		Mocks.anno(cas, A.class, 6,7);
@@ -47,18 +49,22 @@ public class RegexEngineSpec {
 		Mocks.anno(cas, B.class, 2,5);
 		Mocks.anno(cas, B.class, 2,7);
 		Mocks.anno(cas, D.class, 6,7);
+		Mocks.anno(cas, E.class, 8,9);
 		typeA = Fixtures.getType(A.class);
 		typeB = Fixtures.getType(B.class);
 		typeD = Fixtures.getType(D.class);
+		typeE = Fixtures.getType(E.class);
 		ruleA = toRule("ruleA", A.class);
 		ruleB = toRule("ruleB", B.class);
 		ruleD = toRule("ruleD", D.class);
+		ruleE = toRule("ruleE", E.class);
 		ruleAB = toRule("ruleAB", A.class, B.class);
 		ruleAD = toRule("ruleAD", A.class, D.class);
 		ruleBD = toRule("ruleBD", B.class, D.class);
-		ruleDA = toRule("ruleDA", D.class, A.class);
 		ruleAA = toRule("ruleAA", A.class, A.class);
 		ruleBA = toRule("ruleBA", B.class, A.class);
+		ruleEB = toRule("ruleEB", E.class, B.class);
+		ruleEA = toRule("ruleEA", E.class, A.class);
 	}
 
 	private List<RegexOccurrence> processRules(Rule... rules) {
@@ -66,7 +72,7 @@ public class RegexEngineSpec {
 
 		RegexEngine regexEngine = new RegexEngine(
 				Lists.newArrayList(rules),
-				Lists.newArrayList(typeA, typeB, typeD),
+				Lists.newArrayList(typeA, typeB, typeD, typeE),
 				(cas, episode) -> recognizedOccurrences.add(episode)
 		);
 		regexEngine.setAllowOverlappingOccurrences(true);
@@ -146,6 +152,28 @@ public class RegexEngineSpec {
 	}
 
 	@Test
+	public void testEB() {
+		List<RegexOccurrence> occurrences = processRules(ruleEB);
+		Assertions.assertThat(occurrences)
+				.hasSize(2)
+				.extracting("begin", "end", "rule.name")
+				.contains(
+						Tuple.tuple(0, 5, "ruleEB"),
+						Tuple.tuple(0, 7, "ruleEB")
+				);
+	}
+
+	@Test
+	public void testEA() {
+		List<RegexOccurrence> occurrences = processRules(ruleEA);
+		Assertions.assertThat(occurrences)
+				.hasSize(1)
+				.extracting("begin", "end", "rule.name")
+				.containsExactly(Tuple.tuple(0, 3, "ruleEA"));
+	}
+
+
+	@Test
 	public void testB() {
 		List<RegexOccurrence> occurrences = processRules(ruleB);
 		Assertions.assertThat(occurrences)
@@ -168,6 +196,20 @@ public class RegexEngineSpec {
 						Tuple.tuple(6, 7, "ruleD")
 				);
 	}
+
+
+	@Test
+	public void testE() {
+		List<RegexOccurrence> occurrences = processRules(ruleE);
+		Assertions.assertThat(occurrences)
+				.hasSize(2)
+				.extracting("begin", "end", "rule.name")
+				.contains(
+						Tuple.tuple(0, 1, "ruleE"),
+						Tuple.tuple(8, 9, "ruleE")
+				);
+	}
+
 
 	@Test
 	public void testA() {
