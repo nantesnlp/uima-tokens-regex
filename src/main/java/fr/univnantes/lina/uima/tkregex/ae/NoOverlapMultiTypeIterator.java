@@ -17,6 +17,7 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 
 	protected List<Annotation> annotations;
 	protected int currentIndex;
+	protected int startingIndex;
 
 
 	public NoOverlapMultiTypeIterator(JCas cas, Collection<Type> iteratedTypes) {
@@ -26,6 +27,7 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 	public NoOverlapMultiTypeIterator(JCas cas, Collection<Type> iteratedTypes, int startingIndex) {
 		this.annotations= JcasUtil.toList(cas, iteratedTypes);
 		this.currentIndex = startingIndex - 1;
+		this.startingIndex = startingIndex;
 		doNext();
 	}
 
@@ -93,6 +95,7 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 		else {
 			NoOverlapMultiTypeIterator newIt = new NoOverlapMultiTypeIterator();
 			newIt.annotations = this.annotations;
+			newIt.startingIndex = currentIndex;
 			newIt.currentIndex = currentIndex + 1;
 			newIt.lastIndex = lastIndex;
 			newIt.beforeLastIndex = -1;
@@ -104,24 +107,6 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 
 	}
 
-//	private void produceIterationAlternative(int lastIndex, int currentIndex) {
-//		if(alternativeListeners.isEmpty())
-//			return;
-//		NoOverlapMultiTypeIterator newIt = new NoOverlapMultiTypeIterator();
-//		newIt.annotations = this.annotations;
-//		newIt.currentIndex = currentIndex;
-//		newIt.lastIndex = lastIndex;
-//		newIt.beforeLastIndex = -1;
-//		newIt.alternativeListeners = this.alternativeListeners;
-//		newIt.inOverlap = false;
-//		notifyListeners(newIt);
-//	}
-//
-
-//	private void notifyListeners(NoOverlapMultiTypeIterator newIt) {
-//		for(AlternativeListener listener:alternativeListeners)
-//			listener.newIterationAlternative(newIt);
-//	}
 
 	@Override
 	public boolean hasNext() {
@@ -141,7 +126,8 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 
 	@Override
 	public String toString() {
-		return String.format("%s<--*%s-->%s",
+		return String.format("Iterator{start:%s}:%s<--*%s-->%s",
+				getName(),
 				lastIndex == -1 ? "BEGIN" : toString(annotations.get(lastIndex)),
 				atAlternativePoint() ? "(fork)" : "",
 				currentIndex >= annotations.size()  ? "END" : toString(annotations.get(currentIndex))
@@ -152,4 +138,7 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 		return String.format("%s[%s,%d]", a.getClass().getSimpleName(), a.getBegin(), a.getEnd());
 	}
 
+	public Object getName() {
+		return toString(annotations.get(startingIndex));
+	}
 }

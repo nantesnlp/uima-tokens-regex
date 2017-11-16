@@ -1,7 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
-import org.apache.uima.cas.FSIterator;
+import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -42,8 +42,10 @@ public class RegexEngine {
 
 
 		for (final Rule rule: rules) {
-			RecognitionHandler episodeHandler = episode -> {
-				casRecognitionHandler.recognizedEpisode(jCas, episode, rule);
+			final List<RegexOccurrence> recognizedEpisodes = new ArrayList<>();
+			RecognitionHandler episodeHandler = (episode) -> {
+				episode.setRule(rule);
+				recognizedEpisodes.add(episode);
 			};
 			Automaton automaton = rule.getAutomaton();
 			AutomatonEngine automatonEngine = new AutomatonEngine(automaton);
@@ -53,24 +55,79 @@ public class RegexEngine {
 
 			NoOverlapMultiTypeIterator it = getIterator(jCas);
 			iterate(automatonEngine, it, true);
-			automatonEngine.finish();
 			automatonEngine.removeRecognitionHandler(episodeHandler);
+			if(recognizedEpisodes.size() <= 1)
+				for(RegexOccurrence o:recognizedEpisodes)
+					casRecognitionHandler.recognizedEpisode(jCas, o);
+			else
+				for(RegexOccurrence o:removePrefixOverlaps(recognizedEpisodes))
+					casRecognitionHandler.recognizedEpisode(jCas, o);
 		}
 
 	}
 
-	private void iterate(AutomatonEngine automaton, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
+	private List<RegexOccurrence> removePrefixOverlaps(List<RegexOccurrence> recognizedEpisodes) {
+		Collections.sort(recognizedEpisodes, (occ1, occ2) -> {
+			int comp = occ1.getBegin() - occ2.getBegin();
+			if(comp != 0)
+				return comp;
+			else
+				return occ2.getEnd() - occ1.getEnd();
+		});
+		int lastBegin = -1;
+		RegexOccurrence lastBiggestAtBegin = null;
+		List<RegexOccurrence> keptOccurrences = new ArrayList<>();
+		for(RegexOccurrence current:recognizedEpisodes) {
+			if(current.getBegin() > lastBegin) {
+				lastBegin = current.getBegin();
+				lastBiggestAtBegin = current;
+				keptOccurrences.add(current);
+			} else {
+				if(!samePrefix(lastBiggestAtBegin.getLabelledAnnotations(), current.getLabelledAnnotations()))
+					keptOccurrences.add(current);
+			}
+		}
+		return keptOccurrences;
+	}
+
+	private boolean samePrefix(List<LabelledAnnotation> l1, List<LabelledAnnotation> l2) {
+		for (int i=0; i<Math.min(l1.size(), l2.size()); i++) {
+			if(l1.get(i).getAnnotation() != l2.get(i).getAnnotation())
+				return false;
+		}
+		return true;
+	}
+
+	private void iterate(AutomatonEngine automatonEngine, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
+		System.out.println("Iterating with " + it);
 		while (it.hasNext()) {
 			Optional<NoOverlapMultiTypeIterator> alternative = it.getIterationAlternative();
-			if(alternative.isPresent())
-				iterate(automaton.doClone(), alternative.get(), false);
+			if(alternative.isPresent()) {
+				AutomatonEngine automatonEngineClone = automatonEngine.doClone();
+				System.out.format("Cloning engine %d to engine %d%n",
+						getEngineId(automatonEngine),
+						getEngineId(automatonEngineClone));
+				iterate(automatonEngineClone, alternative.get(), false);
+			}
 			Annotation annotation = it.next();
-			automaton.nextAnnotation(annotation);
-			if(automaton.isCurrentlyFailed() && !isRootIterator)
+			automatonEngine.nextAnnotation(annotation);
+			if(automatonEngine.isCurrentlyFailed() && !isRootIterator) {
+				System.out.format("Automaton engine %d is failed%n", getEngineId(automatonEngine));
+				System.out.println("Killing iterator " + it.getName());
 				break;
+			}
 		}
+		automatonEngine.finish();
+
 	}
 
+	private static int id = 0;
+	private Map<AutomatonEngine, Integer> ids = new HashMap<>();
+	private int getEngineId(AutomatonEngine engine) {
+		if(!ids.containsKey(engine))
+			ids.put(engine, id++);
+		return ids.get(engine);
+	}
 	private NoOverlapMultiTypeIterator getIterator(JCas jCas) {
 		return new NoOverlapMultiTypeIterator(jCas, this.iteratedTypes);
 	}

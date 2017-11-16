@@ -28,5 +28,5 @@ import org.apache.uima.jcas.JCas;
 
 public interface CasRecognitionHandler {
 	
-	public void recognizedEpisode(JCas cas, RegexOccurrence episode, Rule rule);
+	void recognizedEpisode(JCas cas, RegexOccurrence episode);
 }

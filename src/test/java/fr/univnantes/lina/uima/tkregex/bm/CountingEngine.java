@@ -43,7 +43,7 @@ public class CountingEngine extends TokenRegexAE {
 	}
 	
 	@Override
-	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence, Rule rule) {
+	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence) {
 		cnt.incrementAndGet();
 		AnnotationFS annotation = jCas.getCas().createAnnotation(termType, occurrence.getBegin(), occurrence.getEnd());
 		jCas.addFsToIndexes(annotation);

@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
 
 public class RecogEngine extends TokenRegexAE {
 	@Override
-	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence, Rule rule) {
+	protected void ruleMatched(JCas jCas, RegexOccurrence occurrence) {
 		OccAnno a = new OccAnno(jCas);
 		a.setBegin(occurrence.getBegin());
 		a.setEnd(occurrence.getEnd());
-		a.setRule(rule.getName());
+		a.setRule(occurrence.getRule().getName());
 		a.setPattern(occurrence.getLabelledAnnotations().stream().map(LabelledAnnotation::getLabel).collect(Collectors.joining(" ")));
 		a.addToIndexes();
 	}

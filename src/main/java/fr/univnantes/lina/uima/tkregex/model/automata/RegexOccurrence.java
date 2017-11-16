@@ -35,6 +35,7 @@ import java.util.List;
 public class RegexOccurrence {
 	public static final char WHITESPACE = ' ';
 
+	private Rule rule;
 	private AutomatonEngine automaton;
 	private String category;
 	private List<LabelledAnnotation> allMatchingAnnotations;
@@ -66,9 +67,9 @@ public class RegexOccurrence {
 			throw new IllegalArgumentException("end < begin");
 	}
 
-//	void setRule(Rule rule) {
-//		this.rule = rule;
-//	}
+	public void setRule(Rule rule) {
+		this.rule = rule;
+	}
 	
 	void setCategory(String category) {
 		this.category = category;
@@ -156,4 +157,7 @@ public class RegexOccurrence {
 			return false;
 	}
 
+	public Rule getRule() {
+		return rule;
+	}
 }

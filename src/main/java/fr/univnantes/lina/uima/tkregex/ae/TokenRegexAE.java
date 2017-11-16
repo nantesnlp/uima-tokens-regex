@@ -47,7 +47,7 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(name = PARAM_ALLOW_OVERLAPPING_OCCURRENCES, mandatory = false, defaultValue="false")
 	private boolean allowOverlappingOccurrences;
 
-	protected abstract void ruleMatched(JCas jCas, RegexOccurrence occurrence, Rule rule);
+	protected abstract void ruleMatched(JCas jCas, RegexOccurrence occurrence);
 	protected void beforeRuleProcessing(JCas jCas) {}
 	protected void afterRuleProcessing(JCas jCas) {}
 
@@ -62,7 +62,7 @@ public abstract class TokenRegexAE extends JCasAnnotator_ImplBase {
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException {
 		super.initialize(context);
-		this.regexEngine = new RegexEngine(resource.getRules(), resource.getIteratedTypes(), (jCas, occurrence, rule) -> ruleMatched(jCas, occurrence, rule));
+		this.regexEngine = new RegexEngine(resource.getRules(), resource.getIteratedTypes(), (jCas, occurrence) -> ruleMatched(jCas, occurrence));
 		this.regexEngine.setAllowOverlappingOccurrences(allowOverlappingOccurrences);
 	}
 	
