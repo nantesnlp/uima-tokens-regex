@@ -91,7 +91,7 @@ public class AutomatonSpec {
 		automatonTest(
 				"a a a a a a", 
 				"a*", 
-				"a a a a a a (0,6) |  (none)"
+				"a a a a a a (0,6)"
 		);
 
 		

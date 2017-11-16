@@ -19,15 +19,22 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 	protected int currentIndex;
 	protected int startingIndex;
 
+	/**
+	 * Keeps the track of the end offset of the
+	 * containing annotation.
+	 */
+	private int offsetUpperBound;
+
 
 	public NoOverlapMultiTypeIterator(JCas cas, Collection<Type> iteratedTypes) {
-		this(cas, iteratedTypes, 0);
+		this(cas, iteratedTypes, 0, cas.getDocumentText() == null ? Integer.MAX_VALUE : cas.getDocumentText().length());
 	}
 
-	public NoOverlapMultiTypeIterator(JCas cas, Collection<Type> iteratedTypes, int startingIndex) {
+	public NoOverlapMultiTypeIterator(JCas cas, Collection<Type> iteratedTypes, int startingIndex, int offsetUpperBound) {
 		this.annotations= JcasUtil.toList(cas, iteratedTypes);
 		this.currentIndex = startingIndex - 1;
 		this.startingIndex = startingIndex;
+		this.offsetUpperBound = offsetUpperBound;
 		doNext();
 	}
 
@@ -89,13 +96,22 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 	}
 
 
+	public Optional<Annotation> peekNext() {
+		if(!hasNext())
+			return Optional.empty();
+		else
+			return Optional.of(annotations.get(currentIndex));
+	}
+
+
 	public Optional<NoOverlapMultiTypeIterator> getIterationAlternative() {
 		if(!atAlternativePoint())
 			return Optional.empty();
 		else {
 			NoOverlapMultiTypeIterator newIt = new NoOverlapMultiTypeIterator();
 			newIt.annotations = this.annotations;
-			newIt.startingIndex = currentIndex;
+			newIt.startingIndex = currentIndex + 1;
+			newIt.offsetUpperBound = this.annotations.get(currentIndex).getEnd();
 			newIt.currentIndex = currentIndex + 1;
 			newIt.lastIndex = lastIndex;
 			newIt.beforeLastIndex = -1;
@@ -140,5 +156,9 @@ public class NoOverlapMultiTypeIterator implements Iterator<Annotation> {
 
 	public Object getName() {
 		return toString(annotations.get(startingIndex));
+	}
+
+	public int getOffsetUpperBound() {
+		return offsetUpperBound;
 	}
 }

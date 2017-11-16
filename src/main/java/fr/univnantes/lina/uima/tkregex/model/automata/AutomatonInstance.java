@@ -142,4 +142,9 @@ public class AutomatonInstance implements Cloneable {
 	public int getInstanceId() {
 		return instanceId;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("AutomatonInstance[id=%d,trace=%s]", instanceId, getEpisode());
+	}
 }

@@ -69,6 +69,7 @@ public class RegexEngineSpec {
 				Lists.newArrayList(typeA, typeB, typeD),
 				(cas, episode) -> recognizedOccurrences.add(episode)
 		);
+		regexEngine.setAllowOverlappingOccurrences(true);
 		regexEngine.process(cas);
 
 		return recognizedOccurrences;
@@ -102,7 +103,7 @@ public class RegexEngineSpec {
 		Assertions.assertThat(occurrences)
 				.hasSize(2)
 				.extracting("begin", "end", "rule.name")
-				.containsExactly(
+				.contains(
 						Tuple.tuple(0, 5, "ruleAB"),
 						Tuple.tuple(0, 7, "ruleAB")
 						);

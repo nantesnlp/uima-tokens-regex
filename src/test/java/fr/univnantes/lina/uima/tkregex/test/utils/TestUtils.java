@@ -209,7 +209,7 @@ public class TestUtils {
 			Mockito.when(anno.getCoveredText()).thenReturn(s);
 			Mockito.when(anno.getBegin()).thenReturn(i);
 			Mockito.when(anno.getEnd()).thenReturn(i+1);
-			a.nextAnnotation(anno);
+			a.nextAnnotation(anno, true);
 			i += 1;
 		}
 		a.finish();

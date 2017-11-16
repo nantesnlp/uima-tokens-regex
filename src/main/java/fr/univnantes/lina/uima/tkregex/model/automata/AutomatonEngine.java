@@ -11,7 +11,6 @@ import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutomatonEngine {
-	private Rule rule;
 	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
 	private LinkedList<AutomatonInstance> instances;
 	private boolean allowOverlappingInstances = false;
@@ -31,15 +30,6 @@ public class AutomatonEngine {
 		this.allowOverlappingInstances = allowOverlappingInstances;
 	}
 
-	void setRule(Rule rule) {
-		this.rule = rule;
-	}
-
-	public Rule getRule() {
-		return rule;
-	}
-
-
 	public boolean isAllowOverlappingInstances() {
 		return allowOverlappingInstances;
 	}
@@ -52,15 +42,17 @@ public class AutomatonEngine {
 		this.handlers.remove(handler);
 	}
 	public void finish() {
-		nextAnnotation(LastAnnotationToken.INSTANCE);
+		nextAnnotation(LastAnnotationToken.INSTANCE, false);
 	}
 
-	public void nextAnnotation(AnnotationFS annotation) {
-		AutomatonInstance automatonInstance = new AutomatonInstance(
-				this,
-				this.automaton.getInitState(),
-				instanceIdGenerator.incrementAndGet());
-		this.instances.add(automatonInstance);
+	public void nextAnnotation(AnnotationFS annotation, boolean allowedToCreateNewInstances) {
+		if(allowedToCreateNewInstances) {
+			AutomatonInstance automatonInstance = new AutomatonInstance(
+					this,
+					this.automaton.getInitState(),
+					instanceIdGenerator.incrementAndGet());
+			this.instances.add(automatonInstance);
+		}
 
 		ListIterator<AutomatonInstance> instanceIt = this.instances.listIterator();
 		RegexOccurrence matchingEpisode = null;
@@ -108,9 +100,9 @@ public class AutomatonEngine {
 
 	public AutomatonEngine doClone() {
 		AutomatonEngine clone = new AutomatonEngine(automaton);
-		clone.rule = this.rule;
 		clone.allowOverlappingInstances = this.allowOverlappingInstances;
 		clone.handlers = this.handlers;
+		clone.instanceIdGenerator = this.instanceIdGenerator;
 
 		clone.instances = new LinkedList<>();
 		for(AutomatonInstance instance:this.instances) {
@@ -139,4 +131,12 @@ public class AutomatonEngine {
 		}
 	}
 
+
+	@Override
+	public String toString() {
+		return String.format("AutomatonEngine[lastInstanceId=%d, numInstances=%s, isCurrentlyFailed=%b]",
+				this.instanceIdGenerator.get(),
+				this.instances.size(),
+				isCurrentlyFailed());
+	}
 }

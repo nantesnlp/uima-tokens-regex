@@ -1,6 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
@@ -73,72 +74,58 @@ public class RegexEngine {
 		Multimap<Integer, RegexOccurrence> map = HashMultimap.create();
 		for(RegexOccurrence o:recognizedEpisodes)
 			map.put(o.getAutomatonInstanceId(), o);
-		RegexOccurrence longest, current;
-		Collection<RegexOccurrence> occGroup;
-		Iterator<RegexOccurrence> iterator;
+		Collection<RegexOccurrence> currentGroup;
 		for(Integer instanceId:map.keySet()) {
-			occGroup = map.get(instanceId);
-			iterator = occGroup.iterator();
-			longest = iterator.next();
-			while(iterator.hasNext()) {
-				current = iterator.next();
-				if(current.size() > longest.size())
-					longest = current;
+			currentGroup = map.get(instanceId);
+			if(currentGroup.size() == 1)
+				keptOccurrences.add(currentGroup.iterator().next());
+			else {
+				// removes doublons for that instance id
+				List<RegexOccurrence> keptInGroup = Lists.newArrayListWithCapacity(currentGroup.size());
+				for(RegexOccurrence o1:currentGroup)
+					if(keptInGroup.stream().allMatch(o2 -> !sameEpisode(o1.getLabelledAnnotations(),o2.getLabelledAnnotations())))
+						keptInGroup.add(o1);
+				keptOccurrences.addAll(keptInGroup);
 			}
-			keptOccurrences.add(longest);
 		}
 		return keptOccurrences;
 	}
 
-//	private List<RegexOccurrence> removePrefixOverlaps(List<RegexOccurrence> recognizedEpisodes) {
-//		Collections.sort(recognizedEpisodes, (occ1, occ2) -> {
-//			int comp = occ1.getBegin() - occ2.getBegin();
-//			if(comp != 0)
-//				return comp;
-//			else
-//				return occ2.getEnd() - occ1.getEnd();
-//		});
-//		int lastBegin = -1;
-//		RegexOccurrence lastBiggestAtBegin = null;
-//		List<RegexOccurrence> keptOccurrences = new ArrayList<>();
-//		for(RegexOccurrence current:recognizedEpisodes) {
-//			if(current.getBegin() > lastBegin) {
-//				lastBegin = current.getBegin();
-//				lastBiggestAtBegin = current;
-//				keptOccurrences.add(current);
-//			} else {
-//				if(!samePrefix(lastBiggestAtBegin.getLabelledAnnotations(), current.getLabelledAnnotations()))
-//					keptOccurrences.add(current);
-//			}
-//		}
-//		return keptOccurrences;
-//	}
-
-	private boolean samePrefix(List<LabelledAnnotation> l1, List<LabelledAnnotation> l2) {
-		for (int i=0; i<Math.min(l1.size(), l2.size()); i++) {
-			if(l1.get(i).getAnnotation() != l2.get(i).getAnnotation())
-				return false;
-		}
-		return true;
+	private boolean sameEpisode(List<LabelledAnnotation> o1, List<LabelledAnnotation> o2) {
+		if(o1.isEmpty() || o2.isEmpty())
+			return true;
+		else if(!o1.isEmpty() && o2.isEmpty())
+			return o1.get(0) == o2.get(0) && sameEpisode(o1.subList(1, o1.size()), o2.subList(1, o2.size()));
+		else
+			return false;
 	}
 
 	private void iterate(AutomatonEngine automatonEngine, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
-		System.out.println("Iterating with " + it);
 		while (it.hasNext()) {
 			Optional<NoOverlapMultiTypeIterator> alternative = it.getIterationAlternative();
 			if(alternative.isPresent()) {
 				AutomatonEngine automatonEngineClone = automatonEngine.doClone();
-				System.out.format("Cloning engine %d to engine %d%n",
-						getEngineId(automatonEngine),
-						getEngineId(automatonEngineClone));
 				iterate(automatonEngineClone, alternative.get(), false);
 			}
 			Annotation annotation = it.next();
-			automatonEngine.nextAnnotation(annotation);
-			if(automatonEngine.isCurrentlyFailed() && !isRootIterator) {
-				System.out.format("Automaton engine %d is failed%n", getEngineId(automatonEngine));
-				System.out.println("Killing iterator " + it.getName());
-				break;
+			boolean inAlternativeIterationWindow = it.getOffsetUpperBound() > annotation.getBegin();
+			automatonEngine.nextAnnotation(annotation, inAlternativeIterationWindow);
+
+
+			if(isRootIterator)
+				// this iterator is never killed
+				continue;
+			else {
+				boolean nextOutOfWindow = it.peekNext().isPresent() && it.peekNext().get().getBegin() >= it.getOffsetUpperBound();
+				if(nextOutOfWindow) {
+					if(!automatonEngine.isCurrentlyFailed())
+						continue;
+					else {
+						// stopping current iteration
+						break;
+					}
+
+				}
 			}
 		}
 		automatonEngine.finish();
