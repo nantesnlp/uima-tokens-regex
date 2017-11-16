@@ -8,12 +8,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutomatonEngine {
 	private Rule rule;
 	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
 	private LinkedList<AutomatonInstance> instances;
 	private boolean allowOverlappingInstances = false;
+	private AtomicInteger instanceIdGenerator = new AtomicInteger(0);
 
 	private Automaton automaton;
 
@@ -56,7 +58,8 @@ public class AutomatonEngine {
 	public void nextAnnotation(AnnotationFS annotation) {
 		AutomatonInstance automatonInstance = new AutomatonInstance(
 				this,
-				this.automaton.getInitState());
+				this.automaton.getInitState(),
+				instanceIdGenerator.incrementAndGet());
 		this.instances.add(automatonInstance);
 
 		ListIterator<AutomatonInstance> instanceIt = this.instances.listIterator();
@@ -96,6 +99,7 @@ public class AutomatonEngine {
 					// The instance succeeds
 					RegexOccurrence e = inst.getEpisode();
 					matchingEpisode = e;
+					e.setAutomatonInstanceId(inst.getInstanceId());
 					notifyHandlers(e);
 				}
 			}

@@ -150,7 +150,7 @@ public class RegexEngineSpec {
 		Assertions.assertThat(occurrences)
 				.hasSize(2)
 				.extracting("begin", "end", "rule.name")
-				.containsExactly(
+				.contains(
 						Tuple.tuple(2, 7, "ruleB"),
 						Tuple.tuple(2, 5, "ruleB")
 						);

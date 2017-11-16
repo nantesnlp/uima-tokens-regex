@@ -1,5 +1,7 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.cas.Type;
@@ -60,35 +62,57 @@ public class RegexEngine {
 				for(RegexOccurrence o:recognizedEpisodes)
 					casRecognitionHandler.recognizedEpisode(jCas, o);
 			else
-				for(RegexOccurrence o:removePrefixOverlaps(recognizedEpisodes))
+				for(RegexOccurrence o:keepLongestByInstanceId(recognizedEpisodes))
 					casRecognitionHandler.recognizedEpisode(jCas, o);
 		}
 
 	}
 
-	private List<RegexOccurrence> removePrefixOverlaps(List<RegexOccurrence> recognizedEpisodes) {
-		Collections.sort(recognizedEpisodes, (occ1, occ2) -> {
-			int comp = occ1.getBegin() - occ2.getBegin();
-			if(comp != 0)
-				return comp;
-			else
-				return occ2.getEnd() - occ1.getEnd();
-		});
-		int lastBegin = -1;
-		RegexOccurrence lastBiggestAtBegin = null;
-		List<RegexOccurrence> keptOccurrences = new ArrayList<>();
-		for(RegexOccurrence current:recognizedEpisodes) {
-			if(current.getBegin() > lastBegin) {
-				lastBegin = current.getBegin();
-				lastBiggestAtBegin = current;
-				keptOccurrences.add(current);
-			} else {
-				if(!samePrefix(lastBiggestAtBegin.getLabelledAnnotations(), current.getLabelledAnnotations()))
-					keptOccurrences.add(current);
+	private List<RegexOccurrence> keepLongestByInstanceId(List<RegexOccurrence> recognizedEpisodes) {
+		List<RegexOccurrence> keptOccurrences = new ArrayList<>(recognizedEpisodes.size());
+		Multimap<Integer, RegexOccurrence> map = HashMultimap.create();
+		for(RegexOccurrence o:recognizedEpisodes)
+			map.put(o.getAutomatonInstanceId(), o);
+		RegexOccurrence longest, current;
+		Collection<RegexOccurrence> occGroup;
+		Iterator<RegexOccurrence> iterator;
+		for(Integer instanceId:map.keySet()) {
+			occGroup = map.get(instanceId);
+			iterator = occGroup.iterator();
+			longest = iterator.next();
+			while(iterator.hasNext()) {
+				current = iterator.next();
+				if(current.size() > longest.size())
+					longest = current;
 			}
+			keptOccurrences.add(longest);
 		}
 		return keptOccurrences;
 	}
+
+//	private List<RegexOccurrence> removePrefixOverlaps(List<RegexOccurrence> recognizedEpisodes) {
+//		Collections.sort(recognizedEpisodes, (occ1, occ2) -> {
+//			int comp = occ1.getBegin() - occ2.getBegin();
+//			if(comp != 0)
+//				return comp;
+//			else
+//				return occ2.getEnd() - occ1.getEnd();
+//		});
+//		int lastBegin = -1;
+//		RegexOccurrence lastBiggestAtBegin = null;
+//		List<RegexOccurrence> keptOccurrences = new ArrayList<>();
+//		for(RegexOccurrence current:recognizedEpisodes) {
+//			if(current.getBegin() > lastBegin) {
+//				lastBegin = current.getBegin();
+//				lastBiggestAtBegin = current;
+//				keptOccurrences.add(current);
+//			} else {
+//				if(!samePrefix(lastBiggestAtBegin.getLabelledAnnotations(), current.getLabelledAnnotations()))
+//					keptOccurrences.add(current);
+//			}
+//		}
+//		return keptOccurrences;
+//	}
 
 	private boolean samePrefix(List<LabelledAnnotation> l1, List<LabelledAnnotation> l2) {
 		for (int i=0; i<Math.min(l1.size(), l2.size()); i++) {

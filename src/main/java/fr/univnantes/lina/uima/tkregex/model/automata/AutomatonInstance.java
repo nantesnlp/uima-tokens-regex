@@ -13,10 +13,20 @@ public class AutomatonInstance implements Cloneable {
 	private boolean failed;
 	private AutomatonEngine automatonEng;
 
-	AutomatonInstance(AutomatonEngine automatonEngine, State current) {
+	/**
+	 * A unique id that is cloned when an iteration altervative
+	 * is forked.
+	 *
+	 * The reason for that instanceId is that there cannot be several episodes
+	 * recognized by the same instance id.
+	 */
+	private int instanceId;
+
+	AutomatonInstance(AutomatonEngine automatonEngine, State current, int instanceId) {
 		this.automatonEng = automatonEngine;
 		this.current = current;
 		this.failed = false;
+		this.instanceId = instanceId;
 	}
 
 	public boolean hasFailed() {
@@ -51,7 +61,7 @@ public class AutomatonInstance implements Cloneable {
 	 * @return
 	 */
 	public AutomatonInstance doClone() {
-		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current);
+		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current, this.instanceId);
 		clone.failed = this.failed;
 		clone.trace = new LinkedList<>();
 		for(StateExploration se:this.trace) {
@@ -127,5 +137,9 @@ public class AutomatonInstance implements Cloneable {
 			iterate(annotations, at.getIterator());
 		}
 
+	}
+
+	public int getInstanceId() {
+		return instanceId;
 	}
 }

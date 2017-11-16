@@ -45,6 +45,7 @@ public class RegexOccurrence {
 	private int size;
 	private int begin = -1;
 	private int end = -1;
+	private int automatonInstanceId;
 
 	RegexOccurrence(AutomatonEngine automatonEngine, Iterable<LabelledAnnotation> list) {
 		super();
@@ -159,5 +160,13 @@ public class RegexOccurrence {
 
 	public Rule getRule() {
 		return rule;
+	}
+
+	public void setAutomatonInstanceId(int automatonInstanceId) {
+		this.automatonInstanceId = automatonInstanceId;
+	}
+
+	public int getAutomatonInstanceId() {
+		return automatonInstanceId;
 	}
 }
