@@ -557,7 +557,7 @@ public class UimaTokenRegexParser extends Parser {
 	}
 
 	public static class TypeShortNameContext extends ParserRuleContext {
-		public TerminalNode IdentifierPart() { return getToken(UimaTokenRegexParser.IdentifierPart, 0); }
+		public TerminalNode Identifier() { return getToken(UimaTokenRegexParser.Identifier, 0); }
 		public TypeShortNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -579,7 +579,7 @@ public class UimaTokenRegexParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(144);
-			match(IdentifierPart);
+			match(Identifier);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2264,22 +2264,21 @@ public class UimaTokenRegexParser extends Parser {
 	public final FeatureNameContext featureName() throws RecognitionException {
 		FeatureNameContext _localctx = new FeatureNameContext(_ctx, getState());
 		enterRule(_localctx, 70, RULE_featureName);
-		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(358);
 			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==IdentifierPart) {
+			switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
+			case 1:
 				{
 				setState(355);
 				typeShortName();
 				setState(356);
 				match(T__10);
 				}
+				break;
 			}
-
 			setState(360);
 			featureBaseName();
 			}
@@ -2784,7 +2783,7 @@ public class UimaTokenRegexParser extends Parser {
 		"\7\4\2\2\u0089\u008b\5\20\t\2\u008a\u0088\3\2\2\2\u008a\u008b\3\2\2\2"+
 		"\u008b\13\3\2\2\2\u008c\u008d\5\16\b\2\u008d\u008e\7\4\2\2\u008e\u008f"+
 		"\5\20\t\2\u008f\r\3\2\2\2\u0090\u0091\7\64\2\2\u0091\17\3\2\2\2\u0092"+
-		"\u0093\7\65\2\2\u0093\21\3\2\2\2\u0094\u0095\7/\2\2\u0095\u0096\7 \2\2"+
+		"\u0093\7\64\2\2\u0093\21\3\2\2\2\u0094\u0095\7/\2\2\u0095\u0096\7 \2\2"+
 		"\u0096\u0097\7\64\2\2\u0097\u0098\7\36\2\2\u0098\23\3\2\2\2\u0099\u009a"+
 		"\7.\2\2\u009a\u009b\7\64\2\2\u009b\u009c\7\5\2\2\u009c\u009d\5Z.\2\u009d"+
 		"\u009e\7\36\2\2\u009e\25\3\2\2\2\u009f\u00a0\7\62\2\2\u00a0\u00a3\7\64"+

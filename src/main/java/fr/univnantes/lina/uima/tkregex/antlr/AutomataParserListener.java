@@ -324,14 +324,30 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	private Feature toFeature(FeatureNameContext featName) {
 		TypeDescription baseType = mainIteratedType;
-		if(featName.typeShortName() != null) {
-			TypeDescription typeDescription = typesByShortcut.get(featName.typeShortName().getText());
-			if(typeDescription != null)
+		String featureBaseName = featName.getText();
+
+//		// TODO fix grammar because this is always null
+//		if(featName.typeShortName() != null) {
+//			TypeDescription typeDescription = typesByShortcut.get(featName.typeShortName().getText());
+//			if(typeDescription != null)
+//				baseType = typeDescription;
+//			else
+//				throw new AutomataParsingException(String.format("Unknown type <%s> for feature <%s>", featName.typeShortName().getText(), featName.getText()));
+//		}
+
+		String string = featName.getText();
+		int dot = string.lastIndexOf('.');
+		if(dot >0 ) {
+			String typeShortname = string.substring(0, dot);
+			TypeDescription typeDescription = typesByShortcut.get(typeShortname);
+			if(typeDescription != null) {
 				baseType = typeDescription;
-			else
-				throw new AutomataParsingException(String.format("Unknown type <%s> for feature <%s>", featName.typeShortName().getText(), featName.getText()));
+				featureBaseName = string.substring(dot+1);
+			}
 		}
-		Optional<Feature> featureDescription = findFeatureDescription(toType(baseType), featName.getText());
+
+
+		Optional<Feature> featureDescription = findFeatureDescription(toType(baseType), featureBaseName);
 		if(featureDescription.isPresent())
 			return featureDescription.get();
 		else

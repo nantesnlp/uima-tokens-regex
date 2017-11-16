@@ -50,7 +50,7 @@ mainUseDeclaration : USE typeFullName ('as' typeShortName )? ;
 secondaryUseDeclaration : typeFullName 'as' typeShortName ;
 typeFullName : Identifier ;
 
-typeShortName : IdentifierPart ;
+typeShortName : Identifier ;
 
 javaMatcherDeclaration
 	: JAVA_MATCHER ':' Identifier ';'
