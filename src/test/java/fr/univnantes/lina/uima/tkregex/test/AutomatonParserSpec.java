@@ -136,16 +136,24 @@ public class AutomatonParserSpec {
 				.extracting("name")
 				.containsExactly(
 						"fr.univnantes.lina.test.uima.A",
-						"fr.univnantes.lina.test.uima.B"
+						"fr.univnantes.lina.test.uima.B",
+						"fr.univnantes.lina.test.uima.OccAnno"
 						);
 		assertThat(listener.getIteratedTypeShortcuts())
-				.hasSize(2)
+				.hasSize(3)
 				.containsEntry("TA", listener.getIteratedTypeDescriptions().get(0))
 				.containsEntry("TB", listener.getIteratedTypeDescriptions().get(1))
+				.containsEntry("T3", listener.getIteratedTypeDescriptions().get(2))
 		;
 		assertThat(listener.getTypeMatchers())
-				.hasSize(6)
-				.containsOnlyKeys("TA", "TB", "A", "B", "fr.univnantes.lina.test.uima.A", "fr.univnantes.lina.test.uima.B")
+				.hasSize(9)
+				.containsOnlyKeys(
+						"TA", "TB", "T3",
+						"A", "B", "OccAnno",
+						"fr.univnantes.lina.test.uima.A",
+						"fr.univnantes.lina.test.uima.B",
+						"fr.univnantes.lina.test.uima.OccAnno"
+				)
 		;
 	}
 
@@ -154,8 +162,8 @@ public class AutomatonParserSpec {
 		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
 		Type typeA = listener.getIteratedTypes().get(0);
 		Type typeB = listener.getIteratedTypes().get(1);
-		assertThat(listener.getRules()).hasSize(1);
-		Automaton automaton = listener.getRules().get(0).getAutomaton();
+		assertThat(listener.getRules()).hasSize(2);
+		Automaton automaton = listener.getRules().stream().filter(r->r.getName().equals("rule1")).findFirst().get().getAutomaton();
 
 		// matcher TA
 		List<Transition> t1list = automaton.getInitState().getTransitions();

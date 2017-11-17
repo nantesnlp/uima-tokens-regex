@@ -65,7 +65,7 @@ public class StringArrayMatcher  extends FeatureMatcher {
 	}
 
 	@Override
-	public boolean matches(AnnotationFS annotation) {
+	public boolean doMatching(AnnotationFS annotation) {
 		String value = getStringValue(annotation);
 		switch(operator) {
 			case IN:
@@ -81,7 +81,7 @@ public class StringArrayMatcher  extends FeatureMatcher {
 		}
 	}
 
-	protected String getStringValue(AnnotationFS annotation) {
+	protected String getStringValue(AnnotationFS annotation)  {
 		return (String) getValue(annotation);
 	}
 }

@@ -1,11 +1,14 @@
 import fr.univnantes.lina.test.uima.TestTypeSystem;
 use fr.univnantes.lina.test.uima.A as TA ,
-fr.univnantes.lina.test.uima.B as TB
+fr.univnantes.lina.test.uima.B as TB,
+fr.univnantes.lina.test.uima.OccAnno as T3
 ;
 
 
 set inline = false;
 
 matcher M1: [TA.begin == 2];
+matcher M2: [T3.rule == "TOTO"];
 
 rule "rule1" : TA TB A B;
+rule "rule2" : T3;

@@ -99,6 +99,18 @@
         </featureDescription>
       </features>
     </typeDescription>
+    <typeDescription>
+      <name>fr.univnantes.lina.test.uima.TypeB</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>fStringForTypeB</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
 
   </types>
 </typeSystemDescription>
