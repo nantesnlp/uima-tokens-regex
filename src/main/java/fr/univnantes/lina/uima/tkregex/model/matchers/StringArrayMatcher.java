@@ -29,59 +29,29 @@ import java.util.Collection;
 import java.util.Set;
 
 public class StringArrayMatcher  extends FeatureMatcher {
-	private Set<String> values;
-	private Op operator;
+
+	private StringArrayMatcherAspect stringArrayMatcherAspect;
 
 	public StringArrayMatcher(Feature feature, Op operator, Collection<String> values) {
 		super(feature);
-		this.operator = operator;
-		this.values = Sets.newHashSetWithExpectedSize(values.size());
-		boolean ignoreCase = isIgnoreCase();
-		for(String v:values) {
-			this.values.add(ignoreCase ? v.toLowerCase() : v);
-		}
-
+		this.stringArrayMatcherAspect = new StringArrayMatcherAspect(operator, values);
 	}
 
 	public StringArrayMatcher(Feature feature, Op operator, String... values) {
 		this(feature, operator, Sets.newHashSet(values));
 	}
 
-	private boolean isIgnoreCase() {
-		return operator == Op.IN_IGNORE_CASE || operator == Op.NIN_IGNORE_CASE;
-	}
-
-
-	public Op getOperator() {
-		return operator;
-	}
-
-	private boolean isIn(String text) {
-		return values.contains(text);
-	}
-
-	public Set<String> getValues() {
-		return values;
-	}
 
 	@Override
-	public boolean doMatching(AnnotationFS annotation) {
-		String value = getStringValue(annotation);
-		switch(operator) {
-			case IN:
-				return isIn(value);
-			case NIN:
-				return !isIn(value);
-			case IN_IGNORE_CASE:
-				return isIn(value.toLowerCase());
-			case NIN_IGNORE_CASE:
-				return !isIn(value.toLowerCase());
-			default:
-				throw new UnsupportedOperationException("Unexpected operator: " + operator);
-		}
+	protected boolean doMatching(AnnotationFS annotation) {
+		return stringArrayMatcherAspect.doMatching(getStringValue(annotation));
 	}
 
-	protected String getStringValue(AnnotationFS annotation)  {
+	protected String getStringValue(AnnotationFS annotation) {
 		return (String) getValue(annotation);
+	}
+
+	public StringArrayMatcherAspect getStringArrayMatcherAspect() {
+		return stringArrayMatcherAspect;
 	}
 }

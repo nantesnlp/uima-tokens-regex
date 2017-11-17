@@ -1,5 +1,6 @@
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -19,6 +20,7 @@ public abstract class FeatureMatcher implements AnnotationMatcher {
 	private Feature feature;
 
 	protected FeatureMatcher(Feature feature) {
+		Preconditions.checkNotNull(feature);
 		this.feature = feature;
 	}
 

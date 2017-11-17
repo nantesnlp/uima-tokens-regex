@@ -2,14 +2,23 @@ package fr.univnantes.lina.uima.tkregex.model.matchers;
 
 import org.apache.uima.cas.text.AnnotationFS;
 
-public class CoveredTextStringArrayMatcher extends StringArrayMatcher {
+import java.util.Set;
 
-	public CoveredTextStringArrayMatcher(Op operator, String... values) {
-		super(null, operator, values);
+public class CoveredTextStringArrayMatcher extends AbstractAnnotationMatcher {
+
+	private StringArrayMatcherAspect stringArrayMatcherAspect;
+
+	public CoveredTextStringArrayMatcher(Op operator, Set<String> values) {
+		this.stringArrayMatcherAspect = new StringArrayMatcherAspect(operator, values);
+
 	}
 
 	@Override
-	protected String getStringValue(AnnotationFS annotation) {
-		return annotation.getCoveredText();
+	public boolean matches(AnnotationFS annotation) {
+		return stringArrayMatcherAspect.doMatching(annotation.getCoveredText());
+	}
+
+	public StringArrayMatcherAspect getStringArrayMatcherAspect() {
+		return stringArrayMatcherAspect;
 	}
 }

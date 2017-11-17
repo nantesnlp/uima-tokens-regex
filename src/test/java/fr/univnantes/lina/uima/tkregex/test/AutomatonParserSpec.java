@@ -662,13 +662,13 @@ public class AutomatonParserSpec {
 		assertEquals(1, a.getInitState().getTransitions().size());
 		Transition transition1 = a.getInitState().getTransitions().iterator().next();
 		assertThat(transition1.getMatcher())
-			.isInstanceOf(StringArrayMatcher.class);
-		StringArrayMatcher matcher = (StringArrayMatcher)transition1.getMatcher();
-		assertThat(matcher.getValues())
+			.isInstanceOf(CoveredTextStringArrayMatcher.class);
+		CoveredTextStringArrayMatcher matcher = (CoveredTextStringArrayMatcher)transition1.getMatcher();
+		assertThat(matcher.getStringArrayMatcherAspect().getValues())
 			.hasSize(3)
 			.containsOnly("A", "B", "c")
 			;
-		Asserts.assertThat(matcher).doesNotIgnoreCase();
+		assertFalse(matcher.getStringArrayMatcherAspect().isIgnoreCase());
 	}
 
 	@Test
@@ -678,13 +678,14 @@ public class AutomatonParserSpec {
 		assertEquals(1, a.getInitState().getTransitions().size());
 		Transition transition1 = a.getInitState().getTransitions().iterator().next();
 		assertThat(transition1.getMatcher())
-				.isInstanceOf(StringArrayMatcher.class);
-		StringArrayMatcher matcher = (StringArrayMatcher)transition1.getMatcher();
-		assertThat(matcher.getValues())
+				.isInstanceOf(CoveredTextStringArrayMatcher.class);
+		CoveredTextStringArrayMatcher matcher = (CoveredTextStringArrayMatcher)transition1.getMatcher();
+		assertThat(matcher.getStringArrayMatcherAspect().getValues())
 				.hasSize(3)
 				.containsOnly("a", "b", "c")
 		;
-		Asserts.assertThat(matcher).ignoresCase();
+
+		assertTrue(matcher.getStringArrayMatcherAspect().isIgnoreCase());
 	}
 
 

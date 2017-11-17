@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import fr.univnantes.lina.uima.tkregex.TokensRegex;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.StringExactlyMatcher;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.StringIgnoreCaseMatcher;
@@ -259,7 +260,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			matcher = new CoveredTextStringArrayMatcher(
 					toOperator(
 							ctx.inListOperator()),
-							coveredTextArray.get());
+							Sets.newHashSet(coveredTextArray.get()));
 		} else if(ctx.literalArray() != null) {
 			matcher = new ArrayMatcher(
 					toFeature(ctx.featureName()),
