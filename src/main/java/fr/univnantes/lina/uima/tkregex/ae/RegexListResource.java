@@ -23,6 +23,7 @@ package fr.univnantes.lina.uima.tkregex.ae;
 
 import com.google.common.base.Joiner;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.ThrowingErrorListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
@@ -58,8 +59,14 @@ public class RegexListResource implements SharedResourceObject {
 			
 			input = getCharStream(aData);
 			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
+			parser.removeErrorListeners();
+			parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 			listener = new AutomataParserListener( parser );
 			listener.setAllowMatchingEmptySequences(false);
 			ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());

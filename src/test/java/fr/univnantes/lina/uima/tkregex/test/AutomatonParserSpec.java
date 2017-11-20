@@ -28,6 +28,7 @@ import fr.univnantes.lina.uima.tkregex.ae.builtin.StringIgnoreCaseMatcher;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.TitleCased;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
+import fr.univnantes.lina.uima.tkregex.antlr.ThrowingErrorListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
@@ -70,6 +71,9 @@ public class AutomatonParserSpec {
 	private void initAutomataFromFileWithCustomResourceDirectory(String regexFilePath,Path customDirectory) throws IOException {
 		CharStream input = CharStreams.fromPath(AutomatonTests.RESOURCES.resolve(regexFilePath));
 		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		parser.removeErrorListeners();
+		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 		listener.setCustomResourceDir(customDirectory);
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
@@ -78,14 +82,23 @@ public class AutomatonParserSpec {
 	private void initAutomataFromFile(String regexFilePath) throws IOException {
 		CharStream input = CharStreams.fromPath(AutomatonTests.RESOURCES.resolve(regexFilePath));
 		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		parser.removeErrorListeners();
+		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
 	}
 
 	private UimaTokenRegexParser initListenerAndGetParser(CharStream input) {
 		UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
+		lexer.removeErrorListeners();
+		lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
+		parser.removeErrorListeners();
+		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 		listener = new AutomataParserListener( parser );
 		return parser;
 	}
@@ -95,6 +108,9 @@ public class AutomatonParserSpec {
 		
 		CharStream input = CharStreams.fromString(body);
 		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		parser.removeErrorListeners();
+		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
 		listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
