@@ -308,7 +308,7 @@ RESOURCE : 'resource';
 
 // Comments
 LINE_COMMENT
-    :   '#' ~[\r\n]* -> skip
+    :   '#' ~[\r\n]* -> channel(HIDDEN)
     ;
 
 // Matcher declaration
@@ -349,7 +349,7 @@ JavaLetterOrDigit
     ;
 
 	
-WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
+WS : [ \t\r\n]+ -> channel(HIDDEN) ; // skip spaces, tabs, newlines
 
 
 Regex: '/' (~[/]| EscapeSequence)* '/';
