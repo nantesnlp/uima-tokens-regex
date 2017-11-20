@@ -390,15 +390,15 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitArrayOperator(UimaTokenRegexParser.ArrayOperatorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link UimaTokenRegexParser#inListOperator}.
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#inStringListOperator}.
 	 * @param ctx the parse tree
 	 */
-	void enterInListOperator(UimaTokenRegexParser.InListOperatorContext ctx);
+	void enterInStringListOperator(UimaTokenRegexParser.InStringListOperatorContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link UimaTokenRegexParser#inListOperator}.
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#inStringListOperator}.
 	 * @param ctx the parse tree
 	 */
-	void exitInListOperator(UimaTokenRegexParser.InListOperatorContext ctx);
+	void exitInStringListOperator(UimaTokenRegexParser.InStringListOperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#operator}.
 	 * @param ctx the parse tree

@@ -182,6 +182,12 @@ public class AutomatonParserSpec {
 	}
 
 	@Test
+	public void testTextInResource() throws IOException {
+		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
+		// should not raise exception
+	}
+
+		@Test
 	public void testTypeMatcher() throws IOException {
 		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
 		Type typeA = listener.getIteratedTypes().get(0);

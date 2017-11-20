@@ -280,7 +280,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		} else if(ctx.coveredTextArray() != null) {
 			matcher = new CoveredTextStringArrayMatcher(
 					toOperator(
-							ctx.inListOperator()),
+							ctx.inStringListOperator()),
 							Sets.newHashSet(coveredTextArray.get()));
 		} else if(ctx.literalArray() != null) {
 			matcher = new ArrayMatcher(
@@ -288,11 +288,18 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 					toOperator(ctx.arrayOperator()),
 					toLiteralArray(ctx.literalArray()));
 		} else if(ctx.resourceIdentifier() != null) {
-			matcher = new StringArrayMatcher(
-					toFeature(ctx.featureName(), ctx),
-					toOperator(ctx.inListOperator()),
-					toStringArray(ctx.resourceIdentifier())
-			);
+			if(ctx.featureName() != null) {
+				matcher = new StringArrayMatcher(
+						toFeature(ctx.featureName(), ctx),
+						toOperator(ctx.inStringListOperator()),
+						toStringArray(ctx.resourceIdentifier())
+				);
+			} else {
+				matcher = new CoveredTextStringArrayMatcher(
+						toOperator(
+								ctx.inStringListOperator()),
+						toStringArray(ctx.resourceIdentifier()));
+			}
 		} else if(ctx.coveredTextExactly() != null) {
 			matcher = new StringExactlyMatcher(coveredTextExactly.get());
 		} else if(ctx.coveredTextIgnoreCase() != null) {
@@ -334,7 +341,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return null;
 	}
 
-	private Op toOperator(InListOperatorContext ctxt) {
+	private Op toOperator(InStringListOperatorContext ctxt) {
 		return Op.fromString(ctxt.getText());
 	}
 
@@ -944,12 +951,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	}
 
 	@Override
-	public void enterInListOperator(InListOperatorContext ctx) {
+	public void enterInStringListOperator(InStringListOperatorContext ctx) {
 
 	}
 
 	@Override
-	public void exitInListOperator(InListOperatorContext ctx) {
+	public void exitInStringListOperator(InStringListOperatorContext ctx) {
 
 	}
 

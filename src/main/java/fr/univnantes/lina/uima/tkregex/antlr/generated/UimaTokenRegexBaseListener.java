@@ -474,13 +474,13 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInListOperator(UimaTokenRegexParser.InListOperatorContext ctx) { }
+	@Override public void enterInStringListOperator(UimaTokenRegexParser.InStringListOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInListOperator(UimaTokenRegexParser.InListOperatorContext ctx) { }
+	@Override public void exitInStringListOperator(UimaTokenRegexParser.InStringListOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

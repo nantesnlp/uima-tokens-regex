@@ -121,10 +121,11 @@ atomicExpression
 	: matcherIdentifier
 	| featureName operator literal
 	| featureName arrayOperator literalArray
-	| featureName inListOperator resourceIdentifier
+	| featureName inStringListOperator resourceIdentifier
 	| 'text' '==' coveredTextIgnoreCase
 	| 'text' '===' coveredTextExactly
-	| 'text' inListOperator coveredTextArray
+	| 'text' inStringListOperator coveredTextArray
+	| 'text' inStringListOperator resourceIdentifier
 	;
 
 matcherIdentifier : Identifier ;
@@ -184,7 +185,7 @@ arrayOperator
 	| 'nin'
 	;
 
-inListOperator
+inStringListOperator
 	: arrayOperator
 	| 'inIgnoreCase'
 	| 'ninIgnoreCase'
