@@ -30,15 +30,25 @@ public interface UimaTokenRegexListener extends ParseTreeListener {
 	 */
 	void exitHeaderBlock(UimaTokenRegexParser.HeaderBlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link UimaTokenRegexParser#importDeclaration}.
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#typeSystemDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterImportDeclaration(UimaTokenRegexParser.ImportDeclarationContext ctx);
+	void enterTypeSystemDeclaration(UimaTokenRegexParser.TypeSystemDeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link UimaTokenRegexParser#importDeclaration}.
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#typeSystemDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitImportDeclaration(UimaTokenRegexParser.ImportDeclarationContext ctx);
+	void exitTypeSystemDeclaration(UimaTokenRegexParser.TypeSystemDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link UimaTokenRegexParser#importMatchersDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterImportMatchersDeclaration(UimaTokenRegexParser.ImportMatchersDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link UimaTokenRegexParser#importMatchersDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitImportMatchersDeclaration(UimaTokenRegexParser.ImportMatchersDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link UimaTokenRegexParser#useDeclaration}.
 	 * @param ctx the parse tree

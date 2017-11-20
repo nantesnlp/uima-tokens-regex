@@ -1,4 +1,4 @@
-import fr.univnantes.lina.test.uima.TestTypeSystem;
+type-system fr.univnantes.lina.test.uima.TestTypeSystem;
 use fr.univnantes.lina.test.uima.TestAnno;
 
 resource ListJSON1: json("src/test/resources/fix-resources/json-file.json", "a.aa");

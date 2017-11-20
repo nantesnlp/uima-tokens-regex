@@ -1,4 +1,4 @@
-import fr.univnantes.lina.test.uima.TestTypeSystem;
+type-system fr.univnantes.lina.test.uima.TestTypeSystem;
 use fr.univnantes.lina.test.uima.TypeA as TA ,
 fr.univnantes.lina.test.uima.TypeB as TB
 ;

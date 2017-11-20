@@ -31,6 +31,10 @@ public class AutomataParsingException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 
+	public AutomataParsingException(Throwable e) {
+		super(e);
+	}
+
 	public AutomataParsingException(String msg) {
 		super(msg);
 	}

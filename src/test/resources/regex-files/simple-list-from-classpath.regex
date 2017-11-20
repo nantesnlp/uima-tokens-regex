@@ -1,9 +1,0 @@
-import fr.univnantes.lina.test.uima.TestTypeSystem;
-use fr.univnantes.lina.test.uima.TestAnno;
-set inline = false;
-
-resource List1: list("fix-resources/simple-list.txt");
-
-matcher A: [lemma=="a"];
-
-rule "rule1" : A+ ;

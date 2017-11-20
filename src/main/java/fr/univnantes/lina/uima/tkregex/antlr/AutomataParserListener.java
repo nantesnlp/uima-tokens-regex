@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import fr.univnantes.lina.uima.tkregex.TokensRegex;
+import fr.univnantes.lina.uima.tkregex.ae.RegexList;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.StringExactlyMatcher;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.StringIgnoreCaseMatcher;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexListener;
@@ -54,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -527,6 +529,40 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		}
 	}
 
+	@Override
+	public void enterTypeSystemDeclaration(TypeSystemDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitTypeSystemDeclaration(TypeSystemDeclarationContext ctx) {
+		String value = ctx.Identifier().getText();
+		String filePath = value.replaceAll("\\.", "/") + ".xml";
+		try {
+			typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
+			typeSystemDescription.resolveImports();
+		} catch (Exception e) {
+			throwException(ctx, String.format("Failed to load type system %s. Got %s:%s", filePath, e.getClass().getSimpleName(), e.getMessage()));
+		}
+
+	}
+
+	@Override
+	public void enterImportMatchersDeclaration(ImportMatchersDeclarationContext ctx) {
+
+	}
+
+	@Override
+	public void exitImportMatchersDeclaration(ImportMatchersDeclarationContext ctx) {
+		URL url = toResourceUrl(ctx.path(), ctx.path().getText(), ctx);
+		try {
+			RegexList regexList = TokensRegex.parseRegexList(url, customResourceDir);
+			shortcutMatchers.putAll(regexList.getShortcutMatchers());
+			shortcutMatchers.putAll(regexList.getJavaMatchers());
+		} catch(Exception e) {
+			throwException(ctx, String.format("Could not parse uima tokens regex file %s. Got error: %s", ctx.path().getText(), e.getMessage()));
+		}
+	}
 
 
 	@Override
@@ -636,22 +672,6 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 			
 
-	@Override
-	public void enterImportDeclaration(ImportDeclarationContext ctx) {
-		
-	}
-
-	@Override
-	public void exitImportDeclaration(ImportDeclarationContext ctx) {
-		String value = ctx.Identifier().getText();
-		String filePath = value.replaceAll("\\.", "/") + ".xml";
-		try {
-			typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
-			typeSystemDescription.resolveImports();
-		} catch (Exception e) {
-			throwException(ctx, String.format("Failed to load type system %s. Got %s:%s", filePath, e.getClass().getSimpleName(), e.getMessage()));
-		}
-	}
 
 
 	@Override
@@ -821,14 +841,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 					return customResourceDir.get().resolve(text).toUri().toURL();
 				}
 			}
-			// finally try classpath
-			String classpathUrl = text.startsWith("/") ? text : ("/" + text);
-			if(this.getClass().getResource(classpathUrl) != null) {
-				LOGGER.debug("Loading resource {} from classpath", resourceId);
-				return this.getClass().getResource(classpathUrl);
-			}
-			else
-				return throwException(ctx, String.format("Cannot find resource %s", text));
+			return throwException(ctx, String.format("Cannot find resource %s", text));
 		} catch (MalformedURLException e) {
 			return throwException(ctx, e.getMessage());
 		}

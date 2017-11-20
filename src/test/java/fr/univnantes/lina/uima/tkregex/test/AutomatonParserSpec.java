@@ -23,6 +23,8 @@ package fr.univnantes.lina.uima.tkregex.test;
 
 
 import com.google.common.collect.ImmutableSet;
+import fr.univnantes.lina.uima.tkregex.TokensRegex;
+import fr.univnantes.lina.uima.tkregex.ae.RegexList;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.StringExactlyMatcher;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.StringIgnoreCaseMatcher;
 import fr.univnantes.lina.uima.tkregex.ae.builtin.TitleCased;
@@ -41,6 +43,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.uima.cas.Type;
 import org.junit.Test;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,6 +53,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +69,7 @@ public class AutomatonParserSpec {
 	
 	
 	public void initAutomata(String body, boolean allowMatchingEmptySequences)  {
-		String defaultHeader = "import fr.univnantes.termsuite.types.TermSuiteTypeSystem;\n" +
+		String defaultHeader = "type-system fr.univnantes.termsuite.types.TermSuiteTypeSystem;\n" +
 				"use fr.univnantes.termsuite.types.WordAnnotation;\n";
 		initAutomataWithCustomHeader(body, allowMatchingEmptySequences, defaultHeader);
 	}
@@ -155,7 +159,7 @@ public class AutomatonParserSpec {
 
 	@Test
 	public void testMultipleIteratedType() throws IOException {
-		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
+		initAutomataFromFileWithCustomResourceDirectory("regex-files/multiple-iterated-types.regex", AutomatonTests.RESOURCES);
 		assertThat(listener.getIteratedTypes())
 				.extracting("name")
 				.containsExactly(
@@ -183,13 +187,13 @@ public class AutomatonParserSpec {
 
 	@Test
 	public void testTextInResource() throws IOException {
-		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
+		initAutomataFromFileWithCustomResourceDirectory("regex-files/multiple-iterated-types.regex", AutomatonTests.RESOURCES);
 		// should not raise exception
 	}
 
 		@Test
 	public void testTypeMatcher() throws IOException {
-		initAutomataFromFile("regex-files/multiple-iterated-types.regex");
+		initAutomataFromFileWithCustomResourceDirectory("regex-files/multiple-iterated-types.regex", AutomatonTests.RESOURCES);
 		Type typeA = listener.getIteratedTypes().get(0);
 		Type typeB = listener.getIteratedTypes().get(1);
 		assertThat(listener.getRules()).hasSize(2);
@@ -259,25 +263,9 @@ public class AutomatonParserSpec {
 
 		@Test
 	public void testLoadResourceFromCustomDir() throws IOException {
-		Path customDir = Paths.get("/tmp/sparklane-java-ner-tests");
-		Path simpleListFile = AutomatonTests.RESOURCES.resolve("fix-resources/simple-list.txt");
-		customDir.toFile().mkdirs();
-		Files.copy(simpleListFile, customDir.resolve("simple-list.txt"), StandardCopyOption.REPLACE_EXISTING);
 		initAutomataFromFileWithCustomResourceDirectory(
 				"regex-files/simple-list-from-custom-directory.regex",
-				customDir);
-		assertThat(listener.getResources())
-				.containsKeys("List1")
-				.hasSize(1);
-		assertThat(listener.getResources().get("List1"))
-				.containsExactlyInAnyOrder("word1", "word2", "word3");
-	}
-
-	@Test
-	public void testLoadResourceFromClasspath() throws IOException {
-		assertThat(this.getClass().getResource("/fix-resources/simple-list.txt"))
-				.isNotNull();
-		initAutomataFromFile("regex-files/simple-list-from-classpath.regex");
+				AutomatonTests.RESOURCES);
 		assertThat(listener.getResources())
 				.containsKeys("List1")
 				.hasSize(1);
@@ -324,7 +312,7 @@ public class AutomatonParserSpec {
 	public void testParseCustomJavaMatcher() throws MalformedURLException {
 		initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
 				true,
-				"import tata;\nuse fr.univnantes.lina.test.uima.TypeA;\njava-matcher: Tatayoyo;");
+				"type-system tata;\nuse fr.univnantes.lina.test.uima.TypeA;\njava-matcher: Tatayoyo;");
 		Automaton a = rules.get(0).getAutomaton();
 		Transition t1 = a.getInitState().getTransitions().iterator().next();
 		assertEquals("A", t1.getMatcher().getLabel());
@@ -351,7 +339,7 @@ public class AutomatonParserSpec {
 		try {
 			initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
 					true,
-					"import tata;\nuse fr.univnantes.lina.test.uima.TypeA;");
+					"type-system tata;\nuse fr.univnantes.lina.test.uima.TypeA;");
 			fail("Should have raised exception");
 		} catch(AutomataParsingException e) {
 			assertThat(e.getMessage())
@@ -847,8 +835,17 @@ public class AutomatonParserSpec {
 			.contains(state4.getTransitions().get(0).getToState());
 	}
 
-	
-	
+	@Test
+	public void parseImportMatchers() throws IOException {
+		// tryue to load the file
+		Path path = AutomatonTests.RESOURCES.resolve("regex-files/import-matchers-from-other-file.regex");
+		RegexList regexList = TokensRegex.parseRegexList(path, Optional.of(AutomatonTests.RESOURCES));
+		assertThat(regexList.getShortcutMatchers())
+				.hasSize(1)
+				.containsKeys("A");
+	}
+
+
 	@Test
 	public void testParseExpressionMatcherAndOrTree() {
 		initAutomata(file4);

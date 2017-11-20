@@ -29,12 +29,16 @@ ruleList
 	;
 	
 headerBlock 
-	:  importDeclaration useDeclaration (externalListDeclaration | optionDeclaration)* javaMatcherDeclaration*
+	:  typeSystemDeclaration useDeclaration (externalListDeclaration | optionDeclaration | importMatchersDeclaration)* javaMatcherDeclaration*
 	;
 
-importDeclaration
-	: IMPORT Identifier ';'
+typeSystemDeclaration
+	: TYPE_SYSTEM Identifier ';'
 	;
+
+importMatchersDeclaration
+	: IMPORT_MATCHERS_FROM path ';' ;
+
 
 useDeclaration
 	:  mainUseDeclaration
@@ -301,7 +305,8 @@ NOTEQUAL        : '!=';
 IN        : 'in';
 
 //header block declaration
-IMPORT	: 'import';
+TYPE_SYSTEM	: 'type-system';
+IMPORT_MATCHERS_FROM	: 'import-matchers-from';
 USE	: 'use';
 SET	: 'set';
 JAVA_MATCHER	: 'java-matcher';

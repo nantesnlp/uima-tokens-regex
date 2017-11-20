@@ -23,7 +23,6 @@ package fr.univnantes.lina.uima.tkregex.ae;
 
 import com.google.common.base.Preconditions;
 import fr.univnantes.lina.uima.tkregex.model.automata.RegexOccurrence;
-import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
 import org.apache.uima.UimaContext;

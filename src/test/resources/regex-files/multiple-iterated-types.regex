@@ -1,10 +1,10 @@
-import fr.univnantes.lina.test.uima.TestTypeSystem;
+type-system fr.univnantes.lina.test.uima.TestTypeSystem;
 use fr.univnantes.lina.test.uima.A as TA ,
 fr.univnantes.lina.test.uima.B as TB,
 fr.univnantes.lina.test.uima.OccAnno as T3
 ;
 
-resource TotoResource: list("regex-files/test-list.txt");
+resource TotoResource: list("fix-resources/simple-list.txt");
 
 set inline = false;
 
