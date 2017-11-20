@@ -4,11 +4,13 @@ fr.univnantes.lina.test.uima.B as TB,
 fr.univnantes.lina.test.uima.OccAnno as T3
 ;
 
+resource TotoResource: list("regex-files/test-list.txt");
 
 set inline = false;
 
 matcher M1: [TA.begin == 2];
 matcher M2: [T3.rule == "TOTO"];
+matcher M3: [text inIgnoreCase TotoResource];
 
 rule "rule1" : TA TB A B;
 rule "rule2" : T3;

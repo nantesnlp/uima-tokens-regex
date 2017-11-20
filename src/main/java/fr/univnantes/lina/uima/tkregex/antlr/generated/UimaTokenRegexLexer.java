@@ -284,7 +284,7 @@ public class UimaTokenRegexLexer extends Lexer {
 		"\u0188\u0187\3\2\2\2\u0189\u018c\3\2\2\2\u018a\u0188\3\2\2\2\u018a\u018b"+
 		"\3\2\2\2\u018b\u018d\3\2\2\2\u018c\u018a\3\2\2\2\u018d\u018e\7\61\2\2"+
 		"\u018ev\3\2\2\2\23\2\u00c6\u00c9\u00d8\u00dc\u00e3\u00e7\u00ef\u00f5\u014d"+
-		"\u0164\u016b\u0174\u017c\u0181\u0188\u018a\3\b\2\2";
+		"\u0164\u016b\u0174\u017c\u0181\u0188\u018a\3\2\3\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

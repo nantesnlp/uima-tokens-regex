@@ -53,7 +53,7 @@ public class TermSuiteFrenchMWTParserSpec {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
 		
-		AutomataParserListener listener = new AutomataParserListener( parser );
+		AutomataParserListener listener = new AutomataParserListener( parser, FRENCH_MWT_RULES.toUri().toURL() );
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
 

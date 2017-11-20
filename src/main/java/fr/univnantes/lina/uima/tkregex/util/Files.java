@@ -1,12 +1,10 @@
 package fr.univnantes.lina.uima.tkregex.util;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.dataformat.yaml.JacksonYAMLParseException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -41,24 +39,15 @@ public class Files {
 
 	public static Set<String> loadJson(URL url, String keyPath) throws IOException {
 		ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-		try {
-			JsonNode node = mapper.readTree(url);
-			return toSet(node,toPath(keyPath), url, "JSON", keyPath);
-		} catch(JsonParseException e) {
-			throw new AutomataParsingException("Bad JSON Format", e);
-		}
+		JsonNode node = mapper.readTree(url);
+		return toSet(node,toPath(keyPath), url, "JSON", keyPath);
 	}
 
 	public static Set<String> loadYaml(URL url, String keyPath) throws IOException {
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-		try {
-			JsonNode node = mapper.readTree(url);
-			return toSet(node, toPath(keyPath), url, "YAML", keyPath);
-		} catch(JacksonYAMLParseException e) {
-			throw new AutomataParsingException("Bad YAML Format", e);
-		}
-
-}
+		JsonNode node = mapper.readTree(url);
+		return toSet(node, toPath(keyPath), url, "YAML", keyPath);
+	}
 
 	private static Set<String> toSet(JsonNode node, Deque<String> keyPathList, URL url, String type, String keyPath) {
 		Preconditions.checkArgument(keyPathList.size() > 0);

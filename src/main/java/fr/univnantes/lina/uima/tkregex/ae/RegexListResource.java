@@ -23,6 +23,7 @@ package fr.univnantes.lina.uima.tkregex.ae;
 
 import com.google.common.base.Joiner;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
 import fr.univnantes.lina.uima.tkregex.antlr.ThrowingErrorListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
@@ -39,14 +40,17 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.DataResource;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.SharedResourceObject;
-import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.util.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
 
 public class RegexListResource implements SharedResourceObject {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegexListResource.class);
 
 	public static final String KEY_TOKEN_REGEX_RULES = "TokenRegexRules";
 	private AutomataParserListener listener;
@@ -60,17 +64,21 @@ public class RegexListResource implements SharedResourceObject {
 			input = getCharStream(aData);
 			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
 			lexer.removeErrorListeners();
-			lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+			ThrowingErrorListener listener = new ThrowingErrorListener(aData.getUrl());
+			lexer.addErrorListener(listener);
 
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
 			parser.removeErrorListeners();
-			parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+			parser.addErrorListener(listener);
 
-			listener = new AutomataParserListener( parser );
-			listener.setAllowMatchingEmptySequences(false);
-			ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
+			this.listener = new AutomataParserListener( parser , aData.getUrl());
+			this.listener.setAllowMatchingEmptySequences(false);
+			ParseTreeWalker.DEFAULT.walk(this.listener, parser.ruleList());
 		} catch (IOException e) {
+			throw new ResourceInitializationException(e);
+		} catch (AutomataParsingException e) {
+			LOGGER.error("Error in {}", e.getMessage());
 			throw new ResourceInitializationException(e);
 		}
 	}

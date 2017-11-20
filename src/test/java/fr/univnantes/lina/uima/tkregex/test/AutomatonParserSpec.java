@@ -42,6 +42,8 @@ import org.apache.uima.cas.Type;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,12 +59,12 @@ public class AutomatonParserSpec {
 	
 	private List<Rule> rules;
 	private AutomataParserListener listener;
-	public void initAutomata(String rules) {
+	public void initAutomata(String rules)  {
 		initAutomata(rules, false);
 	}
 	
 	
-	public void initAutomata(String body, boolean allowMatchingEmptySequences) {
+	public void initAutomata(String body, boolean allowMatchingEmptySequences)  {
 		String defaultHeader = "import fr.univnantes.termsuite.types.TermSuiteTypeSystem;\n" +
 				"use fr.univnantes.termsuite.types.WordAnnotation;\n";
 		initAutomataWithCustomHeader(body, allowMatchingEmptySequences, defaultHeader);
@@ -70,9 +72,9 @@ public class AutomatonParserSpec {
 
 	private void initAutomataFromFileWithCustomResourceDirectory(String regexFilePath,Path customDirectory) throws IOException {
 		CharStream input = CharStreams.fromPath(AutomatonTests.RESOURCES.resolve(regexFilePath));
-		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		UimaTokenRegexParser parser = initListenerAndGetParser(input, AutomatonTests.RESOURCES.resolve(regexFilePath).toUri().toURL());
 		parser.removeErrorListeners();
-		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+		parser.addErrorListener(new ThrowingErrorListener(customDirectory.resolve(regexFilePath).toUri().toURL()));
 
 		listener.setCustomResourceDir(customDirectory);
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
@@ -80,40 +82,46 @@ public class AutomatonParserSpec {
 	}
 
 	private void initAutomataFromFile(String regexFilePath) throws IOException {
-		CharStream input = CharStreams.fromPath(AutomatonTests.RESOURCES.resolve(regexFilePath));
-		UimaTokenRegexParser parser = initListenerAndGetParser(input);
+		Path resPath = AutomatonTests.RESOURCES.resolve(regexFilePath);
+		CharStream input = CharStreams.fromPath(resPath);
+		UimaTokenRegexParser parser = initListenerAndGetParser(input, resPath.toUri().toURL());
 		parser.removeErrorListeners();
-		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+		parser.addErrorListener(new ThrowingErrorListener(resPath.toUri().toURL()));
 
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();
 	}
 
-	private UimaTokenRegexParser initListenerAndGetParser(CharStream input) {
+	private UimaTokenRegexParser initListenerAndGetParser(CharStream input, URL url) {
 		UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
 		lexer.removeErrorListeners();
-		lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+		lexer.addErrorListener(new ThrowingErrorListener(url));
 
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+		parser.addErrorListener(new ThrowingErrorListener(url));
 
-		listener = new AutomataParserListener( parser );
+		listener = new AutomataParserListener( parser , url);
 		return parser;
 	}
 
 	private void initAutomataWithCustomHeader(String body, boolean allowMatchingEmptySequences, String header) {
-		body = header + body;
-		
-		CharStream input = CharStreams.fromString(body);
-		UimaTokenRegexParser parser = initListenerAndGetParser(input);
-		parser.removeErrorListeners();
-		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+		try {
 
-		listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
-		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
-		this.rules = listener.getRules();
+			body = header + body;
+
+			CharStream input = CharStreams.fromString(body);
+			UimaTokenRegexParser parser = initListenerAndGetParser(input, new URL("file://dynamic.text"));
+			parser.removeErrorListeners();
+			parser.addErrorListener(new ThrowingErrorListener(new URL("file://dynamic.text")));
+
+			listener.setAllowMatchingEmptySequences(allowMatchingEmptySequences);
+			ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
+			this.rules = listener.getRules();
+		} catch(MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	private String file1 = "rule \"Tata\": [lemma==\"mang\"] /^(et|ou)$/ [];";
@@ -307,7 +315,7 @@ public class AutomatonParserSpec {
 	
 	
 	@Test
-	public void testParseCustomJavaMatcher() {
+	public void testParseCustomJavaMatcher() throws MalformedURLException {
 		initAutomataWithCustomHeader("matcher A: [Tatayoyo]; rule \"a\": A A;",
 				true,
 				"import tata;\nuse fr.univnantes.lina.test.uima.TypeA;\njava-matcher: Tatayoyo;");
@@ -350,7 +358,7 @@ public class AutomatonParserSpec {
 
 
 	@Test
-	public void testParseLabel() {
+	public void testParseLabel() throws MalformedURLException {
 		initAutomata(file9_1, true);
 		Automaton a = rules.get(0).getAutomaton();
 		Transition t1 = a.getInitState().getTransitions().iterator().next();
@@ -376,7 +384,7 @@ public class AutomatonParserSpec {
 	}
 
 	@Test
-	public void testParseIgnoreMatcher() {
+	public void testParseIgnoreMatcher() throws MalformedURLException {
 		initAutomata(file8_1, true);
 		Automaton a = rules.get(0).getAutomaton();
 		Transition t1 = a.getInitState().getTransitions().iterator().next();
@@ -393,7 +401,7 @@ public class AutomatonParserSpec {
 	}
 
 	@Test
-	public void testParseQuantifier1() {
+	public void testParseQuantifier1() throws MalformedURLException {
 		initAutomata(file5_1, true);
 		Automaton a = rules.get(0).getAutomaton();
 		
@@ -510,7 +518,7 @@ public class AutomatonParserSpec {
 	}
 	
 	@Test
-	public void testParseQuantifier4() {
+	public void testParseQuantifier4() throws MalformedURLException {
 		initAutomata(file5_4, true);
 		Automaton a = rules.get(0).getAutomaton();
 		

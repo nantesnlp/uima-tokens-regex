@@ -141,9 +141,15 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return typesByShortcut;
 	}
 
-	public AutomataParserListener(Parser parser) {
+	/**
+	 * The url of the resource being parsed
+	 */
+	private URL resourceUrl;
+
+	public AutomataParserListener(Parser parser, URL resourceUrl) {
 		super();
 		this.parser = parser;
+		this.resourceUrl = resourceUrl;
 	}
 
 	public void setCustomResourceDir(Path customResourceDir) {
@@ -188,16 +194,26 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return AutomatonFactory.createQuantifiedAutomaton(automaton, quantifier);
 	}
 
+	private void throwException(int line, int characterOffset, String message) {
+		throw new AutomataParsingException(this.resourceUrl, line, characterOffset, message);
+	}
+
+	private <T> T throwException(ParserRuleContext ctx, String message) {
+		throw new AutomataParsingException(this.resourceUrl, ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine(), message);
+	}
+
+
 	private Automaton toMatcherDeclarationAutomaton(MatcherDeclarationContext ctx) {
 		TerminalNode ignoreMatcher = ctx.IgnoreMatcher();
 		boolean isIgnored = ignoreMatcher != null && ignoreMatcher.getText().equalsIgnoreCase("~");
 		
 		if(!this.inlineAllowed && ctx.Identifier() == null && this.inRule) 
 			if(!isIgnored)
-				throw new AutomataParsingException("undefined matcher "
-					+ " at line " + ctx.getStart().getLine() + ":" + ctx.getText());
+				throwException(
+						ctx,
+						"undefined matcher " + ctx.getText());
 		
-		AnnotationMatcher annotationMatcher;
+		AnnotationMatcher annotationMatcher = null;
 		
 		if(ctx.Regex() != null) {
 			String text = ctx.Regex().getText();
@@ -211,11 +227,16 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 				annotationMatcher = typeMatchers.get(matcherName);
 
 			if(annotationMatcher == null)
-				throw new AutomataParsingException("There is no matcher declared for short matcher name " + matcherName);
+				throwException(
+						ctx,
+						"There is no matcher declared for short matcher name " + matcherName);
+
 		} else if(ctx.featureMatcherDeclaration() != null) {
 			annotationMatcher = toAnnotationMatcher(ctx.featureMatcherDeclaration());
-		} else 
-			throw new AutomataParsingException("Not a valid matcher context");
+		} else
+			throwException(
+					ctx,
+					"Not a valid matcher context");
 		annotationMatcher.setIgnoreMatcher(isIgnored);
 		return AutomatonFactory.createSimpleAutomaton(annotationMatcher);
 	}
@@ -255,7 +276,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		AnnotationMatcher matcher = null;
 		if(ctx.matcherIdentifier() != null) {
 			String matcherName = ctx.matcherIdentifier().getText();
-			matcher = findAnnotationMatcherByName(matcherName);
+			matcher = findAnnotationMatcherByName(matcherName, ctx);
 		} else if(ctx.coveredTextArray() != null) {
 			matcher = new CoveredTextStringArrayMatcher(
 					toOperator(
@@ -263,12 +284,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 							Sets.newHashSet(coveredTextArray.get()));
 		} else if(ctx.literalArray() != null) {
 			matcher = new ArrayMatcher(
-					toFeature(ctx.featureName()),
+					toFeature(ctx.featureName(), ctx),
 					toOperator(ctx.arrayOperator()),
 					toLiteralArray(ctx.literalArray()));
 		} else if(ctx.resourceIdentifier() != null) {
 			matcher = new StringArrayMatcher(
-					toFeature(ctx.featureName()),
+					toFeature(ctx.featureName(), ctx),
 					toOperator(ctx.inListOperator()),
 					toStringArray(ctx.resourceIdentifier())
 			);
@@ -278,7 +299,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			matcher = new StringIgnoreCaseMatcher(coveredTextIgnoredCase.get());
 		} else 
 			matcher = new ExpressionMatcher(
-					toFeature(ctx.featureName()),
+					toFeature(ctx.featureName(), ctx),
 					toOperator(ctx.operator()),
 					toLiteralValue(ctx.literal()), 
 					toLiteralType(ctx.literal())
@@ -287,8 +308,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return matcher;
 	}
 
-	private AnnotationMatcher findAnnotationMatcherByName(String matcherName) {
-		AnnotationMatcher matcher;
+	private AnnotationMatcher findAnnotationMatcherByName(String matcherName, ParserRuleContext ctx) {
+		AnnotationMatcher matcher = null;
 		if(shortcutMatchers.containsKey(matcherName))
 			matcher = shortcutMatchers.get(matcherName);
 		else if(declaredJavaMatchers.containsKey(matcherName))
@@ -298,7 +319,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		else if(BuiltinMatcher.isRegistered(matcherName))
 			matcher = BuiltinMatcher.get(matcherName);
 		else
-			throw new AutomataParsingException("No such custom nor builtin matcher: " + matcherName);
+			throwException(ctx, "No such custom nor builtin matcher: " + matcherName);
 		return matcher;
 	}
 
@@ -309,7 +330,8 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		if(resources.containsKey(resourceId)) {
 			return resources.get(resourceId);
 		} else
-			throw new AutomataParsingException(String.format("No such external resource <%s>. Available resources: %s", resourceId, resources.keySet()));
+			throwException(ctxt, String.format("No such external resource <%s>. Available resources: %s", resourceId, resources.keySet()));
+		return null;
 	}
 
 	private Op toOperator(InListOperatorContext ctxt) {
@@ -323,7 +345,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		return Op.fromString(ctxt.getText());
 	}
 
-	private Feature toFeature(FeatureNameContext featName) {
+	private Feature toFeature(FeatureNameContext featName, ParserRuleContext ctx) {
 		TypeDescription baseType = mainIteratedType;
 		String featureBaseName = featName.getText();
 
@@ -352,7 +374,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		if(featureDescription.isPresent())
 			return featureDescription.get();
 		else
-			throw new AutomataParsingException(String.format("No feature named <%s> for type <%s>", featName.getText(), baseType.getName()));
+			return throwException(ctx, String.format("No feature named <%s> for type <%s>", featName.getText(), baseType.getName()));
 	}
 
 	private Type toType(TypeDescription typeDescription) {
@@ -364,7 +386,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			try {
 				typeSystem = JCasFactory.createJCas().getTypeSystem();
 			} catch (UIMAException e) {
-				throw new AutomataParsingException(e);
+				throwException(0,0, e.getMessage());
 			}
 		return typeSystem;
 
@@ -406,7 +428,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		else if(ctx.StringLiteral() != null)
 			return ExpressionMatcher.TYPE_STRING;
 		else
-			throw new AutomataParsingException("Unknown literal type: " + ctx.toStringTree(parser));
+			return throwException(ctx, "Unknown literal type: " + ctx.toStringTree(parser));
 	}
 
 	private Object toLiteralValue(LiteralContext ctx) {
@@ -419,8 +441,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		else if(ctx.StringLiteral() != null)
 			return ctx.getText().substring(1, ctx.getText().length()-1); // remove heading and trailing "
 		else
-			throw new AutomataParsingException("Unknown literal type: " + ctx.toStringTree(parser));
-		
+			return throwException(ctx, "Unknown literal type: " + ctx.toStringTree(parser));
 	}
 
 	@Override
@@ -430,7 +451,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		String ruleName = ruleCtx.getText().substring(1, ruleCtx.getText().length()-1);
 		Rule rule = new Rule(a, ruleName);
 		if(a.matchesEmptySequence() && !allowMatchingEmptySequences )
-			throw new AutomataParsingException("The automata " + ruleName + " matches the empty sequence");
+			throwException(ctx, "The automata " + ruleName + " matches the empty sequence");
 		this.rules.add(rule);
 		this.inRule = false;
 	}
@@ -461,7 +482,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	@Override
 	public void exitShortcutMatcherDeclaration(
 			ShortcutMatcherDeclarationContext ctx) {
-		AnnotationMatcher matcher;
+		AnnotationMatcher matcher = null;
 		String matcherName = ctx.Identifier().getText();
 		if(ctx.featureMatcherDeclaration() != null) {
 			matcher = toAnnotationMatcher(ctx.featureMatcherDeclaration());
@@ -470,9 +491,9 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			String regex = text.substring(1, text.length() - 1);
 			matcher = new RegexCoveredTextMatcher(regex);
 		} else 
-			throw new AutomataParsingException("Not a valid shortcutMatcherDeclaration: " + ctx.getText());
+			throwException(ctx, "Not a valid shortcutMatcherDeclaration: " + ctx.getText());
 		if(this.shortcutMatchers.get(matcherName) != null)
-			throw new AutomataParsingException("There is already a matcher named " + matcherName);
+			throwException(ctx, "There is already a matcher named " + matcherName);
 		if(ctx.labelIdentifier() == null)
 			matcher.setLabel(matcherName);
 		else
@@ -492,7 +513,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			try {
 				this.inlineAllowed = Boolean.parseBoolean(options.get(OPTION_INLINE));
 			} catch(Exception e) {
-				throw new AutomataParsingException("Bad value for parameter " + OPTION_INLINE + " (expeted true or false)");
+				throwException(ctx, "Bad value for parameter " + OPTION_INLINE + " (expected true or false)");
 			}
 		else {
 			this.inlineAllowed = true;
@@ -504,26 +525,26 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	@Override
 	public void exitUseDeclaration(UseDeclarationContext ctx) {
 		String value = ctx.mainUseDeclaration().typeFullName().getText();
-		mainIteratedType = toTypeDescription(value);
+		mainIteratedType = toTypeDescription(value, ctx);
 		if(ctx.mainUseDeclaration().typeShortName() != null)
 			typesByShortcut.put(ctx.mainUseDeclaration().typeShortName().getText(), mainIteratedType);
 		for(SecondaryUseDeclarationContext sctx:ctx.secondaryUseDeclaration()) {
 			String typeFullName = sctx.typeFullName().getText();
-			TypeDescription typeDescription = toTypeDescription(typeFullName);
+			TypeDescription typeDescription = toTypeDescription(typeFullName, ctx);
 			Type type = toType(typeDescription);
 			String typeCustomShortName = sctx.typeShortName().getText();
 			if(mainIteratedType.getName().equals(typeFullName))
-				throw new AutomataParsingException(String.format("A used type can be declared at most once: <%s>",
+				throwException(ctx, String.format("A used type can be declared at most once: <%s>",
 						typeFullName));
 			if(typesByShortcut.values().contains(typeFullName))
-				throw new AutomataParsingException(String.format("A used type can be declared at most once: <%s>",
+				throwException(ctx, String.format("A used type can be declared at most once: <%s>",
 						typeFullName));
 			if(typesByShortcut.containsKey(type.getShortName()))
-				throw new AutomataParsingException(String.format("There is already one declared type with shortcut <%s>: %s",
+				throwException(ctx, String.format("There is already one declared type with shortcut <%s>: %s",
 						typeCustomShortName,
 						typesByShortcut.get(type.getShortName())));
 			if(typesByShortcut.containsKey(typeCustomShortName))
-				throw new AutomataParsingException(String.format("There is already one declared type with shortcut <%s>: %s",
+				throwException(ctx, String.format("There is already one declared type with shortcut <%s>: %s",
 						typeCustomShortName,
 						typesByShortcut.get(typeCustomShortName)));
 			typesByShortcut.put(typeCustomShortName, typeDescription);
@@ -583,10 +604,10 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 	}
 
-	private TypeDescription toTypeDescription(String value) {
+	private TypeDescription toTypeDescription(String value, ParserRuleContext ctx) {
 		TypeDescription typeDesc = typeSystemDescription.getType(value);
 		if(typeDesc == null)
-			throw new AutomataParsingException("No such type in type system: " + value);
+			throwException(ctx, "No such type in type system: " + value);
 		return typeDesc;
 	}
 
@@ -601,7 +622,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 	public void exitOptionDeclaration(OptionDeclarationContext ctx) {
 		String optName = ctx.Identifier().getText();
 		if(!OPTION_NAMES.contains(optName))
-			throw new AutomataParsingException("Unknown option " + optName);
+			throwException(ctx, "Unknown option " + optName);
 		options.put(optName, ctx.literal().toString());
 	}
 
@@ -621,7 +642,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
 			typeSystemDescription.resolveImports();
 		} catch (Exception e) {
-			throw new AutomataParsingException("Failed to load type system " + filePath, e);
+			throwException(ctx, String.format("Failed to load type system %s. Got %s:%s", filePath, e.getClass().getSimpleName(), e.getMessage()));
 		}
 	}
 
@@ -737,7 +758,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			if (ctx.csvListDefinition() != null) {
 				throw new UnsupportedOperationException("Not yet implemented");
 			} else if (ctx.tsvListDefinition() != null) {
-				URL url = toResourceUrl(ctx.tsvListDefinition().path(), resourceId);
+				URL url = toResourceUrl(ctx.tsvListDefinition().path(), resourceId, ctx);
 				TerminalNode colArg = ctx.tsvListDefinition().IntegerLiteral();
 				int column = colArg == null ? 0 : Integer.parseInt(colArg.getText());
 				LOGGER.debug(String.format("[TSV] Loading %s from column %d of resource %s",
@@ -746,24 +767,24 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 						url));
 				values = Files.loadTsv(url, column);
 			} else if (ctx.jsonListDefinition() != null) {
-				URL url = toResourceUrl(ctx.jsonListDefinition().path(), resourceId);
+				URL url = toResourceUrl(ctx.jsonListDefinition().path(), resourceId, ctx);
 				String rawKeyPath = ctx.jsonListDefinition().keypath().getText();
 				values = Files.loadJson(url, withoutQuotes(rawKeyPath));
 			} else if (ctx.simpleListDefinition() != null) {
-				URL url = toResourceUrl(ctx.simpleListDefinition().path(), resourceId);
+				URL url = toResourceUrl(ctx.simpleListDefinition().path(), resourceId, ctx);
 				LOGGER.debug(String.format("[Simple string file] Loading %s from column 0 of resource %s",
 						resourceId,
 						url));
 				values = Files.loadTsv(url, 0);
 			} else if (ctx.yamlListDefinition() != null) {
-				URL url = toResourceUrl(ctx.yamlListDefinition().path(), resourceId);
+				URL url = toResourceUrl(ctx.yamlListDefinition().path(), resourceId, ctx);
 				String rawKeyPath = ctx.yamlListDefinition().keypath().getText();
 				values = Files.loadYaml(url, withoutQuotes(rawKeyPath));
 			}
 			resources.put(resourceId, values);
 		} catch(IOException e) {
 			LOGGER.error(String.format("Failed to parse resource %s", resourceId), e);
-			throw new AutomataParsingException(e);
+			throwException(ctx, String.format("Failed to parse resource %s", resourceId));
 		}
 	}
 
@@ -773,13 +794,13 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 
 
-	private URL toResourceUrl(PathContext path, String resourceId) {
+	private URL toResourceUrl(PathContext path, String resourceId, ParserRuleContext ctx) {
 		String text = path.StringLiteral().getText();
 		text = text.substring(1, text.length() - 1);
-		return resolveUrl(text, resourceId);
+		return resolveUrl(text, resourceId, ctx);
 	}
 
-	private URL resolveUrl(String text, String resourceId) {
+	private URL resolveUrl(String text, String resourceId, ParserRuleContext ctx) {
 		try {
 			// try current dir
 			if(Paths.get(text).toFile().isFile()) {
@@ -800,9 +821,9 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 				return this.getClass().getResource(classpathUrl);
 			}
 			else
-				throw new AutomataParsingException(String.format("Cannot find resource %s", text));
+				return throwException(ctx, String.format("Cannot find resource %s", text));
 		} catch (MalformedURLException e) {
-			throw new AutomataParsingException(e);
+			return throwException(ctx, e.getMessage());
 		}
 	}
 
