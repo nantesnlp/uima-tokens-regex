@@ -111,7 +111,7 @@ generateGrammarSource {
 }
 
 
-task jcasgen(type: JavaExec) {
+task jcasgenTest(type: JavaExec) {
 	description = 'Generate UIMA TS classes'
 	ext.srcFile = file("$projectDir/src/test/resources/TestTypeSystem.xml")
 	ext.outputDir = file("$projectDir/src/test/java")
@@ -127,7 +127,7 @@ task jcasgen(type: JavaExec) {
 	main = 'org.apache.uima.tools.jcasgen.Jg'
 	args = ['-jcasgeninput', srcFile, '-jcasgenoutput', outputDir]
 }
-
+compileTestJava.dependsOn jcasgenTest
 
 bintray {
 	user = System.getenv('BINTRAY_USER')
