@@ -21,14 +21,8 @@
  *******************************************************************************/
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
-
-import java.util.List;
 
 public class ExpressionMatcher extends FeatureMatcher {
 
@@ -51,13 +45,7 @@ public class ExpressionMatcher extends FeatureMatcher {
 	}
 
 	@Override
-	public boolean matches(AnnotationFS annotation) {
-		boolean b = doMatching(annotation);
-		return b;
-	}
-	private boolean doMatching(AnnotationFS annotation) {
-		if(!isOfRequiredType(annotation))
-			return false;
+	protected boolean doMatching(AnnotationFS annotation) {
 		switch(operator) {
 		case EQ:
 			return value.equals(getValue(annotation));
@@ -77,22 +65,6 @@ public class ExpressionMatcher extends FeatureMatcher {
 	}
 
 
-	LoadingCache<Type, Boolean> typeCheckingCache = CacheBuilder.newBuilder()
-			.build(new CacheLoader<Type, Boolean>() {
-				@Override
-				public Boolean load(Type type) throws Exception {
-					Feature feature = getFeature();
-					List<Feature> typeFeatures = type.getFeatures();
-					for(Feature typeFeature:typeFeatures)
-						if(typeFeature == feature || typeFeature.equals(feature) || typeFeature.getName().equals(feature.getName()))
-							return true;
-					return false;
-				}
-			});
-
-	private boolean isOfRequiredType(AnnotationFS annotation) {
-		return typeCheckingCache.getUnchecked(annotation.getType());
-	}
 
 	public Op getOperator() {
 		return operator;

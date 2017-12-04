@@ -1,9 +1,7 @@
 type-system fr.univnantes.lina.test.uima.TestTypeSystem;
 use fr.univnantes.lina.test.uima.TestAnno;
-set inline = false;
 
-resource List1: list("src/test/resources/fix-resources/simple-list.txt");
+import-matchers-from "regex-files/simple-list-from-custom-directory.regex";
 
-matcher A: [lemma=="a"];
-
+# The rule below should word properly
 rule "rule1" : A+ ;

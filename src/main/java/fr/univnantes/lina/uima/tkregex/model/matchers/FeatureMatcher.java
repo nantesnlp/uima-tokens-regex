@@ -1,9 +1,15 @@
 package fr.univnantes.lina.uima.tkregex.model.matchers;
 
+import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.resource.metadata.FeatureDescription;
+
+import java.util.List;
 
 public abstract class FeatureMatcher implements AnnotationMatcher {
 	public static final String UIMA_CAS_INTEGER = "uima.cas.Integer";
@@ -14,6 +20,7 @@ public abstract class FeatureMatcher implements AnnotationMatcher {
 	private Feature feature;
 
 	protected FeatureMatcher(Feature feature) {
+		Preconditions.checkNotNull(feature);
 		this.feature = feature;
 	}
 
@@ -51,9 +58,35 @@ public abstract class FeatureMatcher implements AnnotationMatcher {
 		return feature;
 	}
 
+	LoadingCache<Type, Boolean> typeCheckingCache = CacheBuilder.newBuilder()
+			.build(new CacheLoader<Type, Boolean>() {
+				@Override
+				public Boolean load(Type type) throws Exception {
+					Feature feature = getFeature();
+					List<Feature> typeFeatures = type.getFeatures();
+					for(Feature typeFeature:typeFeatures)
+						if(typeFeature == feature || typeFeature.equals(feature) || typeFeature.getName().equals(feature.getName()))
+							return true;
+					return false;
+				}
+			});
 
-	protected Object getValue(AnnotationFS annotation) {
-//		Feature feature = getFeature(annotation, featureDescription);
+	private boolean isOfRequiredType(AnnotationFS annotation) {
+		return typeCheckingCache.getUnchecked(annotation.getType());
+	}
+
+
+	@Override
+	public boolean matches(AnnotationFS annotation) {
+		if(!isOfRequiredType(annotation))
+			return false;
+		else
+			return doMatching(annotation);
+	}
+
+	protected abstract boolean doMatching(AnnotationFS annotation);
+
+	protected Object getValue(AnnotationFS annotation)  {
 		switch(feature.getRange().getName()) {
 			case UIMA_CAS_INTEGER:
 				return annotation.getIntValue(feature);

@@ -22,7 +22,6 @@
 package fr.univnantes.lina.uima.tkregex.test;
 
 
-import fr.univnantes.lina.uima.tkregex.ae.NoOverlapMultiTypeIterator;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -42,6 +41,7 @@ import java.nio.file.Paths;
 	TypeMatcherSpec.class,
 	MultiTypeIteratorSpec.class,
 	NoOverlapMultiTypeIteratorSpec.class,
+	MultitypeFunctionalSpec.class,
 	RegexEngineSpec.class
 }
 )

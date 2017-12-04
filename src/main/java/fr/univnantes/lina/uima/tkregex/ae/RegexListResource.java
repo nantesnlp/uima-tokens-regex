@@ -22,7 +22,10 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
 import com.google.common.base.Joiner;
+import fr.univnantes.lina.uima.tkregex.TokensRegex;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
+import fr.univnantes.lina.uima.tkregex.antlr.ThrowingErrorListener;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
 import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
@@ -38,8 +41,9 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.DataResource;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.SharedResourceObject;
-import org.apache.uima.resource.metadata.TypeDescription;
 import org.apache.uima.util.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -47,60 +51,44 @@ import java.util.*;
 
 public class RegexListResource implements SharedResourceObject {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegexListResource.class);
+
 	public static final String KEY_TOKEN_REGEX_RULES = "TokenRegexRules";
-	private AutomataParserListener listener;
-	
-	@Override
-	public void load(DataResource aData) throws ResourceInitializationException {
-		CharStream input;
-		try {
-			UIMAFramework.getLogger().log(Level.FINE, "Loading resource " + KEY_TOKEN_REGEX_RULES + " at: " + aData.getUri());
-			
-			input = getCharStream(aData);
-			UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
-			listener = new AutomataParserListener( parser );
-			listener.setAllowMatchingEmptySequences(false);
-			ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
-		} catch (IOException e) {
-			throw new ResourceInitializationException(e);
-		}
-	}
-
-	protected CharStream getCharStream(DataResource aData) throws IOException {
-		return CharStreams.fromStream(aData.getInputStream());
-	}
-
 
 	public List<Rule> getRules() {
-		return Collections.unmodifiableList(this.listener.getRules());
+		return regexList.getRules();
 	}
-	
+
+	public List<Type> getIteratedTypes() {
+		return regexList.getIteratedTypes();
+	}
+
 	public Map<String, AnnotationMatcher> getShortcutMatchers() {
-		return listener.getShortcutMatchers();
+		return regexList.getShortcutMatchers();
 	}
 
 	public Map<String, CustomMatcher> getJavaMatchers() {
-		return listener.getJavaMatchers();
+		return regexList.getJavaMatchers();
 	}
 
-
-//	public TypeDescription getIteratedTypeDescription() {
-//		return this.listener.getMainIteraredType();
-//	}
-
-	public List<Type> getIteratedTypes() {
-		return this.listener.getIteratedTypes();
+	private RegexList regexList;
+	
+	@Override
+	public void load(DataResource aData) throws ResourceInitializationException {
+		try {
+			regexList = TokensRegex.parseRegexList(aData.getUrl());
+		} catch (Exception e) {
+			throw new ResourceInitializationException(e);
+		}
 	}
 
 	public String getMatchingLabelString(Annotation word) {
 		List<String> matcherNames = new LinkedList<String>();
 		Set<String> labels = new HashSet<String>();
-		for(String matcherName:this.listener.getShortcutMatchers().keySet()) {
-			if(listener.getShortcutMatchers().get(matcherName).matches(word)) {
+		for(String matcherName:regexList.getShortcutMatchers().keySet()) {
+			if(regexList.getShortcutMatchers().get(matcherName).matches(word)) {
 				matcherNames.add(matcherName);
-				labels.add(listener.getShortcutMatchers().get(matcherName).getLabel());
+				labels.add(regexList.getShortcutMatchers().get(matcherName).getLabel());
 			}
 		}
 		matcherNames.removeAll(labels);
@@ -110,13 +98,12 @@ public class RegexListResource implements SharedResourceObject {
 
 	public List<String> getMatchingLabels(Annotation word) {
 		List<String> l = new LinkedList<String>();
-		for(String matcherName:this.listener.getShortcutMatchers().keySet()) {
-			if(listener.getShortcutMatchers().get(matcherName).matches(word)) {
-				l.add(matcherName + ">" + listener.getShortcutMatchers().get(matcherName).getLabel());
+		for(String matcherName:regexList.getShortcutMatchers().keySet()) {
+			if(regexList.getShortcutMatchers().get(matcherName).matches(word)) {
+				l.add(matcherName + ">" + regexList.getShortcutMatchers().get(matcherName).getLabel());
 			}
 		}
 		return l;
 	}
-
 
 }

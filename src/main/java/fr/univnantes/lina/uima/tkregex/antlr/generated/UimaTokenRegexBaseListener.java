@@ -42,13 +42,25 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterImportDeclaration(UimaTokenRegexParser.ImportDeclarationContext ctx) { }
+	@Override public void enterTypeSystemDeclaration(UimaTokenRegexParser.TypeSystemDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitImportDeclaration(UimaTokenRegexParser.ImportDeclarationContext ctx) { }
+	@Override public void exitTypeSystemDeclaration(UimaTokenRegexParser.TypeSystemDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImportMatchersDeclaration(UimaTokenRegexParser.ImportMatchersDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImportMatchersDeclaration(UimaTokenRegexParser.ImportMatchersDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -474,13 +486,13 @@ public class UimaTokenRegexBaseListener implements UimaTokenRegexListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInListOperator(UimaTokenRegexParser.InListOperatorContext ctx) { }
+	@Override public void enterInStringListOperator(UimaTokenRegexParser.InStringListOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInListOperator(UimaTokenRegexParser.InListOperatorContext ctx) { }
+	@Override public void exitInStringListOperator(UimaTokenRegexParser.InStringListOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,0 +1,10 @@
+type-system fr.univnantes.lina.test.uima.TestTypeSystem;
+use fr.univnantes.lina.test.uima.TypeA as TA ,
+fr.univnantes.lina.test.uima.TypeB as TB
+;
+
+matcher M1: [TA.fInt == 2];
+matcher M2: [TB.fStringForTypeB == "toto"];
+matcher M3: [TA.begin == 0];
+
+rule "rule1" : M1 M2;

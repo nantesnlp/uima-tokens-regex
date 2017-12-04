@@ -20,7 +20,7 @@
 #
 ################################################################################
 
-import fr.univnantes.termsuite.types.TermSuiteTypeSystem;
+type-system fr.univnantes.termsuite.types.TermSuiteTypeSystem;
 use fr.univnantes.termsuite.types.WordAnnotation;
 set inline = false;
 

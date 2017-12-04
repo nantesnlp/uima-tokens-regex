@@ -55,7 +55,7 @@ public class ArrayMatcher extends FeatureMatcher {
 	}
 
 	@Override
-	public boolean matches(AnnotationFS annotation) {
+	public boolean doMatching(AnnotationFS annotation) {
 		Object value = getValue(annotation);
 		switch (operator) {
 			case IN: return isIn(value);

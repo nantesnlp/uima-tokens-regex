@@ -29,15 +29,24 @@ ruleList
 	;
 	
 headerBlock 
-	:  importDeclaration useDeclaration (externalListDeclaration | optionDeclaration)* javaMatcherDeclaration*
+	:  typeSystemDeclaration
+	useDeclaration
+	importMatchersDeclaration* // Force matcher declarations before java matcher declarations
+	(externalListDeclaration | optionDeclaration)*
+	javaMatcherDeclaration*
 	;
 
-importDeclaration
-	: IMPORT Identifier ';'
+typeSystemDeclaration
+	: TYPE_SYSTEM Identifier ';'
 	;
+
+importMatchersDeclaration
+	: IMPORT_MATCHERS_FROM path ';' ;
+
 
 useDeclaration
 	:  mainUseDeclaration
+	  ( ',' secondaryUseDeclaration )*
 	  ( ',' secondaryUseDeclaration )*
 	  ';'
 
@@ -50,7 +59,7 @@ mainUseDeclaration : USE typeFullName ('as' typeShortName )? ;
 secondaryUseDeclaration : typeFullName 'as' typeShortName ;
 typeFullName : Identifier ;
 
-typeShortName : IdentifierPart ;
+typeShortName : Identifier ;
 
 javaMatcherDeclaration
 	: JAVA_MATCHER ':' Identifier ';'
@@ -121,10 +130,11 @@ atomicExpression
 	: matcherIdentifier
 	| featureName operator literal
 	| featureName arrayOperator literalArray
-	| featureName inListOperator resourceIdentifier
+	| featureName inStringListOperator resourceIdentifier
 	| 'text' '==' coveredTextIgnoreCase
 	| 'text' '===' coveredTextExactly
-	| 'text' inListOperator coveredTextArray
+	| 'text' inStringListOperator coveredTextArray
+	| 'text' inStringListOperator resourceIdentifier
 	;
 
 matcherIdentifier : Identifier ;
@@ -184,7 +194,7 @@ arrayOperator
 	| 'nin'
 	;
 
-inListOperator
+inStringListOperator
 	: arrayOperator
 	| 'inIgnoreCase'
 	| 'ninIgnoreCase'
@@ -300,7 +310,8 @@ NOTEQUAL        : '!=';
 IN        : 'in';
 
 //header block declaration
-IMPORT	: 'import';
+TYPE_SYSTEM	: 'type-system';
+IMPORT_MATCHERS_FROM	: 'import-matchers-from';
 USE	: 'use';
 SET	: 'set';
 JAVA_MATCHER	: 'java-matcher';
@@ -308,7 +319,7 @@ RESOURCE : 'resource';
 
 // Comments
 LINE_COMMENT
-    :   '#' ~[\r\n]* -> skip
+    :   '#' ~[\r\n]* -> channel(HIDDEN)
     ;
 
 // Matcher declaration
@@ -349,7 +360,7 @@ JavaLetterOrDigit
     ;
 
 	
-WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
+WS : [ \t\r\n]+ -> channel(HIDDEN) ; // skip spaces, tabs, newlines
 
 
 Regex: '/' (~[/]| EscapeSequence)* '/';
