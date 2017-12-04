@@ -223,15 +223,12 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 			String regex = text.substring(1, text.length() - 1);
 			annotationMatcher = new RegexCoveredTextMatcher(regex);
 		} else if(ctx.Identifier() != null) {
-			String matcherName = ctx.Identifier().getText();
-			annotationMatcher = this.shortcutMatchers.get(matcherName);
-			if(annotationMatcher == null)
-				annotationMatcher = typeMatchers.get(matcherName);
+			annotationMatcher = findAnnotationMatcherByName(ctx.Identifier().getText(), ctx);
 
 			if(annotationMatcher == null)
 				throwException(
 						ctx,
-						"There is no matcher declared for short matcher name " + matcherName);
+						"There is no matcher declared for short matcher name " + ctx.Identifier().getText());
 
 		} else if(ctx.featureMatcherDeclaration() != null) {
 			annotationMatcher = toAnnotationMatcher(ctx.featureMatcherDeclaration());
@@ -558,7 +555,7 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		try {
 			RegexList regexList = TokensRegex.parseRegexList(url, customResourceDir);
 			shortcutMatchers.putAll(regexList.getShortcutMatchers());
-			shortcutMatchers.putAll(regexList.getJavaMatchers());
+			declaredJavaMatchers.putAll(regexList.getJavaMatchers());
 		} catch(Exception e) {
 			throwException(ctx, String.format("Could not parse uima tokens regex file %s. Got error: %s", ctx.path().getText(), e.getMessage()));
 		}
