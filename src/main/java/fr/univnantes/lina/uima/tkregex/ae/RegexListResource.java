@@ -60,7 +60,7 @@ public class RegexListResource implements SharedResourceObject {
 	}
 
 	public List<Type> getIteratedTypes() {
-		return regexList.getGetIteratedTypes();
+		return regexList.getIteratedTypes();
 	}
 
 	public Map<String, AnnotationMatcher> getShortcutMatchers() {
