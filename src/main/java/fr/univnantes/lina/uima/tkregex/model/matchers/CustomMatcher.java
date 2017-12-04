@@ -52,4 +52,9 @@ public class CustomMatcher extends AbstractAnnotationMatcher {
 	public boolean isReady() {
 		return matcher.isPresent();
 	}
+
+	@Override
+	public String getLabel() {
+		return super.getLabel() == null ? getName() : super.getLabel();
+	}
 }
