@@ -29,7 +29,11 @@ ruleList
 	;
 	
 headerBlock 
-	:  typeSystemDeclaration useDeclaration (externalListDeclaration | optionDeclaration | importMatchersDeclaration)* javaMatcherDeclaration*
+	:  typeSystemDeclaration
+	useDeclaration
+	importMatchersDeclaration* // Force matcher declarations before java matcher declarations
+	(externalListDeclaration | optionDeclaration)*
+	javaMatcherDeclaration*
 	;
 
 typeSystemDeclaration
@@ -42,6 +46,7 @@ importMatchersDeclaration
 
 useDeclaration
 	:  mainUseDeclaration
+	  ( ',' secondaryUseDeclaration )*
 	  ( ',' secondaryUseDeclaration )*
 	  ';'
 
