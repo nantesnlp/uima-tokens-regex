@@ -10,6 +10,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class RegexEngine {
 	private List<Type> iteratedTypes;
@@ -40,11 +41,19 @@ public class RegexEngine {
 		this.allowOverlappingOccurrences = allowOverlappingOccurrences;
 	}
 
-
 	public void process(JCas jCas) {
+		/*
+		By default, process on all rules
+		 */
+		process(jCas, r -> true);
+	}
+
+	public void process(JCas jCas, Predicate<Rule> ruleFilter) {
 
 
 		for (final Rule rule: rules) {
+			if(!ruleFilter.test(rule))
+				continue;
 			final List<RegexOccurrence> recognizedEpisodes = new ArrayList<>();
 			RecognitionHandler episodeHandler = (episode) -> {
 				episode.setRule(rule);
