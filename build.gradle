@@ -22,7 +22,7 @@ apply plugin: 'maven-publish'
 
 group = 'fr.univ-nantes.julestar'
 archivesBaseName = 'uima-tokens-regex'
-version = '2.1.1'
+version = '2.1.2'
 
 ////////////////////////////////////////////////////////////////// DEPENDENCIES
 
@@ -137,7 +137,7 @@ bintray {
 	override = true
 	pkg {
 		repo = 'maven'
-		name = 'uima-tokens-regex'
+		name = 'fr.univ-nantes.julestar:uima-tokens-regex'
 		userOrg = 'pompadour'
 		licenses = ['Apache-2.0']
 		vcsUrl = 'https://github.com/nantesnlp/uima-tokens-regex.git'

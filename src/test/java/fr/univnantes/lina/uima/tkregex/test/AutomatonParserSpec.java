@@ -317,7 +317,9 @@ public class AutomatonParserSpec {
 		Transition t1 = a.getInitState().getTransitions().iterator().next();
 		assertEquals("A", t1.getMatcher().getLabel());
 		assertThat(t1.getMatcher())
-			.isInstanceOf(CustomMatcher.class);
+			.isInstanceOf(MatcherProxy.class);
+		assertThat(((MatcherProxy)t1.getMatcher()).getMatcher())
+				.isInstanceOf(CustomMatcher.class);
 
 	}
 
@@ -329,7 +331,10 @@ public class AutomatonParserSpec {
 		Transition t1 = a.getInitState().getTransitions().iterator().next();
 		assertEquals("A", t1.getMatcher().getLabel());
 		assertThat(t1.getMatcher())
-			.isInstanceOf(TitleCased.class);
+				.isInstanceOf(MatcherProxy.class);
+		assertThat(((MatcherProxy)t1.getMatcher()).getMatcher())
+				.isInstanceOf(TitleCased.class);
+
 
 	}
 	

@@ -272,10 +272,10 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 
 
 	private AnnotationMatcher toAnnotationMatcher(AtomicExpressionContext ctx) {
-		AnnotationMatcher matcher = null;
+		AnnotationMatcher matcher;
 		if(ctx.matcherIdentifier() != null) {
 			String matcherName = ctx.matcherIdentifier().getText();
-			matcher = findAnnotationMatcherByName(matcherName, ctx);
+			matcher = new MatcherProxy(findAnnotationMatcherByName(matcherName, ctx));
 		} else if(ctx.coveredTextArray() != null) {
 			matcher = new CoveredTextStringArrayMatcher(
 					toOperator(

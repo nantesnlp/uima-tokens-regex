@@ -13,10 +13,12 @@ import java.util.stream.Collectors;
 public class TypeMatcher implements AnnotationMatcher {
 	private TypeSystem typeSystem;
 	private Type type;
+	private String label;
 
 	public TypeMatcher(TypeSystem typeSystem, Type type) {
 		this.typeSystem = typeSystem;
 		this.type = type;
+		this.label = type.getShortName();
 	}
 
 	public Type getType() {
@@ -38,12 +40,12 @@ public class TypeMatcher implements AnnotationMatcher {
 
 	@Override
 	public String getLabel() {
-		return type.getShortName();
+		return label;
 	}
 
 	@Override
 	public void setLabel(String label) {
-
+		this.label = label;
 	}
 
 	@Override
