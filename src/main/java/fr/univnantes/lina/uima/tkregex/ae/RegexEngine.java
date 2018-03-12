@@ -17,6 +17,7 @@ public class RegexEngine {
 	private List<Rule> rules;
 	private boolean allowOverlappingOccurrences;
 	private CasRecognitionHandler casRecognitionHandler;
+	private int maxEpisodeLength = AutomatonEngine.MAX_EPISODE_LENGTH;
 
 
 	public RegexEngine(List<Rule> rules, List<Type> iteratedTypes, CasRecognitionHandler recognitionHandler) {
@@ -25,7 +26,11 @@ public class RegexEngine {
 		this.rules = rules;
 	}
 
-//	public String getIteratedTypeName() {
+	public void setMaxEpisodeLength(int maxEpisodeLength) {
+		this.maxEpisodeLength = maxEpisodeLength;
+	}
+
+	//	public String getIteratedTypeName() {
 //		return iteratedTypeName;
 //	}
 
@@ -62,6 +67,7 @@ public class RegexEngine {
 			Automaton automaton = rule.getAutomaton();
 			AutomatonEngine automatonEngine = new AutomatonEngine(automaton);
 			automatonEngine.setAllowOverlappingInstances(this.allowOverlappingOccurrences);
+			automatonEngine.setMaxEpisodeLength(this.maxEpisodeLength);
 			automatonEngine.addRecognitionHandler(episodeHandler);
 			automatonEngine.reset();
 

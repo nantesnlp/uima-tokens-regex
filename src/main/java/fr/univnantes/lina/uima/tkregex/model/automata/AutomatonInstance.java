@@ -12,6 +12,7 @@ public class AutomatonInstance implements Cloneable {
 	private LinkedList<StateExploration> trace = Lists.newLinkedList();
 	private boolean failed;
 	private AutomatonEngine automatonEng;
+	private int maxEpisodeLength;
 
 	/**
 	 * A unique id that is cloned when an iteration altervative
@@ -22,11 +23,12 @@ public class AutomatonInstance implements Cloneable {
 	 */
 	private int instanceId;
 
-	AutomatonInstance(AutomatonEngine automatonEngine, State current, int instanceId) {
+	AutomatonInstance(AutomatonEngine automatonEngine, State current, int instanceId, int maxEpisodeLength) {
 		this.automatonEng = automatonEngine;
 		this.current = current;
 		this.failed = false;
 		this.instanceId = instanceId;
+		this.maxEpisodeLength = maxEpisodeLength;
 	}
 
 	public boolean hasFailed() {
@@ -61,7 +63,7 @@ public class AutomatonInstance implements Cloneable {
 	 * @return
 	 */
 	public AutomatonInstance doClone() {
-		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current, this.instanceId);
+		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current, this.instanceId, this.maxEpisodeLength);
 		clone.failed = this.failed;
 		clone.trace = new LinkedList<>();
 		for(StateExploration se:this.trace) {
@@ -97,7 +99,7 @@ public class AutomatonInstance implements Cloneable {
 			Transition t = null;
 			while (transitionIt.hasNext()) {
 				Transition transition = transitionIt.next();
-				if(doesAnnotationMatchTransition(a, transition)) {
+				if(doesAnnotationMatchTransition(a, transition) && this.trace.size() < maxEpisodeLength) {
 					AnnotationFS matchedAnnotation = annotations.pop();
 
 					this.trace.addLast(new StateExploration(

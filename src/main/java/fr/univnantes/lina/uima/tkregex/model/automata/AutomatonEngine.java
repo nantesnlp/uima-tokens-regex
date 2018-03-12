@@ -11,10 +11,13 @@ import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutomatonEngine {
+	public static final int MAX_EPISODE_LENGTH = 30;
+
 	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
 	private LinkedList<AutomatonInstance> instances;
 	private boolean allowOverlappingInstances = false;
 	private AtomicInteger instanceIdGenerator = new AtomicInteger(0);
+	private int maxEpisodeLength = MAX_EPISODE_LENGTH;
 
 	private Automaton automaton;
 
@@ -26,6 +29,12 @@ public class AutomatonEngine {
 		this.automaton = automaton;
 		this.instances = new LinkedList<>();
 	}
+
+	public void setMaxEpisodeLength(int maxEpisodeLength) {
+		this.maxEpisodeLength = maxEpisodeLength;
+	}
+
+
 	public void setAllowOverlappingInstances(boolean allowOverlappingInstances) {
 		this.allowOverlappingInstances = allowOverlappingInstances;
 	}
@@ -50,7 +59,8 @@ public class AutomatonEngine {
 			AutomatonInstance automatonInstance = new AutomatonInstance(
 					this,
 					this.automaton.getInitState(),
-					instanceIdGenerator.incrementAndGet());
+					instanceIdGenerator.incrementAndGet(),
+					maxEpisodeLength);
 			this.instances.add(automatonInstance);
 		}
 
@@ -104,6 +114,7 @@ public class AutomatonEngine {
 		AutomatonEngine clone = new AutomatonEngine(automaton);
 		clone.allowOverlappingInstances = this.allowOverlappingInstances;
 		clone.handlers = this.handlers;
+		clone.maxEpisodeLength = this.maxEpisodeLength;
 		clone.instanceIdGenerator = this.instanceIdGenerator;
 
 		clone.instances = new LinkedList<>();
