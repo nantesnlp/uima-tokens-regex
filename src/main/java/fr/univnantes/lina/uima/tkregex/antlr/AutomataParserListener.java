@@ -838,7 +838,20 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 					return customResourceDir.get().resolve(text).toUri().toURL();
 				}
 			}
-			return throwException(ctx, String.format("Cannot find resource %s", text));
+
+			LOGGER.debug("Loading resource {} from classpath", resourceId);
+			URL url = getClass().getResource(text);
+			try {
+				if(url == null)
+					return throwException(ctx, String.format("Cannot find resource %s", text));
+				InputStream is = url.openStream();
+				if(is == null)
+					return throwException(ctx, String.format("Cannot find resource %s", text));
+				is.close();
+				return url;
+			} catch (IOException e) {
+				return throwException(ctx, String.format("Cannot find resource %s", text));
+			}
 		} catch (MalformedURLException e) {
 			return throwException(ctx, e.getMessage());
 		}
