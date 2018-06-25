@@ -1,8 +1,5 @@
 package fr.univnantes.lina.uima.tkregex.ae;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.cas.Type;
@@ -71,8 +68,7 @@ public class RegexEngine {
 			automatonEngine.addRecognitionHandler(episodeHandler);
 			automatonEngine.reset();
 
-			NoOverlapMultiTypeIterator it = getIterator(jCas);
-			iterate(automatonEngine, it, true);
+			iterate(automatonEngine, jCas);
 			automatonEngine.removeRecognitionHandler(episodeHandler);
 			if(recognizedEpisodes.size() <= 1)
 				for(RegexOccurrence o:recognizedEpisodes)
@@ -115,12 +111,17 @@ public class RegexEngine {
 			return false;
 	}
 
-	private void iterate(AutomatonEngine automatonEngine, NoOverlapMultiTypeIterator it, boolean isRootIterator) {
+	private static final int MAX_ALTERNATIVE_COUNT = 10;
+	private void iterate(AutomatonEngine automatonEngine, JCas jCas) {
+		iterate(automatonEngine, getIterator(jCas), true, MAX_ALTERNATIVE_COUNT);
+	}
+
+	private void iterate(AutomatonEngine automatonEngine, NoOverlapMultiTypeIterator it, boolean isRootIterator, int alternativeCount) {
 		while (it.hasNext()) {
 			Optional<NoOverlapMultiTypeIterator> alternative = it.getIterationAlternative();
-			if(alternative.isPresent()) {
+			if(alternative.isPresent() && alternativeCount > 0) {
 				AutomatonEngine automatonEngineClone = automatonEngine.doClone();
-				iterate(automatonEngineClone, alternative.get(), false);
+				iterate(automatonEngineClone, alternative.get(), false, alternativeCount - 1);
 			}
 			Annotation annotation = it.next();
 			boolean inAlternativeIterationWindow = it.getOffsetUpperBound() > annotation.getBegin();

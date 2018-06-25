@@ -22,7 +22,7 @@ apply plugin: 'maven-publish'
 
 group = 'fr.univ-nantes.julestar'
 archivesBaseName = 'uima-tokens-regex'
-version = '2.2.1'
+version = '2.2.2'
 
 ////////////////////////////////////////////////////////////////// DEPENDENCIES
 
