@@ -33,3 +33,5 @@ out
 # type system classes
 src/test/java/fr/univnantes/lina/test/uima
 uima-tokens-regex.iml
+
+target

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
 
 import java.io.BufferedReader;
