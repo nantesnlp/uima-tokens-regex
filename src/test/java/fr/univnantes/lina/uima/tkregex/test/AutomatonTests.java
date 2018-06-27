@@ -48,6 +48,6 @@ import java.nio.file.Paths;
 
 public class AutomatonTests {
 
-	public static final Path RESOURCES = Paths.get("src", "test", "resources");
+	public static final Path RESOURCES = Paths.get( "src", "test", "resources");
 
 }

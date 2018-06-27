@@ -1,3 +1,3 @@
-classpath*:TermSuite_TS.xml
-classpath*:TestTypeSystem.xml
-classpath*:SourceDocumentInformation.xml
+classpath*:uima/TermSuite_TS.xml
+classpath*:uima/TestTypeSystem.xml
+classpath*:uima/SourceDocumentInformation.xml

@@ -24,6 +24,8 @@ package fr.univnantes.lina.uima.tkregex.test;
 
 import com.google.common.base.Charsets;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -41,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TermSuiteFrenchMWTParserSpec {
 	
-	private static final Path FRENCH_MWT_RULES = Paths.get("src", "test", "resources", "french-multi-word-rule-system.regex");
+	private static final Path FRENCH_MWT_RULES = AutomatonTests.RESOURCES.resolve("french-multi-word-rule-system.regex");
 	private List<Rule> rules;
 
 	@Before
@@ -50,7 +52,7 @@ public class TermSuiteFrenchMWTParserSpec {
 		UimaTokenRegexLexer lexer = new UimaTokenRegexLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UimaTokenRegexParser parser = new UimaTokenRegexParser(tokens);
-		
+
 		AutomataParserListener listener = new AutomataParserListener( parser, FRENCH_MWT_RULES.toUri().toURL() );
 		ParseTreeWalker.DEFAULT.walk(listener, parser.ruleList());
 		this.rules = listener.getRules();

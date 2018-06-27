@@ -1,5 +1,8 @@
 src/main/java/fr/univnantes/lina/uima/tkregex/antlr/generated/
 
+# generated uima classes
+src/test/java/fr/univnantes/termsuite/
+
 # Java
 
 *.class

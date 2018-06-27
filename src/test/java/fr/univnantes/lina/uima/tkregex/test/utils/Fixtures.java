@@ -64,15 +64,15 @@ public class Fixtures {
 	}
 
 	public static JCas createTestCas(String documentString) {
-		String tsPath = Paths.get("src", "test", "resources", "TestTypeSystem.xml").toString();
-		TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(tsPath);
-		
-		for(TypeDescription td:tsd.getTypes()) {
-			System.out.println(td);
-		}
-		
-		
+//		String tsPath = Paths.get("src", "test", "resources", "TestTypeSystem.xml").toString();
+
+
 		try {
+			TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescription();
+
+			for(TypeDescription td:tsd.getTypes()) {
+				System.out.println(td);
+			}
 			JCas cas = JCasFactory.createJCas(tsd);
 			cas.setDocumentText(documentString);
 			StringBuffer buffer = new StringBuffer();

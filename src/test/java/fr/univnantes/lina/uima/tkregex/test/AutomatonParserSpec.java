@@ -31,6 +31,8 @@ import fr.univnantes.lina.uima.tkregex.ae.builtin.TitleCased;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
 import fr.univnantes.lina.uima.tkregex.antlr.ThrowingErrorListener;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
+import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.*;
 import fr.univnantes.lina.uima.tkregex.model.matchers.*;
 import fr.univnantes.lina.uima.tkregex.test.asserts.Asserts;
