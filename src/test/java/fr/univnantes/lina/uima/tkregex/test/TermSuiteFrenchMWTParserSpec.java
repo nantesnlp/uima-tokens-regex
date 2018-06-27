@@ -24,8 +24,6 @@ package fr.univnantes.lina.uima.tkregex.test;
 
 import com.google.common.base.Charsets;
 import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;

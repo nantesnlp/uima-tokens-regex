@@ -23,29 +23,17 @@ package fr.univnantes.lina.uima.tkregex.ae;
 
 import com.google.common.base.Joiner;
 import fr.univnantes.lina.uima.tkregex.TokensRegex;
-import fr.univnantes.lina.uima.tkregex.antlr.AutomataParserListener;
-import fr.univnantes.lina.uima.tkregex.antlr.AutomataParsingException;
-import fr.univnantes.lina.uima.tkregex.antlr.ThrowingErrorListener;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexLexer;
-import fr.univnantes.lina.uima.tkregex.antlr.generated.UimaTokenRegexParser;
 import fr.univnantes.lina.uima.tkregex.model.automata.Rule;
 import fr.univnantes.lina.uima.tkregex.model.matchers.AnnotationMatcher;
 import fr.univnantes.lina.uima.tkregex.model.matchers.CustomMatcher;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.DataResource;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.SharedResourceObject;
-import org.apache.uima.util.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 

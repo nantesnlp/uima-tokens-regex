@@ -21,7 +21,6 @@
  *******************************************************************************/
 grammar UimaTokenRegex;
 @header {
-    package fr.univnantes.lina.uima.tkregex.antlr.generated;
 }
 
 ruleList
