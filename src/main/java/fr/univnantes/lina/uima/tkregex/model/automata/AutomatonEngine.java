@@ -3,6 +3,8 @@ package fr.univnantes.lina.uima.tkregex.model.automata;
 import com.google.common.collect.Lists;
 import fr.univnantes.lina.uima.tkregex.model.matchers.LabelledAnnotation;
 import org.apache.uima.cas.text.AnnotationFS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -11,13 +13,17 @@ import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutomatonEngine {
-	public static final int MAX_EPISODE_LENGTH = 30;
+	public static final Logger LOGGER = LoggerFactory.getLogger(AutomatonEngine.class);
+	public static final String NO_NAME = "none";
 
 	private Collection<RecognitionHandler> handlers = new LinkedList<RecognitionHandler>();
 	private LinkedList<AutomatonInstance> instances;
 	private boolean allowOverlappingInstances = false;
 	private AtomicInteger instanceIdGenerator = new AtomicInteger(0);
-	private int maxEpisodeLength = MAX_EPISODE_LENGTH;
+	private EngineSafeGuard safeGuard = new EngineSafeGuard();
+	private long nbInstanceCreations = 0;
+	private long startTime = System.currentTimeMillis();
+	private boolean timedOut = false;
 
 	private Automaton automaton;
 
@@ -30,10 +36,9 @@ public class AutomatonEngine {
 		this.instances = new LinkedList<>();
 	}
 
-	public void setMaxEpisodeLength(int maxEpisodeLength) {
-		this.maxEpisodeLength = maxEpisodeLength;
+	public void setSafeGuard(EngineSafeGuard safeGuard) {
+		this.safeGuard = safeGuard;
 	}
-
 
 	public void setAllowOverlappingInstances(boolean allowOverlappingInstances) {
 		this.allowOverlappingInstances = allowOverlappingInstances;
@@ -55,12 +60,26 @@ public class AutomatonEngine {
 	}
 
 	public void nextAnnotation(AnnotationFS annotation, boolean allowedToCreateNewInstances) {
+		if(timedOut) {
+			return;
+		} else {
+			long currentDuration = System.currentTimeMillis() - startTime;
+			if(currentDuration > safeGuard.getMaxRuleMatchingDurationMillis()) {
+				LOGGER.warn("Regex Engine Timeout: Stopping rule matching for rule {} because current duration {} exceeds max duration allowed {}",
+						name,
+						currentDuration,
+						safeGuard.getMaxRuleMatchingDurationMillis());
+				timedOut = true;
+			}
+		}
+
 		if(allowedToCreateNewInstances) {
+			incrementInstanceCreation();
 			AutomatonInstance automatonInstance = new AutomatonInstance(
 					this,
 					this.automaton.getInitState(),
 					instanceIdGenerator.incrementAndGet(),
-					maxEpisodeLength);
+					safeGuard);
 			this.instances.add(automatonInstance);
 		}
 
@@ -110,15 +129,23 @@ public class AutomatonEngine {
 		}
 	}
 
+	private void incrementInstanceCreation() {
+		nbInstanceCreations ++;
+		if(nbInstanceCreations % 10 == 0 && LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Nb created instances for automaton {}: {}", name, nbInstanceCreations);
+		}
+	}
+
 	public AutomatonEngine doClone() {
 		AutomatonEngine clone = new AutomatonEngine(automaton);
 		clone.allowOverlappingInstances = this.allowOverlappingInstances;
 		clone.handlers = this.handlers;
-		clone.maxEpisodeLength = this.maxEpisodeLength;
+		clone.safeGuard = this.safeGuard;
 		clone.instanceIdGenerator = this.instanceIdGenerator;
 
 		clone.instances = new LinkedList<>();
 		for(AutomatonInstance instance:this.instances) {
+			incrementInstanceCreation();
 			clone.instances.add(instance.doClone());
 		}
 		return clone;
@@ -134,6 +161,9 @@ public class AutomatonEngine {
 	}
 
 	public void reset() {
+		this.timedOut = false;
+		this.startTime = System.currentTimeMillis();
+		this.nbInstanceCreations = 0;
 		this.instances = Lists.newLinkedList();
 	}
 
@@ -151,5 +181,10 @@ public class AutomatonEngine {
 				this.instanceIdGenerator.get(),
 				this.instances.size(),
 				isCurrentlyFailed());
+	}
+
+	private String name = NO_NAME;
+	public void setName(String name) {
+		this.name = name;
 	}
 }

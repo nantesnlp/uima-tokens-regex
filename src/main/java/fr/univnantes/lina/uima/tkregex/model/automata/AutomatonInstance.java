@@ -12,7 +12,11 @@ public class AutomatonInstance implements Cloneable {
 	private LinkedList<StateExploration> trace = Lists.newLinkedList();
 	private boolean failed;
 	private AutomatonEngine automatonEng;
-	private int maxEpisodeLength;
+	private EngineSafeGuard safeGuard;
+	private int transitionCount;
+	private int iterateCount;
+	private int backtrackCount;
+	private int failCount;
 
 	/**
 	 * A unique id that is cloned when an iteration altervative
@@ -23,12 +27,17 @@ public class AutomatonInstance implements Cloneable {
 	 */
 	private int instanceId;
 
-	AutomatonInstance(AutomatonEngine automatonEngine, State current, int instanceId, int maxEpisodeLength) {
+	AutomatonInstance(AutomatonEngine automatonEngine, State current, int instanceId, EngineSafeGuard safeGuard) {
 		this.automatonEng = automatonEngine;
 		this.current = current;
 		this.failed = false;
 		this.instanceId = instanceId;
-		this.maxEpisodeLength = maxEpisodeLength;
+		this.safeGuard = safeGuard;
+		this.transitionCount = 0;
+		this.backtrackCount = 0;
+		this.iterateCount = 0;
+		this.failCount = 0;
+
 	}
 
 	public boolean hasFailed() {
@@ -63,8 +72,12 @@ public class AutomatonInstance implements Cloneable {
 	 * @return
 	 */
 	public AutomatonInstance doClone() {
-		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current, this.instanceId, this.maxEpisodeLength);
+		AutomatonInstance clone = new AutomatonInstance(this.automatonEng, this.current, this.instanceId, this.safeGuard);
 		clone.failed = this.failed;
+		clone.transitionCount = this.transitionCount;
+		clone.failCount = this.failCount;
+		clone.iterateCount = this.iterateCount;
+		clone.backtrackCount = this.backtrackCount;
 		clone.trace = new LinkedList<>();
 		for(StateExploration se:this.trace) {
 			clone.trace.add(se.doClone());
@@ -93,13 +106,19 @@ public class AutomatonInstance implements Cloneable {
 
 	public void iterate(LinkedList<AnnotationFS> annotations,
 						TransitionIterator transitionIt) {
+		iterateCount ++;
+//		System.out.format("it: %5d - fail: %5d - back: %5d - transition: %5d %n", iterateCount, failCount, backtrackCount, transitionCount);
+		if(iterateCount > safeGuard.getMaxIterations())
+			this.failed = true;
+
 		if(annotations.isEmpty()) {
 		} else {
 			AnnotationFS a = annotations.getFirst();
 			Transition t = null;
-			while (transitionIt.hasNext()) {
+			while (transitionIt.hasNext() && transitionCount < safeGuard.getMaxTransitions()) {
+				transitionCount++;
 				Transition transition = transitionIt.next();
-				if(doesAnnotationMatchTransition(a, transition) && this.trace.size() < maxEpisodeLength) {
+				if(doesAnnotationMatchTransition(a, transition) && this.trace.size() < safeGuard.getMaxEpisodeLength()) {
 					AnnotationFS matchedAnnotation = annotations.pop();
 
 					this.trace.addLast(new StateExploration(
@@ -130,9 +149,11 @@ public class AutomatonInstance implements Cloneable {
 	}
 
 	private void backtrack(LinkedList<AnnotationFS> annotations) {
-		if(trace.isEmpty()) {
+		if(trace.isEmpty() || backtrackCount > safeGuard.getMaxBacktrack()) {
+			failCount ++;
 			this.failed = true;
 		} else {
+			backtrackCount ++;
 			StateExploration at = trace.removeLast();
 			this.current = at.getTransition().getFromState();
 			annotations.addFirst(at.getAnnotation());

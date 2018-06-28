@@ -14,7 +14,7 @@ public class RegexEngine {
 	private List<Rule> rules;
 	private boolean allowOverlappingOccurrences;
 	private CasRecognitionHandler casRecognitionHandler;
-	private int maxEpisodeLength = AutomatonEngine.MAX_EPISODE_LENGTH;
+	private EngineSafeGuard safeGuard = new EngineSafeGuard();
 
 
 	public RegexEngine(List<Rule> rules, List<Type> iteratedTypes, CasRecognitionHandler recognitionHandler) {
@@ -23,8 +23,8 @@ public class RegexEngine {
 		this.rules = rules;
 	}
 
-	public void setMaxEpisodeLength(int maxEpisodeLength) {
-		this.maxEpisodeLength = maxEpisodeLength;
+	public void setSafeGuard(EngineSafeGuard safeGuard) {
+		this.safeGuard = safeGuard;
 	}
 
 	//	public String getIteratedTypeName() {
@@ -54,8 +54,9 @@ public class RegexEngine {
 
 
 		for (final Rule rule: rules) {
-			if(!ruleFilter.test(rule))
+			if(!ruleFilter.test(rule)) {
 				continue;
+			}
 			final List<RegexOccurrence> recognizedEpisodes = new ArrayList<>();
 			RecognitionHandler episodeHandler = (episode) -> {
 				episode.setRule(rule);
@@ -63,8 +64,9 @@ public class RegexEngine {
 			};
 			Automaton automaton = rule.getAutomaton();
 			AutomatonEngine automatonEngine = new AutomatonEngine(automaton);
+			automatonEngine.setName(rule.getName());
 			automatonEngine.setAllowOverlappingInstances(this.allowOverlappingOccurrences);
-			automatonEngine.setMaxEpisodeLength(this.maxEpisodeLength);
+			automatonEngine.setSafeGuard(safeGuard);
 			automatonEngine.addRecognitionHandler(episodeHandler);
 			automatonEngine.reset();
 
@@ -124,6 +126,7 @@ public class RegexEngine {
 				iterate(automatonEngineClone, alternative.get(), false, alternativeCount - 1);
 			}
 			Annotation annotation = it.next();
+//			System.out.printf("Processing word [%d,%d] %s%n", annotation.getBegin(), annotation.getEnd(), annotation.getCoveredText());
 			boolean inAlternativeIterationWindow = it.getOffsetUpperBound() > annotation.getBegin();
 			automatonEngine.nextAnnotation(annotation, inAlternativeIterationWindow);
 
