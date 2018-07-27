@@ -536,7 +536,15 @@ public class AutomataParserListener implements UimaTokenRegexListener {
 		String value = ctx.Identifier().getText();
 		String filePath = value.replaceAll("\\.", "/") + ".xml";
 		try {
+			String[] descriptors = TypeSystemDescriptionFactory.scanTypeDescriptors();
+			for(String descriptor: descriptors) {
+				LOGGER.debug("Found a type descriptor at {}", descriptor);
+			}
+			if(descriptors.length == 0) {
+				LOGGER.warn("Found no type descriptors!");
+			}
 			typeSystemDescription = TypeSystemDescriptionFactory.createTypeSystemDescription();
+
 			typeSystemDescription.resolveImports();
 		} catch (Exception e) {
 			throwException(ctx, String.format("Failed to load type system %s. Got %s:%s", filePath, e.getClass().getSimpleName(), e.getMessage()));
